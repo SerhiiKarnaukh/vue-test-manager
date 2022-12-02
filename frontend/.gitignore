@@ -1,6 +1,6 @@
 .DS_Store
 node_modules
-dist
+/dist
 
 
 # local env files
@@ -13,25 +13,6 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-### Django ###
-*.log
-*.pot
-*.pyc
-__pycache__/
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-media
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
 # Editor directories and files
 .idea
 .vscode
@@ -40,6 +21,3 @@ venv.bak/
 *.njsproj
 *.sln
 *.sw?
-
-# vetur settings
-vetur.config.js

@@ -1,9 +1,9 @@
 <template>
   <v-app>
     <the-navbar></the-navbar>
-    <v-main>
-      <router-view></router-view>
-    </v-main>
+
+    <router-view></router-view>
+
     <the-footer></the-footer>
   </v-app>
 

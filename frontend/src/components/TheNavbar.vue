@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container>
     <v-app-bar color="primary">
       <v-app-bar-nav-icon
         variant="text"

@@ -17,6 +17,14 @@
       <v-spacer></v-spacer>
       <div class="d-md-flex d-sm-none d-none mr-3">
         <v-btn
+          flat
+          color="white"
+          to="/dashboard"
+          prepend-icon="mdi-view-dashboard-outline"
+        >
+          Dashboard
+        </v-btn>
+        <v-btn
           v-for="link in links"
           flat
           :key="`${link.label}-navbar-link`"
@@ -35,6 +43,13 @@
       location="left"
     >
       <v-list>
+        <v-list-item
+          to="/dashboard"
+          prepend-icon="mdi-view-dashboard-outline"
+        >
+          Dashboard
+        </v-list-item>
+
         <v-list-item
           v-for="item in links"
           :key="`${item.label}-navbar-drawer-link`"
@@ -85,6 +100,6 @@
 
 <style scoped>
 .main_title {
-    color: white;
+  color: white;
 }
 </style>

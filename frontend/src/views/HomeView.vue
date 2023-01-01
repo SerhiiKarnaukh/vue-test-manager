@@ -24,7 +24,7 @@
           :key="product.id"
         >
           <v-card
-            class="mx-auto rounded-xl"
+            class="mx-auto rounded"
             max-width="300"
             color=""
             flat
@@ -44,10 +44,10 @@
 
             <v-card-title class="">{{ product.name }}</v-card-title>
             <v-card-title class="grey--text text-grey-darken-1 caption mt-n6">
-              subtitle
+              {{ product.description }}
             </v-card-title>
             <div class="d-flex justify-space-between">
-              <v-card-title class="mt-n4">${{ product.price }}</v-card-title>
+              <v-card-title class="mt-n1">${{ product.price }}</v-card-title>
               <v-btn
                 variant="flat"
                 color="primary"

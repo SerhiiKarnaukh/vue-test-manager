@@ -2,12 +2,17 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from core.views import frontpage, contact
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # for Django Rest Framework
     path('api/v1/', include('djoser.urls')),
     path('api/v1/', include('djoser.urls.authtoken')),
     path('api/v1/', include('product.urls')),
+    # for Django Template Language
+    path('', frontpage, name='frontpage'),
+    path('contact/', contact, name='contact'),
 ]
 
 if settings.DEBUG:

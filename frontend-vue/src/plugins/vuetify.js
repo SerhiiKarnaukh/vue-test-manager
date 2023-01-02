@@ -5,6 +5,7 @@ import { createVuetify } from 'vuetify'
 
 export default createVuetify({
  theme: {
+    defaultTheme: 'light',
     icons: {
       iconfont: 'md' || 'fa' || 'md'
 
@@ -13,6 +14,12 @@ export default createVuetify({
       light: {
         colors: {
           primary: '#1867C0',
+          secondary: '#5CBBF6',
+        },
+      },
+      dark: {
+        colors: {
+          primary: '#066920',
           secondary: '#5CBBF6',
         },
       },

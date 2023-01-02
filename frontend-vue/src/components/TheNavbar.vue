@@ -35,6 +35,14 @@
         >
           {{ link.label }}
         </v-btn>
+        <v-btn
+          flat
+          color="white"
+          prepend-icon="mdi-toggle-switch"
+          @click="toggleTheme"
+        >
+          Toggle Theme
+        </v-btn>
       </div>
     </v-app-bar>
     <v-navigation-drawer
@@ -64,7 +72,16 @@
 </template>
 
 <script>
+import { useTheme } from 'vuetify'
   export default {
+    setup () {
+    const theme = useTheme()
+
+    return {
+      theme,
+      toggleTheme: () => theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
+    }
+   },
     data: () => ({
       drawer: false,
       links: [
@@ -84,6 +101,11 @@
           url: '/login'
         },
         {
+          icon: 'pencil-lock',
+          label: 'Signup',
+          url: '/signup'
+        },
+        {
           icon: 'basket',
           label: 'Cart',
           url: '/cart'
@@ -94,7 +116,7 @@
     $route() {
       this.drawer = false
     }
-  }
+  },
   }
 </script>
 

@@ -1,16 +1,21 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import render, get_object_or_404
+from django.views.generic import DetailView
 
 from .models import Product
 from .serializers import ProductSerializer
 
 
 # for Django Template Language
-def product_detail(request, slug):
-    product = get_object_or_404(Product, slug=slug)
-    context = {'product': product}
-    return render(request, 'product/product_detail.html', context)
+class ProductDetail(DetailView):
+    model = Product
+    template_name = 'product/product_detail.html'
+    context_object_name = 'product'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
 
 # for Django Rest Framework

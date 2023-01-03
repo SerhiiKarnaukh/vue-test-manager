@@ -1,13 +1,20 @@
 from django.shortcuts import render
+from django.views.generic import ListView
 
 from product.models import Product
 
 
-def frontpage(request):
-    products = Product.objects.all()
+class FrontPage(ListView):
+    model = Product
+    template_name = 'core/frontpage.html'
+    context_object_name = 'products'
 
-    context = {'products': products}
-    return render(request, 'core/frontpage.html', context)
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+    def get_queryset(self):
+        return Product.objects.all().select_related('category')
 
 
 def contact(request):

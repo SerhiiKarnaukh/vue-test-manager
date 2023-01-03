@@ -16,7 +16,9 @@ urlpatterns = [
     # for Django Template Language
     path('', FrontPage.as_view(), name='frontpage'),
     path('contact/', contact, name='contact'),
-    path('<slug:slug>/', ProductDetail.as_view(), name='product_detail'),
+    path('<slug:category_slug>/<slug:slug>/',
+         ProductDetail.as_view(),
+         name='product_detail'),
 ]
 
 if settings.DEBUG:

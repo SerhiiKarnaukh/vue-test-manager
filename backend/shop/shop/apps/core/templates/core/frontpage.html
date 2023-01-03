@@ -10,7 +10,7 @@
       {% for product in products%}
       <div class="col-md-3">
         <div class="card card-product-grid">
-          <a href="./product-detail.html" class="img-wrap">
+          <a href="{% url 'product_detail' product.slug %}" class="img-wrap">
             <img src="https://picsum.photos/200/300" />
           </a>
           <figcaption class="info-wrap">

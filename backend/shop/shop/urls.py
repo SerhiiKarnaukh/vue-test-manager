@@ -3,6 +3,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from core.views import frontpage, contact
+from product.views import product_detail
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -13,6 +14,7 @@ urlpatterns = [
     # for Django Template Language
     path('', frontpage, name='frontpage'),
     path('contact/', contact, name='contact'),
+    path('<slug:slug>/', product_detail, name='product_detail'),
 ]
 
 if settings.DEBUG:

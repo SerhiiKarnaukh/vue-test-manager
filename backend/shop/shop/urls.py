@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from core.views import FrontPage, contact
-from product.views import ProductDetail
+from product.views import ProductDetail, CategoryDetail
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -19,6 +19,7 @@ urlpatterns = [
     path('<slug:category_slug>/<slug:slug>/',
          ProductDetail.as_view(),
          name='product_detail'),
+    path('<slug:slug>/', CategoryDetail.as_view(), name='category_detail'),
 ]
 
 if settings.DEBUG:

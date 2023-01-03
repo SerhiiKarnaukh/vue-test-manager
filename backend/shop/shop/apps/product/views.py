@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import DetailView
 
-from .models import Product
+from .models import Product, Category
 from .serializers import ProductSerializer
 
 
@@ -15,6 +15,17 @@ class ProductDetail(DetailView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        return context
+
+
+class CategoryDetail(DetailView):
+    model = Category
+    template_name = 'product/category_detail.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['products'] = Product.objects.filter(
+            category__slug=self.kwargs['slug']).select_related('category')
         return context
 
 

@@ -1,5 +1,6 @@
 from io import BytesIO
 from PIL import Image
+from django.urls import reverse
 
 from django.core.files import File
 from django.db import models
@@ -17,7 +18,10 @@ class Category(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return f'/{self.slug}/'
+        return reverse('category_detail', kwargs={'slug': self.slug})
+
+    # def get_absolute_url(self):
+    #     return f'/{self.slug}/'
 
 
 class Product(models.Model):

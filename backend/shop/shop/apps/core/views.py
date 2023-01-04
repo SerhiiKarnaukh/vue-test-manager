@@ -14,7 +14,8 @@ class FrontPage(ListView):
         return context
 
     def get_queryset(self):
-        return Product.objects.all().select_related('category')
+        return Product.objects.all().filter(
+            is_available=True).select_related('category')
 
 
 def contact(request):

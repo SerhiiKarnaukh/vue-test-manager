@@ -1,16 +1,27 @@
 from io import BytesIO
 from PIL import Image
 from django.urls import reverse
+# import datetime
+# import os
 
 from django.core.files import File
 from django.db import models
 
+# def get_file_path(request, filename):
+#     original_filename = str(filename)
+#     nowTime = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+#     filename = "%s%s" % (nowTime, original_filename)
+#     return os.path.join('uploads/', filename)
+
 
 class Category(models.Model):
-    name = models.CharField(max_length=255)
-    slug = models.SlugField()
+    name = models.CharField(max_length=50, unique=True)
+    slug = models.SlugField(max_length=100, unique=True)
+    description = models.TextField(max_length=255, blank=True)
+    cat_image = models.ImageField(upload_to='uploads/%Y/%m/%d/', blank=True)
 
     class Meta:
+        verbose_name = 'Category'
         verbose_name_plural = 'Categories'
         ordering = ('name', )
 
@@ -28,17 +39,20 @@ class Product(models.Model):
     category = models.ForeignKey(Category,
                                  related_name='products',
                                  on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
-    slug = models.SlugField()
+    name = models.CharField(max_length=255, unique=True)
+    slug = models.SlugField(max_length=200, unique=True)
     description = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     image = models.ImageField(upload_to='uploads/%Y/%m/%d/',
                               blank=True,
                               null=True)
+    stock = models.IntegerField()
+    is_available = models.BooleanField(default=True)
     thumbnail = models.ImageField(upload_to='uploads/%Y/%m/%d/',
                                   blank=True,
                                   null=True)
     date_added = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ('-date_added', )

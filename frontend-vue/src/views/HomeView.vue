@@ -38,7 +38,7 @@
                 max-height="300"
                 max-width="300"
                 contain
-                :src="product.get_thumbnail"
+                :src="product.get_image"
               ></v-img>
             </div>
 

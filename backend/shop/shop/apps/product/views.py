@@ -28,6 +28,7 @@ class CategoryDetail(DetailView):
         context = super().get_context_data(**kwargs)
         context['products'] = Product.objects.filter(
             category__slug=self.kwargs['slug']).select_related('category')
+        context['category'] = Category.objects.get(slug=self.kwargs['slug'])
         return context
 
 

@@ -11,11 +11,12 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'date_added', 'image')
+    list_display = ('id', 'name', 'is_available', 'stock', 'date_added',
+                    'image')
     list_display_links = ('id', 'name')
     search_fields = ('name', 'description')
-    # list_editable = ('is_published', )
-    # list_filter = ('is_published', 'time_create')
+    list_editable = ('is_available', 'stock')
+    list_filter = ('is_available', 'date_added')
     prepopulated_fields = {"slug": ("name", )}
 
 

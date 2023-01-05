@@ -1,17 +1,9 @@
 from io import BytesIO
 from PIL import Image
 from django.urls import reverse
-# import datetime
-# import os
 
 from django.core.files import File
 from django.db import models
-
-# def get_file_path(request, filename):
-#     original_filename = str(filename)
-#     nowTime = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-#     filename = "%s%s" % (nowTime, original_filename)
-#     return os.path.join('uploads/', filename)
 
 
 class Category(models.Model):
@@ -30,9 +22,6 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         return reverse('category_detail', kwargs={'slug': self.slug})
-
-    # def get_absolute_url(self):
-    #     return f'/{self.slug}/'
 
 
 class Product(models.Model):
@@ -61,7 +50,7 @@ class Product(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return f'/{self.category.slug}/{self.slug}/'
+        return reverse('product_detail', args=[self.category.slug, self.slug])
 
     def get_image(self):
         if self.image:

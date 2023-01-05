@@ -8,7 +8,7 @@
         <div class="container">
             <header class="d-flex mb-3 justify-content-between section-heading">
                 <h3 class="section-title">Popular products</h3>
-                <a href="./store.html" class="btn btn-outline-primary">See all</a>
+                <a href="{% url 'store' %}" class="btn btn-outline-primary">See all</a>
             </header>
             <div class="row">
                 {% for product in products %}

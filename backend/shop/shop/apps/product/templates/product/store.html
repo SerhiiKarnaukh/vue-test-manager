@@ -26,13 +26,12 @@
                                      data-bs-parent="#accordionExample">
                                     <div class="accordion-body">
                                         <div class="list-group list-group-flush">
-                                            <a href="#"
-                                               class="list-group-item list-group-item-action"
-                                               aria-current="true">The current link item</a>
-                                            <a href="#" class="list-group-item list-group-item-action">A second link item</a>
-                                            <a href="#" class="list-group-item list-group-item-action">A third link item</a>
-                                            <a href="#" class="list-group-item list-group-item-action">A fourth link item</a>
-                                            <a class="list-group-item list-group-item-action disabled">A disabled link item</a>
+                                            <a href="{% url 'store' %}"
+                                               class="list-group-item list-group-item-action">All Products</a>
+                                            {% for category in menu_categories %}
+                                                <a href="{{ category.get_absolute_url }}"
+                                                   class="list-group-item list-group-item-action">{{ category.name }}</a>
+                                            {% endfor %}
                                         </div>
                                     </div>
                                 </div>
@@ -175,14 +174,16 @@
                         {% for product in products %}
                             <div class="col-md-4 col-lg-3 d-flex align-items-stretch">
                                 <div class="card mb-4">
-                                    <img src="{{ product.image.url }}"
-                                         height=""
-                                         width=""
-                                         class="card-img-top"
-                                         alt="{{ product.name }}"/>
-                                    <div class="card-body">
-                                        <h5 class="card-title">{{ product.name }}</h5>
-                                        <div class="fw-bold mb-2">${{ product.price }}</div>
+                                    <a href="{{ product.get_absolute_url }}">
+                                        <img src="{{ product.image.url }}"
+                                             height=""
+                                             width=""
+                                             class="card-img-top"
+                                             alt="{{ product.name }}"/>
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ product.name }}</h5>
+                                            <div class="fw-bold mb-2">${{ product.price }}</div>
+                                        </a>
                                         <div class="d-grid gap-2 mb-auto">
                                             <a href="#" class="btn btn-primary" type="button">Add to cart</a
                                                 >

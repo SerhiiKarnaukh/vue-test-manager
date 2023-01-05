@@ -11,11 +11,12 @@ class Category(models.Model):
     slug = models.SlugField(max_length=100, unique=True)
     description = models.TextField(max_length=255, blank=True)
     cat_image = models.ImageField(upload_to='uploads/%Y/%m/%d/', blank=True)
+    ordering = models.IntegerField(default=0)
 
     class Meta:
         verbose_name = 'Category'
         verbose_name_plural = 'Categories'
-        ordering = ('name', )
+        ordering = ('ordering', )
 
     def __str__(self):
         return self.name

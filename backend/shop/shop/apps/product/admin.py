@@ -4,9 +4,10 @@ from .models import Category, Product
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
+    list_display = ('id', 'name', 'ordering')
     list_display_links = ('id', 'name')
     search_fields = ('name', )
+    list_editable = ('ordering', )
     prepopulated_fields = {"slug": ("name", )}
 
 

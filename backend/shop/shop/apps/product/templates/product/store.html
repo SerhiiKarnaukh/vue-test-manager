@@ -1,0 +1,219 @@
+{% extends "core/base.html" %}
+{% block title %}
+    {{ store_title }} |
+{% endblock title %}
+{% block content %}
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <aside class="col-md-3">
+                    <div class="card">
+                        <div class="accordion" id="accordionExample">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingOne">
+                                    <button class="accordion-button"
+                                            type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#collapseOne"
+                                            aria-expanded="true"
+                                            aria-controls="collapseOne">
+                                        Categories
+                                    </button>
+                                </h2>
+                                <div id="collapseOne"
+                                     class="accordion-collapse collapse show"
+                                     aria-labelledby="headingOne"
+                                     data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        <div class="list-group list-group-flush">
+                                            <a href="#"
+                                               class="list-group-item list-group-item-action"
+                                               aria-current="true">The current link item</a>
+                                            <a href="#" class="list-group-item list-group-item-action">A second link item</a>
+                                            <a href="#" class="list-group-item list-group-item-action">A third link item</a>
+                                            <a href="#" class="list-group-item list-group-item-action">A fourth link item</a>
+                                            <a class="list-group-item list-group-item-action disabled">A disabled link item</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingTwo">
+                                    <button class="accordion-button collapsed"
+                                            type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#collapseTwo"
+                                            aria-expanded="false"
+                                            aria-controls="collapseTwo">
+                                        Sizes
+                                    </button>
+                                </h2>
+                                <div id="collapseTwo"
+                                     class="accordion-collapse collapse"
+                                     aria-labelledby="headingTwo"
+                                     data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item">
+                                                <input class="form-check-input me-1"
+                                                       type="checkbox"
+                                                       value=""
+                                                       id="firstCheckboxStretched"/>
+                                                <label class="form-check-label stretched-link" for="firstCheckboxStretched">XS</label>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <input class="form-check-input me-1"
+                                                       type="checkbox"
+                                                       value=""
+                                                       id="secondCheckboxStretched"/>
+                                                <label class="form-check-label stretched-link" for="secondCheckboxStretched">SM</label>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <input class="form-check-input me-1"
+                                                       type="checkbox"
+                                                       value=""
+                                                       id="thirdCheckboxStretched"/>
+                                                <label class="form-check-label stretched-link" for="thirdCheckboxStretched">LG</label>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <input class="form-check-input me-1"
+                                                       type="checkbox"
+                                                       value=""
+                                                       id="thirdCheckboxStretched"/>
+                                                <label class="form-check-label stretched-link" for="thirdCheckboxStretched">XXL</label>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingThree">
+                                    <button class="accordion-button collapsed"
+                                            type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#collapseThree"
+                                            aria-expanded="false"
+                                            aria-controls="collapseThree">
+                                        Price range
+                                    </button>
+                                </h2>
+                                <div id="collapseThree"
+                                     class="accordion-collapse collapse"
+                                     aria-labelledby="headingThree"
+                                     data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Min</label>
+                                                <select class="mr-2 form-control">
+                                                    <option value="0">
+                                                        $0
+                                                    </option>
+                                                    <option value="50">
+                                                        $50
+                                                    </option>
+                                                    <option value="100">
+                                                        $100
+                                                    </option>
+                                                    <option value="150">
+                                                        $150
+                                                    </option>
+                                                    <option value="200">
+                                                        $200
+                                                    </option>
+                                                    <option value="500">
+                                                        $500
+                                                    </option>
+                                                    <option value="1000">
+                                                        $1000
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="text-end col-md-6">
+                                                <label class="form-label">Max</label>
+                                                <select class="mr-2 form-control">
+                                                    <option value="50">
+                                                        $50
+                                                    </option>
+                                                    <option value="100">
+                                                        $100
+                                                    </option>
+                                                    <option value="150">
+                                                        $150
+                                                    </option>
+                                                    <option value="200">
+                                                        $200
+                                                    </option>
+                                                    <option value="500">
+                                                        $500
+                                                    </option>
+                                                    <option value="1000">
+                                                        $1000
+                                                    </option>
+                                                    <option value="2000">
+                                                        $2000+
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="d-grid gap-2 mt-4">
+                                            <button class="btn btn-primary" type="button">Apply</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+                <main class="col-md-9">
+                    <header class="border-bottom mb-4 pb-3">
+                        <div class="form-inline">
+                            <span class="mr-md-auto"><b>{{ product_count }}</b> Items found</span>
+                        </div>
+                    </header>
+                    <div class="row">
+                        {% for product in products %}
+                            <div class="col-md-4 col-lg-3 d-flex align-items-stretch">
+                                <div class="card mb-4">
+                                    <img src="{{ product.image.url }}"
+                                         height=""
+                                         width=""
+                                         class="card-img-top"
+                                         alt="{{ product.name }}"/>
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ product.name }}</h5>
+                                        <div class="fw-bold mb-2">${{ product.price }}</div>
+                                        <div class="d-grid gap-2 mb-auto">
+                                            <a href="#" class="btn btn-primary" type="button">Add to cart</a
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <nav aria-label="...">
+                            <ul class="pagination">
+                                <li class="page-item disabled">
+                                    <a class="page-link">Previous</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">1</a>
+                                </li>
+                                <li class="page-item active" aria-current="page">
+                                    <a class="page-link" href="#">2</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">3</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </main>
+                </div>
+            </div>
+            <!-- container .//  -->
+        </section>
+    {% endblock content %}

@@ -1,35 +1,35 @@
 {% load static %}
-
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Super Shop demo</title>
-    <link
-      href="{% static 'core/bootstrap/css/bootstrap.min.css' %}"
-      rel="stylesheet"
-      integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
-      crossorigin="anonymous"
-    />
-    <link href="{% static 'core/css/custom-style.css' %}" rel="stylesheet" />
-    <!-- Bootstrap Font Icon CSS -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
-    />
-  </head>
-
-  <body>
-    {% include 'core/includes/navbar.html' %}
-    <section class="main">
-      <div class="container">{% block content %} {% endblock %}</div>
-    </section>
-    {% include 'core/includes/footer.html' %}
-    <script
-      src="{% static 'core/bootstrap/js/bootstrap.bundle.min.js' %}"
-      integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
-      crossorigin="anonymous"
-    ></script>
-  </body>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="keywords" content="meta keywords" />
+        <meta name="description" content="meta description" />
+        <title>
+            {% block title %}
+            {% endblock title %}
+        Super Shop</title>
+        <link href="{% static 'core/bootstrap/css/bootstrap.min.css' %}"
+              rel="stylesheet"
+              integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+              crossorigin="anonymous"/>
+        <link href="{% static 'core/css/custom-style.css' %}" rel="stylesheet" />
+        <!-- Bootstrap Font Icon CSS -->
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"/>
+    </head>
+    <body>
+        {% include "core/includes/navbar.html" %}
+        <section class="main">
+            <div class="container">
+                {% block content %}
+                {% endblock content %}
+            </div>
+        </section>
+        {% include "core/includes/footer.html" %}
+        <script src="{% static 'core/bootstrap/js/bootstrap.bundle.min.js' %}"
+                integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+                crossorigin="anonymous"></script>
+    </body>
 </html>

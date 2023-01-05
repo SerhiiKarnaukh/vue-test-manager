@@ -1,8 +1,10 @@
-{% extends 'core/base.html' %} {% block content %}
-<img src="{{product.image.url}}" widt="200" height="200" />
-<h1>{{product.name}}</h1>
-<h2>{{product.price}}</h2>
-
-{% if product.description %}
-<p>{{product.description}}</p>
-{% endif %} {% endblock %}
+{% extends "core/base.html" %}
+{% block title %}
+    {{ product.name }} |
+{% endblock title %}
+{% block content %}
+    <img src="{{ product.image.url }}" width="200" height="200" alt="" />
+    <h1>{{ product.name }}</h1>
+    <h2>{{ product.price }}</h2>
+    {% if product.description %}<p>{{ product.description }}</p>{% endif %}
+{% endblock content %}

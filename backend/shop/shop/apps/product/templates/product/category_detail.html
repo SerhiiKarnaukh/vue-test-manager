@@ -1,29 +1,29 @@
-{% extends 'core/base.html' %} {% block content %}
-<h1 class="mb-3">{{category}}</h1>
-<div class="container">
-  <div class="row">
-    {% for product in products%}
-    <div class="col-md-4 col-lg-3">
-      <div class="card mb-4">
-        <img
-          src="{{product.image.url}}"
-          class="card-img-top"
-          alt="{{product.name}}"
-        />
-        <div class="card-body">
-          <h5 class="card-title">{{product.name}}</h5>
-          <p class="card-text">
-            {{product.description | linebreaks | truncatewords:25}}
-          </p>
-          <div class="fw-bold mb-2">${{product.price}}</div>
-          <a href="{{ product.get_absolute_url }}" class="btn btn-primary"
-            >View details</a
-          >
+{% extends "core/base.html" %}
+{% block title %}
+    {{ category.name }} |
+{% endblock title %}
+{% block content %}
+    <h1 class="mb-3">{{ category }}</h1>
+    <div class="container">
+        <div class="row">
+            {% for product in products %}
+                <div class="col-md-4 col-lg-3">
+                    <div class="card mb-4">
+                        <img src="{{ product.image.url }}"
+                             height=""
+                             width=""
+                             class="card-img-top"
+                             alt="{{ product.name }}"/>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text">{{ product.description | linebreaks | truncatewords:25 }}</p>
+                            <div class="fw-bold mb-2">${{ product.price }}</div>
+                            <a href="{{ product.get_absolute_url }}" class="btn btn-primary">View details</a
+                                >
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
-      </div>
-    </div>
-    {%endfor%}
-  </div>
-</div>
-
-{% endblock %}
+    {% endblock content %}

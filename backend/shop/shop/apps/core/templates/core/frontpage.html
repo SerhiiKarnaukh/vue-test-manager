@@ -1,34 +1,35 @@
-{% extends 'core/base.html' %} {% block content %}
-<h1>Front Page</h1>
-<section class="section-name padding-y-sm">
-  <div class="container">
-    <header class="d-flex mb-3 justify-content-between section-heading">
-      <h3 class="section-title">Popular products</h3>
-      <a href="./store.html" class="btn btn-outline-primary">See all</a>
-    </header>
-    <div class="row">
-      {% for product in products%}
-      <div class="col-md-4 col-lg-3">
-        <div class="card mb-4">
-          <img
-            src="{{product.image.url}}"
-            class="card-img-top"
-            alt="{{product.name}}"
-          />
-          <div class="card-body">
-            <h5 class="card-title">{{product.name}}</h5>
-            <p class="card-text">
-              {{product.description | linebreaks | truncatewords:25}}
-            </p>
-            <div class="fw-bold price mb-2">${{product.price}}</div>
-            <a href="{{ product.get_absolute_url }}" class="btn btn-primary"
-              >View details</a
-            >
-          </div>
-        </div>
-      </div>
-      {%endfor%}
-    </div>
-  </div>
-</section>
-{% endblock %}
+{% extends "core/base.html" %}
+{% block title %}
+    Welcome |
+{% endblock title %}
+{% block content %}
+    <h1>Front Page</h1>
+    <section class="section-name padding-y-sm">
+        <div class="container">
+            <header class="d-flex mb-3 justify-content-between section-heading">
+                <h3 class="section-title">Popular products</h3>
+                <a href="./store.html" class="btn btn-outline-primary">See all</a>
+            </header>
+            <div class="row">
+                {% for product in products %}
+                    <div class="col-md-4 col-lg-3">
+                        <div class="card mb-4">
+                            <img src="{{ product.image.url }}"
+                                 class="card-img-top"
+                                 alt="{{ product.name }}"
+                                 height=""
+                                 width=""/>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text">{{ product.description | linebreaks | truncatewords:25 }}</p>
+                                <div class="fw-bold price mb-2">${{ product.price }}</div>
+                                <a href="{{ product.get_absolute_url }}" class="btn btn-primary">View details</a
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    {% endblock content %}

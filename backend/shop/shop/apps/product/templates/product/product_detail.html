@@ -3,8 +3,32 @@
     {{ product.name }} |
 {% endblock title %}
 {% block content %}
-    <img src="{{ product.image.url }}" width="200" height="200" alt="" />
-    <h1>{{ product.name }}</h1>
-    <h2>{{ product.price }}</h2>
-    {% if product.description %}<p>{{ product.description }}</p>{% endif %}
+    <section class="py-5">
+        <div class="container">
+            <div class="card mb-3">
+                <div class="row g-0">
+                    <div class="col-md-6">
+                        <img src="{{ product.image.url }}"
+                             class="img-fluid rounded-start"
+                             alt="{{ product.name }}"
+                             width="auto"
+                             height="auto"/>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card-body">
+                            <h5 class="title h2">{{ product.name }}</h5>
+                            <div class="mb-3">
+                                <var class="price h4">${{ product.price }}</var>
+                            </div>
+                            <p class="card-text">{{ product.description }}</p>
+                            <hr/>
+                            <p class="card-text">
+                                <a href="./product-detail.html" class="btn  btn-primary"> <span class="text">Add to cart</span> <i class="bi-cart"></i>  </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock content %}

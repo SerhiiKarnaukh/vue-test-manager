@@ -10,7 +10,7 @@ Pet ecommerce app using Python(Django), Django Templates Language, Django Rest F
 cd backend
 ```
 
-### Frontend Vue.js
+## Frontend Vue.js
 
 ```
 cd frontend-vue

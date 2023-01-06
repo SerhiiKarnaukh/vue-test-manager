@@ -3,7 +3,7 @@
     {{ product.name }} |
 {% endblock title %}
 {% block content %}
-    <section class="py-5">
+    <section class="py-5 main-bg">
         <div class="container">
             <div class="card mb-3">
                 <div class="row g-0">
@@ -23,7 +23,11 @@
                             <p class="card-text">{{ product.description }}</p>
                             <hr/>
                             <p class="card-text">
-                                <a href="./product-detail.html" class="btn  btn-primary"> <span class="text">Add to cart</span> <i class="bi-cart"></i>  </a>
+                                {% if product.stock <= 0 %}
+                                    <h5 class="text-danger">Out of Stock</h5>
+                                {% else %}
+                                    <a href="./product-detail.html" class="btn  btn-primary"><span class="text">Add to cart</span> <i class="bi-cart"></i></a>
+                                {% endif %}
                             </p>
                         </div>
                     </div>

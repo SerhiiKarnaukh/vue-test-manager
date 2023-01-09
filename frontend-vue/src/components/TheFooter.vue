@@ -34,14 +34,6 @@
           url: '/'
         },
         {
-          label: 'Men',
-          url: '/men'
-        },
-        {
-          label: 'Women',
-          url: '/women'
-        },
-        {
           label: 'Login',
           url: '/login'
         },

@@ -24,6 +24,26 @@
         >
           Dashboard
         </v-btn>
+        <v-menu open-on-hover>
+          <template v-slot:activator="{ props }">
+            <v-btn
+              color="white"
+              v-bind="props"
+              prepend-icon="mdi-hanger"
+            >
+              Category
+            </v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item
+              v-for="(item, index) in categories"
+              :key="index"
+            >
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
         <v-btn
           v-for="link in links"
           flat
@@ -35,14 +55,15 @@
         >
           {{ link.label }}
         </v-btn>
-        <v-btn
+        <!-- <v-btn
           flat
           color="white"
           prepend-icon="mdi-toggle-switch"
           @click="toggleTheme"
         >
           Toggle Theme
-        </v-btn>
+        </v-btn> -->
+
       </div>
     </v-app-bar>
     <v-navigation-drawer
@@ -50,7 +71,29 @@
       v-model="drawer"
       location="left"
     >
+
       <v-list>
+        <v-menu>
+          <template v-slot:activator="{ props }">
+            <v-list-item
+              color="white"
+              v-bind="props"
+              prepend-icon="mdi-hanger"
+            >
+              Category
+            </v-list-item>
+          </template>
+
+          <v-list>
+            <v-list-item
+              v-for="(item, index) in categories"
+              :key="index"
+              hover
+            >
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
         <v-list-item
           to="/dashboard"
           prepend-icon="mdi-view-dashboard-outline"
@@ -86,16 +129,6 @@ import { useTheme } from 'vuetify'
       drawer: false,
       links: [
         {
-          icon: 'face-man',
-          label: 'Men',
-          url: '/men'
-        },
-        {
-          icon: 'face-woman',
-          label: 'Women',
-          url: '/women'
-        },
-        {
           icon: 'login',
           label: 'Login',
           url: '/login'
@@ -110,6 +143,12 @@ import { useTheme } from 'vuetify'
           label: 'Cart',
           url: '/cart'
         },
+      ],
+      categories: [
+        { title: 'Shoes' },
+        { title: 'T-shirts' },
+        { title: 'Click Me' },
+        { title: 'Click Me 2' },
       ],
     }),
     watch: {

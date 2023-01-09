@@ -9,11 +9,17 @@
       </h4>
     </div>
   </v-parallax>
-  <v-container fluid>
+  <v-container>
     <v-main>
       <v-row
+        class="py-5"
         justify="center"
-        class="space px-16 pb-5"
+      >
+        <h2>Latest products</h2>
+      </v-row>
+      <v-row
+        justify="center"
+        class="space px-16 py-5"
       >
         <v-col
           cols="12"
@@ -49,6 +55,7 @@
             <div class="d-flex justify-space-between">
               <v-card-title class="mt-n1">${{ product.price }}</v-card-title>
               <v-btn
+                :to="product.get_absolute_url"
                 variant="flat"
                 color="primary"
               >Details</v-btn>

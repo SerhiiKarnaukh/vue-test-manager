@@ -1,14 +1,20 @@
 import { createStore } from 'vuex'
+import mutations from './mutations'
+import actions from './actions'
 
 export default createStore({
-  state: {
-  },
-  getters: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
   modules: {
-  }
+  },
+  state() {
+    return {
+        cart: {
+            items: [],
+        },
+        isAuthenticated: false,
+        token: '',
+        isLoading: false
+    }
+  },
+  mutations: mutations,
+  actions: actions,
 })

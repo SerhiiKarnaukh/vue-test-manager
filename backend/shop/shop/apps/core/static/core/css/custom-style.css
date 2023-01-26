@@ -21,3 +21,14 @@
 .main-bg {
     background-color: #f8f9fa;
 }
+
+.img-sm {
+    width: 80px;
+    height: 80px;
+}
+.input-spinner {
+    width: 125px;
+    flex-wrap: nowrap;
+    display: inline-flex;
+    vertical-align: middle;
+}

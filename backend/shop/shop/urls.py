@@ -3,7 +3,6 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from core.views import FrontPage
-from cart.views import cart
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -12,7 +11,7 @@ urlpatterns = [
     path('api/v1/', include('product.urls')),
 
     # for Django Template Language
-    path('cart/', cart, name='cart'),
+    path('cart/', include('cart.urls')),
     path('', FrontPage.as_view(), name='frontpage'),
     path('store/', include('core.urls')),
 ]

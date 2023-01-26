@@ -3,5 +3,107 @@
     Cart |
 {% endblock title %}
 {% block content %}
-    <h1 class="mb-3">CART</h1>
+    <div class="container py-5 main-bg">
+        <div class="row">
+            <aside class="col-lg-9">
+                <div class="card">
+                    <table class="table table-borderless">
+                        <thead class="text-muted">
+                            <tr class="small text-uppercase">
+                                <th scope="col">Product</th>
+                                <th scope="col" width="120">Quantity</th>
+                                <th scope="col" width="120">Price</th>
+                                <th scope="col" class="text-right" width="200"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <figure class="itemside align-items-center d-flex">
+                                        <div class="aside me-3">
+                                            <img src="https://picsum.photos/200/300"
+                                                 class="figure-img img-fluid rounded img-sm"
+                                                 width="auto"
+                                                 height="auto"
+                                                 alt=""/>
+                                        </div>
+                                        <figcaption class="info">
+                                            <a href="#" class="title text-dark text-decoration-none">Camera Canon EOS M50 Kit</a>
+                                            <p class="text-muted small">
+                                                Matrix: 25 Mpx
+                                                <br/>
+                                                Brand: Canon
+                                            </p>
+                                        </figcaption>
+                                    </figure>
+                                </td>
+                                <td>
+                                    <div class="col">
+                                        <div class="input-group input-spinner">
+                                            <div class="input-group-prepend">
+                                                <button class="btn btn-light" type="button" id="button-plus">
+                                                    <i class="bi-dash"></i>
+                                                </button>
+                                            </div>
+                                            <input type="text" class="form-control"  value="1"/>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-light" type="button" id="button-minus">
+                                                    <i class="bi-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="price-wrap">
+                                        <var class="price fw-bold">$1156.00</var>
+                                        <small class="text-muted">$315.20 each</small>
+                                    </div>
+                                </td>
+                                <td class="text-right">
+                                    <a href="" class="btn btn-danger">Remove</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </aside>
+            <aside class="col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <dl class="dlist-align">
+                            <dt>
+                                Total price:
+                            </dt>
+                            <dd class="text-right">
+                                $69.97
+                            </dd>
+                        </dl>
+                        <dl class="dlist-align">
+                            <dt>
+                                Tax:
+                            </dt>
+                            <dd class="text-right">
+                                $10.00
+                            </dd>
+                        </dl>
+                        <dl class="dlist-align">
+                            <dt>
+                                Total:
+                            </dt>
+                            <dd class="text-right text-dark b">
+                                <strong>$59.97</strong>
+                            </dd>
+                        </dl>
+                        <hr/>
+                        <p class="text-center mb-3">
+                            <img src="./images/misc/payments.png" height="26" width="auto" alt=""/>
+                        </p>
+                        <a href="./place-order.html" class="btn btn-primary btn-block">Checkout</a>
+                        <a href="./store.html" class="btn btn-light btn-block">Continue Shopping</a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
 {% endblock content %}

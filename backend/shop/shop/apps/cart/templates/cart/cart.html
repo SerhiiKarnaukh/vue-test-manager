@@ -17,53 +17,60 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>
-                                    <figure class="itemside align-items-center d-flex">
-                                        <div class="aside me-3">
-                                            <img src="https://picsum.photos/200/300"
-                                                 class="figure-img img-fluid rounded img-sm"
-                                                 width="auto"
-                                                 height="auto"
-                                                 alt=""/>
-                                        </div>
-                                        <figcaption class="info">
-                                            <a href="#" class="title text-dark text-decoration-none">Camera Canon EOS M50 Kit</a>
-                                            <p class="text-muted small">
-                                                Matrix: 25 Mpx
-                                                <br/>
-                                                Brand: Canon
-                                            </p>
-                                        </figcaption>
-                                    </figure>
-                                </td>
-                                <td>
-                                    <div class="col">
-                                        <div class="input-group input-spinner">
-                                            <div class="input-group-prepend">
-                                                <button class="btn btn-light" type="button" id="button-plus">
-                                                    <i class="bi-dash"></i>
-                                                </button>
+                            {% for cart_item in cart_items %}
+                                <tr>
+                                    <td>
+                                        <figure class="itemside align-items-center d-flex">
+                                            <div class="aside me-3">
+                                                <img src="{{ cart_item.product.image.url }}"
+                                                     class="figure-img img-fluid rounded img-sm"
+                                                     width="auto"
+                                                     height="auto"
+                                                     alt=""/>
                                             </div>
-                                            <input type="text" class="form-control"  value="1"/>
-                                            <div class="input-group-append">
-                                                <button class="btn btn-light" type="button" id="button-minus">
-                                                    <i class="bi-plus"></i>
-                                                </button>
+                                            <figcaption class="info">
+                                                <a href="#" class="title text-dark text-decoration-none">{{ cart_item.product.name }}</a>
+                                                <p class="text-muted small">
+                                                    Color: red
+                                                    <br/>
+                                                    Size: 12
+                                                </p>
+                                            </figcaption>
+                                        </figure>
+                                    </td>
+                                    <td>
+                                        <div class="col">
+                                            <div class="input-group input-spinner">
+                                                <div class="input-group-prepend">
+                                                    <a href="{% url 'remove_cart' cart_item.product.id %}"
+                                                       class="btn btn-light"
+                                                       type="button">
+                                                        <i class="bi-dash"></i>
+                                                    </a>
+                                                </div>
+                                                <input type="text" class="form-control"  value="{{ cart_item.quantity }}"/>
+                                                <div class="input-group-append">
+                                                    <a href="{% url 'add_cart' cart_item.product.id %}"
+                                                       class="btn btn-light"
+                                                       type="button">
+                                                        <i class="bi-plus"></i>
+                                                    </a>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="price-wrap">
-                                        <var class="price fw-bold">$1156.00</var>
-                                        <small class="text-muted">$315.20 each</small>
-                                    </div>
-                                </td>
-                                <td class="text-right">
-                                    <a href="" class="btn btn-danger">Remove</a>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td>
+                                        <div class="price-wrap">
+                                            <div class="price fw-bold">$ {{ cart_item.sub_total }}</div>
+                                            <small class="text-muted">$ {{ cart_item.product.price }} each</small>
+                                        </div>
+                                    </td>
+                                    <td class="text-right">
+                                        <a href="{% url 'remove_cart_item' cart_item.product.id %}"
+                                           class="btn btn-danger">Remove</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -76,7 +83,7 @@
                                 Total price:
                             </dt>
                             <dd class="text-right">
-                                $69.97
+                                $ {{ total }}
                             </dd>
                         </dl>
                         <dl class="dlist-align">
@@ -84,7 +91,7 @@
                                 Tax:
                             </dt>
                             <dd class="text-right">
-                                $10.00
+                                $ {{ tax }}
                             </dd>
                         </dl>
                         <dl class="dlist-align">
@@ -92,7 +99,7 @@
                                 Total:
                             </dt>
                             <dd class="text-right text-dark b">
-                                <strong>$59.97</strong>
+                                <strong>$ {{ grand_total }}</strong>
                             </dd>
                         </dl>
                         <hr/>

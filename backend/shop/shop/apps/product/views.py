@@ -3,6 +3,8 @@ from django.views.generic import ListView, DetailView
 
 from .models import Product, Category
 from .serializers import ProductSerializer
+from cart.models import CartItem
+from cart.views import _get_cart_id
 
 
 # for Django Template Language
@@ -11,9 +13,17 @@ class ProductDetail(DetailView):
     template_name = 'product/product_detail.html'
     context_object_name = 'product'
 
+    def create_store_data(self, **kwargs):
+        context = kwargs
+        context['in_cart'] = CartItem.objects.filter(
+            cart__cart_id=_get_cart_id(self.request),
+            product__slug=self.kwargs['slug']).exists()
+        return context
+
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        return context
+        c_def = self.create_store_data()
+        return dict(list(context.items()) + list(c_def.items()))
 
 
 class CategoryDetail(ListView):

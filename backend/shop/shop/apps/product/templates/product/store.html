@@ -185,8 +185,14 @@
                                             <div class="fw-bold mb-2">${{ product.price }}</div>
                                         </a>
                                         <div class="d-grid gap-2 mb-auto">
-                                            <a href="#" class="btn btn-primary" type="button">Add to cart</a
-                                                >
+                                            {% if product.stock <= 0 %}
+                                                <h6 class="text-danger text-center">Out of Stock</h6>
+                                            {% else %}
+                                                <a href="{% url 'add_cart' product.id %}"
+                                                   class="btn btn-primary"
+                                                   type="button">Add to cart</a
+                                                    >
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>

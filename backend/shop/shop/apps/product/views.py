@@ -1,5 +1,7 @@
 from rest_framework import generics
 from django.views.generic import ListView, DetailView
+from django.shortcuts import render
+from django.db.models import Q
 
 from .models import Product, Category
 from .serializers import ProductSerializer
@@ -60,6 +62,21 @@ class CategoryDetail(ListView):
         else:
             return Product.objects.all().filter(
                 is_available=True).select_related('category')
+
+
+def search(request):
+    if 'keyword' in request.GET:
+        keyword = request.GET['keyword']
+        if keyword:
+            products = Product.objects.order_by('-date_added').filter(
+                Q(description__icontains=keyword)
+                | Q(name__icontains=keyword))
+            product_count = products.count()
+    context = {
+        'products': products,
+        'product_count': product_count,
+    }
+    return render(request, 'product/store.html', context)
 
 
 # for Django Rest Framework

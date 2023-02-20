@@ -171,33 +171,39 @@
                         </div>
                     </header>
                     <div class="row">
-                        {% for product in products %}
-                            <div class="col-md-4 col-lg-3 d-flex align-items-stretch">
-                                <div class="card mb-4">
-                                    <a href="{{ product.get_absolute_url }}">
-                                        <img src="{{ product.image.url }}"
-                                             height=""
-                                             width=""
-                                             class="card-img-top"
-                                             alt="{{ product.name }}"/>
-                                        <div class="card-body">
-                                            <h5 class="card-title">{{ product.name }}</h5>
-                                            <div class="fw-bold mb-2">${{ product.price }}</div>
-                                        </a>
-                                        <div class="d-grid gap-2 mb-auto">
-                                            {% if product.stock <= 0 %}
-                                                <h6 class="text-danger text-center">Out of Stock</h6>
-                                            {% else %}
-                                                <a href="{% url 'add_cart' product.id %}"
-                                                   class="btn btn-primary"
-                                                   type="button">Add to cart</a
-                                                    >
-                                                {% endif %}
+                        {% if products %}
+                            {% for product in products %}
+                                <div class="col-md-4 col-lg-3 d-flex align-items-stretch">
+                                    <div class="card mb-4">
+                                        <a href="{{ product.get_absolute_url }}">
+                                            <img src="{{ product.image.url }}"
+                                                 height=""
+                                                 width=""
+                                                 class="card-img-top"
+                                                 alt="{{ product.name }}"/>
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{ product.name }}</h5>
+                                                <div class="fw-bold mb-2">${{ product.price }}</div>
+                                            </a>
+                                            <div class="d-grid gap-2 mb-auto">
+                                                {% if product.stock <= 0 %}
+                                                    <h6 class="text-danger text-center">Out of Stock</h6>
+                                                {% else %}
+                                                    <a href="{% url 'add_cart' product.id %}"
+                                                       class="btn btn-primary"
+                                                       type="button">Add to cart</a
+                                                        >
+                                                    {% endif %}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+                                {% endfor %}
+                            {% else %}
+                                <div>
+                                    <h2>No result found. Please try again.</h2>
                                 </div>
-                            {% endfor %}
+                            {% endif %}
                         </div>
                         <nav aria-label="Page navigation sample">
                             {% if page_obj.has_other_pages %}

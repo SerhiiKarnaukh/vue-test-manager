@@ -15,26 +15,58 @@
                              height="auto"/>
                     </div>
                     <div class="col-md-6">
-                        <div class="card-body">
-                            <h5 class="title h2">{{ product.name }}</h5>
-                            <div class="mb-3">
-                                <var class="price h4">${{ product.price }}</var>
-                            </div>
-                            <p class="card-text">{{ product.description }}</p>
-                            <hr/>
-                            <p class="card-text">
-                                {% if product.stock <= 0 %}
-                                    <h5 class="text-danger">Out of Stock</h5>
-                                {% else %}
-                                    {% if in_cart %}
-                                        <a href="#" class="btn  btn-success"><span class="text">Added to Cart</span> <i class="bi-check-lg"></i></a>
-                                        <a href="{% url 'cart' %}" class="btn  btn-outline-primary"><span class="text">View Cart</span> <i class="bi-eye"></i></a>
+                        <form action="{% url 'add_cart' product.id %}" method="post">
+                            {% csrf_token %}
+                            <div class="card-body">
+                                <h5 class="title h2">{{ product.name }}</h5>
+                                <div class="mb-3">
+                                    <var class="price h4">${{ product.price }}</var>
+                                </div>
+                                <p class="card-text">{{ product.description }}</p>
+                                <hr/>
+                                <div class="row">
+                                    <div class="item-option-select">
+                                        <h5>Choose Color</h5>
+                                        <select class="form-select" name="color" required>
+                                            <option value="" disabled selected>
+                                                Select
+                                            </option>
+                                            {% for i in product.variation_set.colors %}
+                                                <option value="{{ i.variation_value | lower }}">
+                                                    {{ i.variation_value | capfirst }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <hr/>
+                                <div class="row">
+                                    <div class="item-option-select">
+                                        <h5>Choose Size</h5>
+                                        <select class="form-select" name="size" required>
+                                            <option value="" disabled selected>
+                                                Select
+                                            </option>
+                                            {% for i in product.variation_set.sizes %}
+                                                <option value="{{ i.variation_value | lower }}">
+                                                    {{ i.variation_value | capfirst }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <hr/>
+                                <p class="card-text">
+                                    {% if product.stock <= 0 %}
+                                        <h5 class="text-danger">Out of Stock</h5>
                                     {% else %}
-                                        <a href="{% url 'add_cart' product.id %}" class="btn  btn-primary"><span class="text">Add to Cart</span> <i class="bi-cart"></i></a>
+                                        <button type="submit" class="btn  btn-primary">
+                                            <span class="text">Add to Cart</span> <i class="bi-cart"></i>
+                                        </button>
                                     {% endif %}
-                                {% endif %}
-                            </p>
-                        </div>
+                                </p>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

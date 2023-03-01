@@ -57,16 +57,39 @@
                                href="{% url 'contact' %}">Contact</a
                                 >
                             </li>
-                            <li class="nav-item">
-                                <a href="{% url 'cart' %}" class="cart-item">
-                                    <div class="btn btn-outline-light btn-floating m-1">
-                                        <i class="bi bi-cart"></i>
+                            {% if user.id is None %}
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" href="{% url 'login' %}">Log in</a
+                                        >
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link active"
+                                           aria-current="page"
+                                           href="{% url 'register' %}">Sign up</a
+                                            >
+                                        </li>
+                                    {% else %}
+                                        <li class="nav-item">
+                                            <a class="nav-link active"
+                                               aria-current="page"
+                                               href="{% url 'dashboard' %}">Dashboard</a
+                                                >
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link active" aria-current="page" href="{% url 'logout' %}">Log out</a
+                                                    >
+                                                </li>
+                                            {% endif %}
+                                            <li class="nav-item">
+                                                <a href="{% url 'cart' %}" class="cart-item">
+                                                    <div class="btn btn-outline-light btn-floating m-1">
+                                                        <i class="bi bi-cart"></i>
+                                                    </div>
+                                                    <span class="cart-badge">{{ cart_count }}</span>
+                                                </a>
+                                            </li>
+                                        </ul>
                                     </div>
-                                    <span class="cart-badge">{{ cart_count }}</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-            <!-- end of navbar -->
+                                </div>
+                            </nav>
+                            <!-- end of navbar -->

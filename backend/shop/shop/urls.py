@@ -15,6 +15,7 @@ urlpatterns = [
     path('cart/', include('cart.urls')),
     path('', FrontPage.as_view(), name='frontpage'),
     path('store/', include('core.urls')),
+    path('accounts/', include('accounts.urls')),
 ]
 
 if settings.DEBUG:

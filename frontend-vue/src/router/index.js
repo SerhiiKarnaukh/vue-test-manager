@@ -23,7 +23,7 @@ const routes = [
     component: () => import('@/views/dashboard/DashboardView.vue')
   },
   {
-    path: '/store/:category_slug/:product_slug',
+    path: '/store/category/:category_slug/:product_slug',
     name: 'product',
     component: () => import('@/views/ProductDetailView.vue')
   },

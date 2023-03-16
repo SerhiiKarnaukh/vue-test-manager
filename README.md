@@ -1,17 +1,35 @@
-# Super Shop
+# Frontend Vue.js
 
-## Description
-
-Pet ecommerce app using Python(Django), Django Templates Language, Django Rest Framework, Vue.js
-
-## Backend Python(Django)
+## Node.js version
 
 ```
-cd backend
+v19.1.0
 ```
 
-## Frontend Vue.js
+## Project setup
 
 ```
-cd frontend-vue
+npm install
 ```
+
+### Compiles and hot-reloads for development
+
+```
+npm run dev
+```
+
+### Compiles and minifies for production
+
+```
+npm run build
+```
+
+### Lints and fixes files
+
+```
+npm run lint
+```
+
+### Customize configuration
+
+See [Configuration Reference](https://cli.vuejs.org/config/).

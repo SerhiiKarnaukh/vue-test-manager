@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  vue:
+    container_name: vue-tb
+    build:
+      dockerfile: Dockerfile
+      context: .
+    volumes:
+      - '.:/app'
+      - '/app/node_modules'
+    ports:
+      - 5173:5173

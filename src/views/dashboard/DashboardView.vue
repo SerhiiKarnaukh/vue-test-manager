@@ -1,73 +1,49 @@
 <template>
-  <v-main>
-    <v-container>
-      <v-card class="mb-5">
-        <v-table
-          fixed-header
-          hover
-          density="comfortable"
-          width="500px"
-        >
-          <thead>
-            <tr>
-              <th
-                v-for="item in tableHeader"
-                :key="item"
-                class="text-left"
-              >
-                {{ item }}
-              </th>
-              <th class="text-left">
-                Delete
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="item in tableData"
-              :key="item.name"
-            >
-              <td>{{ item.name }}</td>
-              <td>{{ item.calories }}</td>
-              <td>{{ item.price }}</td>
-              <td>
-                <v-btn
-                  variant="text"
-                  icon="mdi-trash-can-outline"
-                  @click="deleteRow(item)"
-                ></v-btn>
-              </td>
-            </tr>
-          </tbody>
-        </v-table>
-        <v-snackbar
-          v-model="snackbar"
-          :timeout="timeout"
-          color="green"
-        >
-          {{ text + currentItem }}
+    <v-main>
+        <v-container>
+            <v-card class="mb-5">
+                <v-table fixed-header hover density="comfortable" width="500px">
+                    <thead>
+                        <tr>
+                            <th v-for="item in tableHeader" :key="item" class="text-left">
+                                {{ item }}
+                            </th>
+                            <th class="text-left">
+                                Delete
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="item in tableData" :key="item.name">
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.calories }}</td>
+                            <td>{{ item.price }}</td>
+                            <td>
+                                <v-btn variant="text" icon="mdi-trash-can-outline" @click="deleteRow(item)"></v-btn>
+                            </td>
+                        </tr>
+                    </tbody>
+                </v-table>
+                <v-snackbar v-model="snackbar" :timeout="timeout" color="green">
+                    {{ text + currentItem }}
 
-          <template v-slot:actions>
-            <v-btn
-              color="black"
-              variant="text"
-              @click="snackbar = false"
-            >
-              Close
-            </v-btn>
-          </template>
-        </v-snackbar>
-      </v-card>
-    </v-container>
-  </v-main>
+                    <template v-slot:actions>
+                        <v-btn color="black" variant="text" @click="snackbar = false">
+                            Close
+                        </v-btn>
+                    </template>
+                </v-snackbar>
+            </v-card>
+        </v-container>
+    </v-main>
 </template>
 
 <script>
-    export default {
-        data () {
-            return {
-                currentItem: '',
-                tableData: [
+export default {
+    data () {
+        return {
+            currentItem: '',
+            tableData: [
                 {
                     name: 'Frozen Yogurt',
                     calories: 159,
@@ -118,29 +94,29 @@
                     calories: 518,
                     price: '129$',
                 },
-                ],
-                snackbar: false,
-                text: 'You removed the ',
-                timeout: 2000,
-                tableHeader: []
-            }
-        },
-        methods: {
-            deleteRow(item) {
-                this.snackbar = true
-                this.currentItem = item.name
-                this.tableData = this.tableData.filter((p) => p.name !== item.name)
-            },
-            createTableHeader() {
-                let keys = this.tableData.reduce((container, obj) => [...container, ...Object.keys(obj)], [])
-                this.tableHeader = [...new Set(keys)]
-                this.tableHeader = this.tableHeader.map(n => n[0].toUpperCase() + n.slice(1).toLowerCase())
-            }
-        },
-        mounted () {
-            this.createTableHeader()
+            ],
+            snackbar: false,
+            text: 'You removed the ',
+            timeout: 2000,
+            tableHeader: []
         }
+    },
+    methods: {
+        deleteRow (item) {
+            this.snackbar = true
+            this.currentItem = item.name
+            this.tableData = this.tableData.filter((p) => p.name !== item.name)
+        },
+        createTableHeader () {
+            let keys = this.tableData.reduce((container, obj) => [...container, ...Object.keys(obj)], [])
+            this.tableHeader = [...new Set(keys)]
+            this.tableHeader = this.tableHeader.map(n => n[0].toUpperCase() + n.slice(1).toLowerCase())
+        }
+    },
+    mounted () {
+        this.createTableHeader()
     }
+}
 </script>
 
 <style lang="scss" scoped>

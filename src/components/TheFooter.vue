@@ -5,21 +5,32 @@
       no-gutters
     >
       <v-btn
-        v-for="link in links"
-        :key="`${link.label}-footer-link`"
         color="white"
         variant="text"
         class="mx-2"
         rounded="xl"
-        :to="link.url"
+        to="/"
       >
-        {{ link.label }}
+        Home
       </v-btn>
+      <div v-if="!$store.state.auth.token">
+        <v-btn
+          v-for="link in links"
+          :key="`${link.label}-footer-link`"
+          color="white"
+          variant="text"
+          class="mx-2"
+          rounded="xl"
+          :to="link.url"
+        >
+          {{ link.label }}
+        </v-btn>
+      </div>
       <v-col
         class="text-center mt-4"
         cols="12"
       >
-        {{ new Date().getFullYear() }} — <strong>Super Shop</strong>
+        {{ new Date().getFullYear() }} — <strong>Games Store</strong>
       </v-col>
     </v-row>
   </v-footer>
@@ -30,8 +41,8 @@
     data: () => ({
       links: [
         {
-          label: 'Home',
-          url: '/'
+          label: 'Signup',
+          url: '/signup'
         },
         {
           label: 'Login',

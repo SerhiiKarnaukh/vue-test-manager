@@ -1,71 +1,52 @@
 <template>
-  <v-main>
+  <v-main class="px-4 pb-4">
     <v-card
       max-width="700"
       class="mx-auto"
-    >
+    > <v-card-title class="mb-6">
+        <h2 class="text-md-h3 font-weight-medium">Create an account</h2>
+      </v-card-title>
+      <app-message />
       <v-card-text>
-        <v-form
-          ref="form"
-          v-model="valid"
-          lazy-validation
-        >
+        <v-form @submit.prevent="registerHandler">
           <v-text-field
-            v-model="name"
-            :counter="10"
-            :rules="nameRules"
-            label="Name"
-            required
+            v-model.trim="state.email"
+            label="Email"
+            prepend-icon="mdi-email-outline"
+            placeholder="Enter your email"
+            :error-messages="v$.email.$errors.map(e => e.$message)"
           ></v-text-field>
 
           <v-text-field
-            v-model="email"
-            :rules="emailRules"
-            label="E-mail"
-            required
+            v-model.trim="state.password"
+            :type="showPassword ? 'text' : 'password'"
+            clearable
+            label="Password"
+            placeholder="Enter your password"
+            prepend-icon="mdi-lock"
+            :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+            @click:append-inner="showPassword = !showPassword"
+            :error-messages="v$.password.$errors.map(e => e.$message)"
           ></v-text-field>
-
-          <v-select
-            v-model="select"
-            :items="items"
-            :rules="[v => !!v || 'Item is required']"
-            label="Item"
-            required
-          ></v-select>
-          <v-autocomplete
-            label="Autocomplete"
-            :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
-          ></v-autocomplete>
-          <v-checkbox
-            v-model="checkbox"
-            :rules="[v => !!v || 'You must agree to continue!']"
-            label="Do you agree?"
-            required
-          ></v-checkbox>
-
-          <v-btn
-            color="success"
-            class="mr-4"
-            @click="validate"
-            :disabled="!valid"
-          >
-            Submit
-          </v-btn>
-
-          <v-btn
-            color="error"
-            class="mr-4"
-            @click="reset"
-          >
-            Reset Form
-          </v-btn>
-
-          <v-btn
-            color="warning"
-            @click="resetValidation"
-          >
-            Reset Validation
-          </v-btn>
+          <v-divider></v-divider>
+          <v-card-actions>
+            <v-btn
+              variant="flat"
+              color="success"
+              type="submit"
+              :disabled="v$.$invalid"
+            >
+              Submit
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn
+              variant="flat"
+              color="warning"
+              to="/login"
+            >
+              I have an account
+            </v-btn>
+          </v-card-actions>
         </v-form>
       </v-card-text>
     </v-card>
@@ -73,43 +54,50 @@
 </template>
 
 <script>
+  import AppMessage from '@/components/ui/AppMessage.vue'
+  import { reactive } from 'vue'
+  import { useVuelidate } from '@vuelidate/core'
+  import { required, email, minLength } from '@vuelidate/validators'
+  import router from '@/router'
+  import {useStore} from 'vuex'
     export default {
-        data: () => ({
-            valid: true,
-            name: '',
-            nameRules: [
-                v => !!v || 'Name is required',
-                v => (v && v.length <= 10) || 'Name must be less than 10 characters',
-            ],
-            email: '',
-            emailRules: [
-                v => !!v || 'E-mail is required',
-                v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
-            ],
-            select: null,
-            items: [
-                'Item 1',
-                'Item 2',
-                'Item 3',
-                'Item 4',
-            ],
-            checkbox: false,
-        }),
+        components: {AppMessage},
+        setup () {
+            const store = useStore()
+            const state = reactive({
+                email: '',
+                password: '',
+            })
+            const rules = {
+                email: { required, email },
+                password: { required, minLength: minLength(6) },
+            }
 
-        methods: {
-            async validate () {
-                const { valid } = await this.$refs.form.validate()
+            const v$ = useVuelidate(rules, state)
 
-                if (valid) alert('Form is valid')
-            },
-            reset () {
-                this.$refs.form.reset()
-            },
-            resetValidation () {
-                this.$refs.form.resetValidation()
-            },
-        },
-    }
+            const registerHandler = async () => {
+                const isFormCorrect = await v$._value.$validate()
+                if (isFormCorrect) {
+                    const formData = {
+                        email: state.email,
+                        password: state.password,
+                    }
+                    try {
+                        await store.dispatch('auth/register', formData)
+                        router.push('/login')
+                    } catch(e){
+                        return
+                    }
+                    return
+                }
+            };
+
+        return { state, v$, registerHandler }
+    },
+    data: () => ({
+        showPassword: false,
+    }),
+  }
 </script>
 
 <style scoped>

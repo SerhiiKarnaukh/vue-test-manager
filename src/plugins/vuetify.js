@@ -3,23 +3,28 @@ import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 
+const CustomLightTheme = {
+    dark: false,
+    colors: {
+      background: '#ECEFF1',
+      primary: '#1867C0',
+      secondary: '#5CBBF6',
+    }
+  }
+
+
 export default createVuetify({
  theme: {
-    defaultTheme: 'light',
+    defaultTheme: 'CustomLightTheme',
     icons: {
       iconfont: 'md' || 'fa' || 'md'
 
     },
     themes: {
-      light: {
-        colors: {
-          primary: '#1867C0',
-          secondary: '#5CBBF6',
-        },
-      },
+      CustomLightTheme,
       dark: {
         colors: {
-          primary: '#066920',
+          primary: '#385155',
           secondary: '#5CBBF6',
         },
       },

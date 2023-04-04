@@ -13,10 +13,10 @@ export default defineConfig({
       autoImport: true,
     }),
   ],
-  server: {
-    host: true,
-    port: 5173, // This is the port which we will use in docker
-  },
+  //   server: {
+  //     host: true,
+  //     port: 5173,
+  //   },
   define: { 'process.env': {} },
   resolve: {
     alias: {

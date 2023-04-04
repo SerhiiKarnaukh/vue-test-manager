@@ -32,7 +32,7 @@ const routes = [
     },
   },
   {
-    path: '/product_detail/:product_id',
+    path: '/:category_slug/:product_slug',
     name: 'product',
     component: () => import('@/views/ProductDetailView.vue'),
     meta: {

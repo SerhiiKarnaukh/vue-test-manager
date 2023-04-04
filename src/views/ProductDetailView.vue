@@ -1,78 +1,67 @@
 <template>
-  <v-container>
-    <v-main>
-      <v-row
-        justify="center"
-        class="space px-md-16 pb-15"
-      >
-        <v-col
-          cols="12"
-          xl="8"
-          lg="12"
-          md="12"
-        >
-          <v-card>
-            <div class="d-flex flex-no-wrap justify-space-between">
-              <v-row>
-                <v-col
-                  cols="12"
-                  md="6"
-                  align="center"
-                >
-                  <v-carousel hide-delimiters>
-                    <v-carousel-item
-                      :src="product.thumbnail"
-                      cover
-                    ></v-carousel-item>
-                    <v-carousel-item
-                      v-for="(item,i) in product.images"
-                      :key="i"
-                      :src="item"
-                      cover
-                    ></v-carousel-item>
-                  </v-carousel>
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="6"
-                >
-                  <div>
-                    <v-card-title class="text-h5">
-                      {{product.name}}
-                    </v-card-title>
-                    <v-card-text class="font-weight-black font-italic">${{ product.price }}</v-card-text>
+    <v-container>
+        <v-main>
+            <v-row justify="center" class="space px-md-16 pb-15">
+                <v-col cols="12" xl="8" lg="12" md="12">
+                    <v-card>
+                        <div class="d-flex flex-no-wrap justify-space-between">
+                            <v-row>
+                                <v-col cols="12" md="6" align="center">
+                                    <v-carousel hide-delimiters>
+                                        <v-carousel-item :src="product.get_image" cover></v-carousel-item>
+                                        <v-carousel-item v-for="(item, i) in product.productgallery" :key="i"
+                                            :src="item.get_image" cover></v-carousel-item>
+                                    </v-carousel>
+                                </v-col>
+                                <v-col cols="12" md="6">
+                                    <div>
+                                        <v-card-title class="text-h5">
+                                            {{ product.name }}
+                                        </v-card-title>
+                                        <v-card-text class="font-weight-black font-italic">${{ product.price
+                                        }}</v-card-text>
 
-                    <v-card-text>{{ product.description }}</v-card-text>
-                  </div>
+                                        <v-card-text>{{ product.description }}</v-card-text>
+                                        <v-card-actions>
+                                            <v-col cols="3">
+                                                <v-text-field v-model.number="quantity" type="number"
+                                                    min="1"></v-text-field>
+                                            </v-col>
+                                        </v-card-actions>
+                                    </div>
+                                    <v-card-actions>
+                                        <v-btn variant="flat" color="primary" prepend-icon="mdi-basket">Add to Cart</v-btn>
+                                    </v-card-actions>
+                                </v-col>
+                            </v-row>
+                        </div>
+                    </v-card>
                 </v-col>
-              </v-row>
-            </div>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-main>
+            </v-row>
+        </v-main>
 
-  </v-container>
+    </v-container>
 </template>
 
 <script>
 import axios from 'axios'
-    export default {
+export default {
     name: 'ProductDetailView',
-    data() {
+    data () {
         return {
             product: {},
             quantity: 1
         }
     },
-    mounted() {
+    mounted () {
         this.getProduct()
     },
     methods: {
-        async getProduct() {
-            const product_id = this.$route.params.product_id
+        async getProduct () {
+            const category_slug = this.$route.params.category_slug
+            const product_slug = this.$route.params.product_slug
             await axios
-                .get(`/products/${product_id}`)
+                .get(`/api/v1/products/${category_slug}/${product_slug}`)
                 .then(response => {
                     this.product = response.data
                 })

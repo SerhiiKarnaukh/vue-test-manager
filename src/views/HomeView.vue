@@ -16,31 +16,7 @@
 
                 <v-col cols="12">
                     <v-row>
-                        <v-col v-for="product in latestProducts" :key="product.id" cols="12" lg="4" sm="6">
-                            <v-card class="mx-auto pb-2">
-                                <v-img :src="product.get_image" height="200px" cover>
-                                    <template v-slot:placeholder>
-                                        <v-row align="center" class="fill-height ma-0" justify="center">
-                                            <v-progress-circular color="grey lighten-5" indeterminate></v-progress-circular>
-                                        </v-row>
-                                    </template>
-                                </v-img>
-
-                                <v-card-title class="text-capitalize">
-                                    {{ product.name }}
-                                </v-card-title>
-                                <v-card-title class="grey--text text-grey-darken-1 caption mt-n4">
-                                    {{ product.description }}
-                                </v-card-title>
-
-                                <v-card-subtitle> ${{ product.price }} </v-card-subtitle>
-                                <v-divider></v-divider>
-                                <v-card-actions>
-                                    <v-spacer></v-spacer>
-                                    <v-btn :to="product.get_absolute_url" variant="flat" color="primary">Details</v-btn>
-                                </v-card-actions>
-                            </v-card>
-                        </v-col>
+                        <TheProductCard v-for="product in latestProducts" :key="product.id" v-bind:product="product" />
                     </v-row>
                 </v-col>
             </v-row>
@@ -50,8 +26,12 @@
 
 <script>
 import axios from 'axios'
+import TheProductCard from '@/components/TheProductCard.vue'
 export default {
     name: 'HomeView',
+    components: {
+        TheProductCard
+    },
     data () {
         return {
             latestProducts: [],
@@ -59,6 +39,7 @@ export default {
     },
     mounted () {
         this.getLatestProducts()
+        document.title = 'Home | Taberna'
     },
     methods: {
         getLatestProducts () {

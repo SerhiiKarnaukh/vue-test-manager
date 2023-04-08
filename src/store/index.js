@@ -1,5 +1,4 @@
 import { createStore, createLogger } from 'vuex'
-import auth from './modules/auth.module'
 
 const plugins = []
 
@@ -11,26 +10,48 @@ export default createStore({
   plugins,
   state() {
     return {
-      message: null,
+      categories: [],
+      cart: {
+        items: [],
+      },
+      isAuthenticated: false,
+      token: '',
     }
   },
   mutations: {
-    setMessage(state, message) {
-      state.message = message
+    initializeStore(state) {
+      state.categories = [
+        { title: 'Shoes', link: '/shoes' },
+        { title: 'Jeans', link: '/jeans' },
+      ]
+      if (localStorage.getItem('cart')) {
+        state.cart = JSON.parse(localStorage.getItem('cart'))
+      } else {
+        localStorage.setItem('cart', JSON.stringify(state.cart))
+      }
+
+      if (localStorage.getItem('token')) {
+        state.token = localStorage.getItem('token')
+        state.isAuthenticated = true
+      } else {
+        state.token = ''
+        state.isAuthenticated = false
+      }
     },
-    clearMessage(state) {
-      state.message = null
+    addToCart(state, item) {
+      const exists = state.cart.items.filter(
+        (i) => i.product.id === item.product.id
+      )
+      if (exists.length) {
+        exists[0].quantity =
+          parseInt(exists[0].quantity) + parseInt(item.quantity)
+      } else {
+        state.cart.items.push(item)
+      }
+
+      localStorage.setItem('cart', JSON.stringify(state.cart))
     },
   },
-  actions: {
-    setMessage({ commit }, message) {
-      commit('setMessage', message)
-      setTimeout(() => {
-        commit('clearMessage')
-      }, 5000)
-    },
-  },
-  modules: {
-    auth,
-  },
+  actions: {},
+  modules: {},
 })

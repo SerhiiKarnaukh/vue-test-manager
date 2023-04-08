@@ -18,12 +18,12 @@
                     </template>
 
                     <v-list>
-                        <v-list-item v-for="(item, index) in categories" :key="index">
+                        <v-list-item v-for="(item, index) in categories" :key="index" :to="item.link">
                             <v-list-item-title>{{ item.title }}</v-list-item-title>
                         </v-list-item>
                     </v-list>
                 </v-menu>
-                <div v-if="!$store.state.auth.token">
+                <div v-if="!$store.state.token">
                     <v-btn v-for="link in links" flat :key="`${link.label}-navbar-link`" color="white" class="ml-3"
                         :to="link.url" :prepend-icon="`mdi-${link.icon}`">
                         {{ link.label }}
@@ -31,7 +31,7 @@
 
                 </div>
 
-                <div v-if="$store.state.auth.token">
+                <div v-if="$store.state.token">
                     <v-btn flat color="white" to="/dashboard" prepend-icon="mdi-view-dashboard-outline">
                         Dashboard
                     </v-btn>
@@ -44,7 +44,7 @@
                     Toggle Theme
                 </v-btn>
                 <v-btn flat color="white" prepend-icon="mdi-basket" to="/cart">
-                    Cart
+                    Cart ({{ cartTotalLength }})
                 </v-btn>
             </div>
         </v-app-bar>
@@ -58,18 +58,18 @@
                     </template>
 
                     <v-list>
-                        <v-list-item v-for="(item, index) in categories" :key="index" hover>
+                        <v-list-item v-for="(item, index) in categories" :key="index" hover :to="item.link">
                             <v-list-item-title>{{ item.title }}</v-list-item-title>
                         </v-list-item>
                     </v-list>
                 </v-menu>
-                <div v-if="!$store.state.auth.token">
+                <div v-if="!$store.state.token">
                     <v-list-item v-for="item in links" :key="`${item.label}-navbar-drawer-link`" :to="item.url"
                         :prepend-icon="`mdi-${item.icon}`">
                         {{ item.label }}
                     </v-list-item>
                 </div>
-                <div v-if="$store.state.auth.token">
+                <div v-if="$store.state.token">
                     <v-list-item to="/dashboard" prepend-icon="mdi-view-dashboard-outline">
                         Dashboard
                     </v-list-item>
@@ -81,7 +81,7 @@
                     Toggle Theme
                 </v-list-item>
                 <v-list-item flat color="white" prepend-icon="mdi-basket" to="/cart">
-                    Cart
+                    Cart ({{ cartTotalLength }})
                 </v-list-item>
             </v-list>
         </v-navigation-drawer>
@@ -92,6 +92,7 @@
 import { useTheme } from 'vuetify'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import axios from 'axios'
 export default {
     setup () {
         const theme = useTheme()
@@ -121,22 +122,46 @@ export default {
                 url: '/signup'
             },
         ],
-        categories: [
-            { title: 'Shoes' },
-            { title: 'T-shirts' },
-            { title: 'Click Me' },
-            { title: 'Click Me 2' },
-        ],
+        // categories: [
+        //     { title: 'Shoes', link: '/shoes' },
+        //     { title: 'Jeans', link: '/jeans' },
+        // ],
+        categories: [],
+        cart: {
+            items: []
+        }
     }),
     watch: {
         $route () {
             this.drawer = false
         },
     },
+    beforeCreate () {
+        this.$store.commit('initializeStore')
+        const token = this.$store.state.token
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = "Token " + token
+        } else {
+            axios.defaults.headers.common['Authorization'] = ""
+        }
+    },
+    mounted () {
+        this.cart = this.$store.state.cart
+        this.categories = this.$store.state.categories
+    },
+    computed: {
+        cartTotalLength () {
+            let totalLength = 0
+            for (let i = 0; i < this.cart.items.length; i++) {
+                totalLength += this.cart.items[i].quantity
+            }
+            return totalLength
+        }
+    }
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .main_title {
     color: white;
 }

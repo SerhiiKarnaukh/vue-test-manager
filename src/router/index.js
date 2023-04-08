@@ -40,6 +40,14 @@ const routes = [
     },
   },
   {
+    path: '/:category_slug',
+    name: 'Category',
+    component: () => import('@/views/CategoryDetailView.vue'),
+    meta: {
+      auth: false,
+    },
+  },
+  {
     path: '/cart',
     name: 'cart',
     component: () => import('@/views/CartView.vue'),

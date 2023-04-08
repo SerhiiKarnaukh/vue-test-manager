@@ -18,8 +18,8 @@
                     </template>
 
                     <v-list>
-                        <v-list-item v-for="(item, index) in categories" :key="index" :to="item.link">
-                            <v-list-item-title>{{ item.title }}</v-list-item-title>
+                        <v-list-item v-for="(item, index) in categories" :key="index" :to="item.get_absolute_url">
+                            <v-list-item-title>{{ item.name }}</v-list-item-title>
                         </v-list-item>
                     </v-list>
                 </v-menu>
@@ -58,8 +58,8 @@
                     </template>
 
                     <v-list>
-                        <v-list-item v-for="(item, index) in categories" :key="index" hover :to="item.link">
-                            <v-list-item-title>{{ item.title }}</v-list-item-title>
+                        <v-list-item v-for="(item, index) in categories" :key="index" hover :to="item.get_absolute_url">
+                            <v-list-item-title>{{ item.name }}</v-list-item-title>
                         </v-list-item>
                     </v-list>
                 </v-menu>
@@ -122,10 +122,6 @@ export default {
                 url: '/signup'
             },
         ],
-        // categories: [
-        //     { title: 'Shoes', link: '/shoes' },
-        //     { title: 'Jeans', link: '/jeans' },
-        // ],
         categories: [],
         cart: {
             items: []
@@ -147,7 +143,7 @@ export default {
     },
     mounted () {
         this.cart = this.$store.state.cart
-        this.categories = this.$store.state.categories
+        this.getAllCategories()
     },
     computed: {
         cartTotalLength () {
@@ -157,7 +153,20 @@ export default {
             }
             return totalLength
         }
-    }
+    },
+    methods: {
+        async getAllCategories () {
+            axios
+                .get(`/api/v1/product-categories/`)
+                .then(response => {
+                    this.categories = response.data
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+        }
+
+    },
 }
 </script>
 

@@ -10,7 +10,6 @@ export default createStore({
   plugins,
   state() {
     return {
-      categories: [],
       cart: {
         items: [],
       },
@@ -20,10 +19,6 @@ export default createStore({
   },
   mutations: {
     initializeStore(state) {
-      state.categories = [
-        { title: 'Shoes', link: '/shoes' },
-        { title: 'Jeans', link: '/jeans' },
-      ]
       if (localStorage.getItem('cart')) {
         state.cart = JSON.parse(localStorage.getItem('cart'))
       } else {

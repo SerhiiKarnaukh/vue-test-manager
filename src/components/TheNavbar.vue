@@ -46,6 +46,20 @@
                 <v-btn flat color="white" prepend-icon="mdi-basket" to="/cart">
                     Cart ({{ cartTotalLength }})
                 </v-btn>
+                <v-btn density="comfortable" @click="searching = true" icon="mdi-magnify"></v-btn>
+                <v-dialog v-model="searching" max-width="400">
+                    <v-card>
+                        <v-toolbar dense>
+                            <v-btn icon @click="searching = false"><v-icon>mdi-close</v-icon></v-btn>
+                        </v-toolbar>
+                        <v-card-text>
+                            <v-form action="/search">
+                                <v-text-field density="compact" variant="outlined" label="Search" single-line hide-details
+                                    class="mr-2" name="query"></v-text-field>
+                            </v-form>
+                        </v-card-text>
+                    </v-card>
+                </v-dialog>
             </div>
         </v-app-bar>
         <v-navigation-drawer temporary v-model="drawer" location="left">
@@ -83,6 +97,9 @@
                 <v-list-item flat color="white" prepend-icon="mdi-basket" to="/cart">
                     Cart ({{ cartTotalLength }})
                 </v-list-item>
+                <v-list-item flat color="white" prepend-icon="mdi-magnify" @click="searching = true">
+                    Search
+                </v-list-item>
             </v-list>
         </v-navigation-drawer>
     </v-container>
@@ -110,6 +127,7 @@ export default {
     },
     data: () => ({
         drawer: false,
+        searching: false,
         links: [
             {
                 icon: 'login',

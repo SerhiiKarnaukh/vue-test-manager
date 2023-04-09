@@ -36,7 +36,7 @@
                                     <v-snackbar v-model="snackbar" color="success">
                                         The product was added to the cart
                                         <template v-slot:actions>
-                                            <v-btn color="orange" variant="text" @click="snackbar = false">
+                                            <v-btn color="black" variant="text" @click="snackbar = false">
                                                 Close
                                             </v-btn>
                                         </template>

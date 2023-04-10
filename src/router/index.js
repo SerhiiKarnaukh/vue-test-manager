@@ -54,8 +54,21 @@ const routes = [
   },
   {
     path: '/cart',
-    name: 'cart',
+    name: 'Cart',
     component: () => import('@/views/CartView.vue'),
+  },
+  {
+    path: '/cart/checkout',
+    name: 'Checkout',
+    component: () => import('@/views/CheckoutView.vue'),
+    meta: {
+      auth: true,
+    },
+  },
+  {
+    path: '/cart/success',
+    name: 'Success',
+    component: () => import('@/views/SuccessView.vue'),
   },
   {
     path: '/:NotFound(.*)*',

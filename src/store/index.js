@@ -46,7 +46,32 @@ export default createStore({
 
       localStorage.setItem('cart', JSON.stringify(state.cart))
     },
+    setToken(state, token) {
+      state.token = token
+      state.isAuthenticated = true
+    },
+    removeToken(state) {
+      state.token = ''
+      state.isAuthenticated = false
+    },
+    clearCart(state) {
+      state.cart = { items: [] }
+
+      localStorage.setItem('cart', JSON.stringify(state.cart))
+    },
+    logout(state) {
+      state.token = null
+      localStorage.removeItem('token')
+    },
   },
   actions: {},
   modules: {},
+  getters: {
+    token(state) {
+      return state.token
+    },
+    isAuthenticated(_, getters) {
+      return !!getters.token
+    },
+  },
 })

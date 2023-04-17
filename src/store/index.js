@@ -1,5 +1,5 @@
 import { createStore, createLogger } from 'vuex'
-
+import axios from 'axios'
 const plugins = []
 
 if (process.env.NODE_ENV === 'development') {
@@ -59,9 +59,30 @@ export default createStore({
 
       localStorage.setItem('cart', JSON.stringify(state.cart))
     },
-    logout(state) {
-      state.token = null
-      localStorage.removeItem('token')
+    async logout(state) {
+      await axios
+        .post('/auth/token/logout/', null, {
+          headers: {
+            Authorization: `Token ${state.token}`,
+          },
+        })
+        .then(() => {
+          state.token = null
+          localStorage.removeItem('token')
+          axios.defaults.headers.common['Authorization'] = ''
+        })
+        .catch((error) => {
+          if (error.response) {
+            for (const property in error.response.data) {
+              error.response.data[property].map((e) => this.errors.push(e))
+            }
+            console.log(JSON.stringify(error.response.data))
+          } else {
+            this.errors.push('Something went wrong. Please try again')
+
+            console.log(JSON.stringify(error))
+          }
+        })
     },
   },
   actions: {},

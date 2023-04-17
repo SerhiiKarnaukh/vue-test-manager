@@ -187,7 +187,7 @@ export default {
           : 'dark'),
       logout: () => {
         store.commit('logout')
-        router.push('/')
+        router.push('/login')
       },
     }
   },

@@ -44,6 +44,7 @@ export default {
   },
   methods: {
     getLatestProducts() {
+      //   axios.defaults.headers.common['Authorization'] = 'Bearer  '
       axios
         .get('/store/api/v1/latest-products/')
         .then((response) => {

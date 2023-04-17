@@ -104,7 +104,7 @@ export default {
           is_active: true,
         }
         axios
-          .post('/api/v1/users/', formData)
+          .post('/api/v1/authusers/', formData)
           .then(() => {
             this.$router.push('/login')
           })

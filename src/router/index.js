@@ -32,7 +32,7 @@ const routes = [
     },
   },
   {
-    path: '/:category_slug/:product_slug',
+    path: '/store/category/:category_slug/:product_slug',
     name: 'product',
     component: () => import('@/views/ProductDetailView.vue'),
     meta: {
@@ -40,7 +40,7 @@ const routes = [
     },
   },
   {
-    path: '/:category_slug',
+    path: '/store/category/:category_slug',
     name: 'Category',
     component: () => import('@/views/CategoryDetailView.vue'),
     meta: {

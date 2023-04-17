@@ -9,10 +9,9 @@
   </v-parallax>
   <v-container>
     <v-main class="pt-4 pt-md-16">
+      <h2 class="text-center">Latest products</h2>
       <v-row class="py-5" justify="center">
-        <h2>Latest products</h2>
-
-        <v-col cols="12">
+        <v-col cols="10">
           <v-row>
             <TheProductCard
               v-for="product in latestProducts"
@@ -46,7 +45,7 @@ export default {
   methods: {
     getLatestProducts() {
       axios
-        .get('/api/v1/latest-products/')
+        .get('/store/api/v1/latest-products/')
         .then((response) => {
           this.latestProducts = response.data
         })

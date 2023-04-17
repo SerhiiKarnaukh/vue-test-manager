@@ -15,7 +15,24 @@
             prepend-icon="mdi-account-edit"
             placeholder="Create your Username"
           ></v-text-field>
-
+          <v-text-field
+            v-model.trim="first_name"
+            label="First Name"
+            prepend-icon="mdi-account-edit"
+            placeholder="Enter your First Name"
+          ></v-text-field>
+          <v-text-field
+            v-model.trim="last_name"
+            label="Last Name"
+            prepend-icon="mdi-account-edit"
+            placeholder="Enter your Last Name"
+          ></v-text-field>
+          <v-text-field
+            v-model.trim="email"
+            label="Email"
+            prepend-icon="mdi-email-outline"
+            placeholder="Enter your Email"
+          ></v-text-field>
           <v-text-field
             v-model.trim="password"
             :type="showPassword ? 'text' : 'password'"
@@ -57,6 +74,9 @@ export default {
     return {
       showPassword: false,
       username: '',
+      first_name: '',
+      last_name: '',
+      email: '',
       password: '',
       password2: '',
       errors: [],
@@ -77,7 +97,11 @@ export default {
       if (!this.errors.length) {
         const formData = {
           username: this.username,
+          first_name: this.first_name,
+          last_name: this.last_name,
+          email: this.email,
           password: this.password,
+          is_active: true,
         }
         axios
           .post('/api/v1/users/', formData)

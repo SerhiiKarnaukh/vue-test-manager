@@ -9,13 +9,13 @@
                 <v-col cols="12" md="6" align="center">
                   <v-carousel hide-delimiters>
                     <v-carousel-item
-                      :src="product.get_image"
+                      :src="product.image"
                       cover
                     ></v-carousel-item>
                     <v-carousel-item
                       v-for="(item, i) in product.productgallery"
                       :key="i"
-                      :src="item.get_image"
+                      :src="item.image"
                       cover
                     ></v-carousel-item>
                   </v-carousel>
@@ -91,7 +91,7 @@ export default {
       const category_slug = this.$route.params.category_slug
       const product_slug = this.$route.params.product_slug
       await axios
-        .get(`/api/v1/products/${category_slug}/${product_slug}`)
+        .get(`/store/api/v1/products/${category_slug}/${product_slug}`)
         .then((response) => {
           this.product = response.data
           document.title = this.product.name + ' | Taberna'

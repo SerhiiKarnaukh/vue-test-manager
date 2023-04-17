@@ -10,10 +10,10 @@
       <v-card-text>
         <v-form @submit.prevent="submitForm">
           <v-text-field
-            v-model.trim="username"
-            label="Username"
+            v-model.trim="email"
+            label="Email"
             prepend-icon="mdi-email-outline"
-            placeholder="Enter your Username"
+            placeholder="Enter your Email"
           ></v-text-field>
           <v-text-field
             v-model.trim="password"
@@ -45,7 +45,7 @@ export default {
   data() {
     return {
       showPassword: false,
-      username: '',
+      email: '',
       password: '',
       errors: [],
     }
@@ -58,7 +58,7 @@ export default {
       axios.defaults.headers.common['Authorization'] = ''
       localStorage.removeItem('token')
       const formData = {
-        username: this.username,
+        email: this.email,
         password: this.password,
       }
       await axios

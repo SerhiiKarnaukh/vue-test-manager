@@ -1,4 +1,4 @@
-# Frontend Vue.js
+# Vue.js Test Applications Manager
 
 ## Node.js version
 

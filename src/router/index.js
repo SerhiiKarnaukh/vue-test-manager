@@ -5,7 +5,7 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: () => import('@/views/HomeView.vue'),
+    component: () => import('@/views/taberna/HomeView.vue'),
     meta: {
       auth: false,
     },
@@ -34,7 +34,7 @@ const routes = [
   {
     path: '/store/category/:category_slug/:product_slug',
     name: 'product',
-    component: () => import('@/views/ProductDetailView.vue'),
+    component: () => import('@/views/taberna/ProductDetailView.vue'),
     meta: {
       auth: false,
     },
@@ -42,7 +42,7 @@ const routes = [
   {
     path: '/store/category/:category_slug',
     name: 'Category',
-    component: () => import('@/views/CategoryDetailView.vue'),
+    component: () => import('@/views/taberna/CategoryDetailView.vue'),
     meta: {
       auth: false,
     },
@@ -50,17 +50,17 @@ const routes = [
   {
     path: '/search',
     name: 'Search',
-    component: () => import('@/views/SearchView.vue'),
+    component: () => import('@/views/taberna/SearchView.vue'),
   },
   {
     path: '/cart',
     name: 'Cart',
-    component: () => import('@/views/CartView.vue'),
+    component: () => import('@/views/taberna/CartView.vue'),
   },
   {
     path: '/cart/checkout',
     name: 'Checkout',
-    component: () => import('@/views/CheckoutView.vue'),
+    component: () => import('@/views/taberna/CheckoutView.vue'),
     meta: {
       auth: true,
     },
@@ -68,7 +68,7 @@ const routes = [
   {
     path: '/cart/success',
     name: 'Success',
-    component: () => import('@/views/SuccessView.vue'),
+    component: () => import('@/views/taberna/SuccessView.vue'),
   },
   {
     path: '/:NotFound(.*)*',

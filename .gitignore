@@ -6,9 +6,11 @@ firebase.json
 node_modules
 /dist
 /temp
+todo.txt
 
 
 # local env files
+.env
 .env.local
 .env.*.local
 

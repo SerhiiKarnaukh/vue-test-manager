@@ -30,7 +30,7 @@
             </v-list-item>
           </v-list>
         </v-menu>
-        <div v-if="!$store.state.token">
+        <div v-if="!$store.state.authToken.token">
           <v-btn
             v-for="link in links"
             flat
@@ -44,7 +44,7 @@
           </v-btn>
         </div>
 
-        <div v-if="$store.state.token">
+        <div v-if="$store.state.authToken.token">
           <v-btn
             flat
             color="white"
@@ -118,7 +118,7 @@
             </v-list-item>
           </v-list>
         </v-menu>
-        <div v-if="!$store.state.token">
+        <div v-if="!$store.state.authToken.token">
           <v-list-item
             v-for="item in links"
             :key="`${item.label}-navbar-drawer-link`"
@@ -128,7 +128,7 @@
             {{ item.label }}
           </v-list-item>
         </div>
-        <div v-if="$store.state.token">
+        <div v-if="$store.state.authToken.token">
           <v-list-item
             to="/dashboard"
             prepend-icon="mdi-view-dashboard-outline"
@@ -186,7 +186,7 @@ export default {
           ? 'CustomLightTheme'
           : 'dark'),
       logout: () => {
-        store.commit('logout')
+        store.dispatch('authToken/logout')
         router.push('/login')
       },
     }

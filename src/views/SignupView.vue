@@ -4,37 +4,39 @@
       <v-card-title class="mb-6">
         <h2 class="text-md-h3 font-weight-medium">Create an account</h2>
       </v-card-title>
-      <v-alert v-if="errors.length" type="error"
-        ><p v-for="error in errors" v-bind:key="error">{{ error }}</p></v-alert
-      >
+      <app-message />
       <v-card-text>
-        <v-form @submit.prevent="submitForm">
+        <v-form @submit.prevent="registerHandler">
           <v-text-field
-            v-model.trim="username"
+            v-model.trim="state.username"
             label="Username"
             prepend-icon="mdi-account-edit"
             placeholder="Create your Username"
+            :error-messages="v$.username.$errors.map((e) => e.$message)"
           ></v-text-field>
           <v-text-field
-            v-model.trim="first_name"
+            v-model.trim="state.first_name"
             label="First Name"
             prepend-icon="mdi-account-edit"
             placeholder="Enter your First Name"
+            :error-messages="v$.first_name.$errors.map((e) => e.$message)"
           ></v-text-field>
           <v-text-field
-            v-model.trim="last_name"
+            v-model.trim="state.last_name"
             label="Last Name"
             prepend-icon="mdi-account-edit"
             placeholder="Enter your Last Name"
+            :error-messages="v$.last_name.$errors.map((e) => e.$message)"
           ></v-text-field>
           <v-text-field
-            v-model.trim="email"
+            v-model.trim="state.email"
             label="Email"
             prepend-icon="mdi-email-outline"
             placeholder="Enter your Email"
+            :error-messages="v$.email.$errors.map((e) => e.$message)"
           ></v-text-field>
           <v-text-field
-            v-model.trim="password"
+            v-model.trim="state.password"
             :type="showPassword ? 'text' : 'password'"
             clearable
             label="Password"
@@ -42,9 +44,10 @@
             prepend-icon="mdi-lock"
             :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
             @click:append-inner="showPassword = !showPassword"
+            :error-messages="v$.password.$errors.map((e) => e.$message)"
           ></v-text-field>
           <v-text-field
-            v-model.trim="password2"
+            v-model.trim="state.password2"
             :type="showPassword ? 'text' : 'password'"
             clearable
             label="Repeat password"
@@ -52,6 +55,7 @@
             prepend-icon="mdi-lock"
             :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
             @click:append-inner="showPassword = !showPassword"
+            :error-messages="v$.password2.$errors.map((e) => e.$message)"
           ></v-text-field>
           <v-divider></v-divider>
           <v-card-actions>
@@ -67,61 +71,67 @@
   </v-main>
 </template>
 <script>
-import axios from 'axios'
+import AppMessage from '@/components/ui/AppMessage.vue'
+import { reactive } from 'vue'
+import { useVuelidate } from '@vuelidate/core'
+import { required, email, minLength } from '@vuelidate/validators'
+import router from '@/router'
+import { useStore } from 'vuex'
 export default {
-  name: 'SignupView',
-  data() {
-    return {
-      showPassword: false,
+  components: { AppMessage },
+  setup() {
+    const store = useStore()
+    const state = reactive({
       username: '',
       first_name: '',
       last_name: '',
       email: '',
       password: '',
       password2: '',
-      errors: [],
+    })
+    const rules = {
+      username: { required, minLength: minLength(3) },
+      first_name: { required, minLength: minLength(3) },
+      last_name: { required, minLength: minLength(3) },
+      email: { required, email },
+      password: { required, minLength: minLength(6) },
+      password2: { required, minLength: minLength(6) },
     }
-  },
-  methods: {
-    submitForm() {
-      this.errors = []
-      if (this.username === '') {
-        this.errors.push('The username is missing')
-      }
-      if (this.password === '') {
-        this.errors.push('The password is too short')
-      }
-      if (this.password !== this.password2) {
-        this.errors.push("The passwords doesn't match")
-      }
-      if (!this.errors.length) {
-        const formData = {
-          username: this.username,
-          first_name: this.first_name,
-          last_name: this.last_name,
-          email: this.email,
-          password: this.password,
-          is_active: true,
-        }
-        axios
-          .post('/api/v1/authusers/', formData)
-          .then(() => {
-            this.$router.push('/login')
-          })
-          .catch((error) => {
-            if (error.response) {
-              for (const property in error.response.data) {
-                error.response.data[property].map((e) => this.errors.push(e))
-              }
-              console.log(JSON.stringify(error.response.data))
-            } else if (error.message) {
-              this.errors.push('Something went wrong. Please try again')
 
-              console.log(JSON.stringify(error))
-            }
+    const v$ = useVuelidate(rules, state)
+
+    const registerHandler = async () => {
+      const isFormCorrect = await v$._value.$validate()
+      if (isFormCorrect) {
+        if (state.password !== state.password2) {
+          store.dispatch('setMessage', {
+            value: ["The passwords doesn't match"],
+            type: 'error',
           })
+        } else {
+          const formData = {
+            username: state.username,
+            first_name: state.first_name,
+            last_name: state.last_name,
+            email: state.email,
+            password: state.password,
+            is_active: true,
+          }
+          try {
+            await store.dispatch('authToken/register', formData)
+            router.push('/login')
+          } catch (e) {
+            return
+          }
+          return
+        }
       }
-    },
+    }
+
+    return { state, v$, registerHandler }
   },
+  data: () => ({
+    showPassword: false,
+  }),
 }
 </script>

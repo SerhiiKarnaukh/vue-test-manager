@@ -4,19 +4,18 @@
       <v-card-title class="mb-6">
         <h1>Login</h1>
       </v-card-title>
-      <v-alert v-if="errors.length" type="error"
-        ><p v-for="error in errors" v-bind:key="error">{{ error }}</p></v-alert
-      >
+      <app-message />
       <v-card-text>
-        <v-form @submit.prevent="submitForm">
+        <v-form @submit.prevent="loginHandler">
           <v-text-field
-            v-model.trim="email"
+            v-model.trim="state.email"
             label="Email"
             prepend-icon="mdi-email-outline"
             placeholder="Enter your Email"
+            :error-messages="v$.email.$errors.map((e) => e.$message)"
           ></v-text-field>
           <v-text-field
-            v-model.trim="password"
+            v-model.trim="state.password"
             :type="showPassword ? 'text' : 'password'"
             clearable
             label="Password"
@@ -24,6 +23,7 @@
             prepend-icon="mdi-lock"
             :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
             @click:append-inner="showPassword = !showPassword"
+            :error-messages="v$.password.$errors.map((e) => e.$message)"
           ></v-text-field>
           <v-divider></v-divider>
           <v-card-actions>
@@ -39,52 +39,56 @@
   </v-main>
 </template>
 <script>
-import axios from 'axios'
+import AppMessage from '@/components/ui/AppMessage.vue'
+import { reactive } from 'vue'
+import { useVuelidate } from '@vuelidate/core'
+import { required, email, minLength } from '@vuelidate/validators'
+import router from '@/router'
+import { useStore } from 'vuex'
+import { useRoute } from 'vue-router'
 export default {
-  name: 'LogIn',
-  data() {
-    return {
-      showPassword: false,
+  components: { AppMessage },
+  setup() {
+    const route = useRoute()
+    const store = useStore()
+    if (route.query.message) {
+      store.dispatch('setMessage', {
+        value: ['Please login'],
+        type: 'warning',
+      })
+    }
+    const state = reactive({
       email: '',
       password: '',
-      errors: [],
+    })
+    const rules = {
+      email: { required, email },
+      password: { required, minLength: minLength(6) },
     }
-  },
-  mounted() {
-    document.title = 'Log In | Taberna'
-  },
-  methods: {
-    async submitForm() {
-      axios.defaults.headers.common['Authorization'] = ''
-      localStorage.removeItem('token')
-      const formData = {
-        email: this.email,
-        password: this.password,
+
+    const v$ = useVuelidate(rules, state)
+
+    const loginHandler = async () => {
+      const isFormCorrect = await v$._value.$validate()
+      if (isFormCorrect) {
+        const formData = {
+          email: state.email,
+          password: state.password,
+        }
+        try {
+          await store.dispatch('authToken/login', formData)
+          router.push('/')
+        } catch (e) {
+          return
+        }
+        return
       }
-      await axios
-        .post('/auth/token/login/', formData)
-        .then((response) => {
-          const token = response.data.auth_token
-          this.$store.commit('setToken', token)
+    }
 
-          axios.defaults.headers.common['Authorization'] = 'Token ' + token
-          localStorage.setItem('token', token)
-          const toPath = this.$route.query.to || '/cart'
-          this.$router.push(toPath)
-        })
-        .catch((error) => {
-          if (error.response) {
-            for (const property in error.response.data) {
-              error.response.data[property].map((e) => this.errors.push(e))
-            }
-            console.log(JSON.stringify(error.response.data))
-          } else {
-            this.errors.push('Something went wrong. Please try again')
-
-            console.log(JSON.stringify(error))
-          }
-        })
-    },
+    return { state, v$, loginHandler }
   },
+  data: () => ({
+    showPassword: false,
+  }),
 }
 </script>

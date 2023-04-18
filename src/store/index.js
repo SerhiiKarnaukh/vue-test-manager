@@ -1,5 +1,5 @@
 import { createStore, createLogger } from 'vuex'
-import axios from 'axios'
+import authToken from './modules/authToken.module'
 const plugins = []
 
 if (process.env.NODE_ENV === 'development') {
@@ -13,8 +13,7 @@ export default createStore({
       cart: {
         items: [],
       },
-      isAuthenticated: false,
-      token: '',
+      message: null,
     }
   },
   mutations: {
@@ -23,14 +22,6 @@ export default createStore({
         state.cart = JSON.parse(localStorage.getItem('cart'))
       } else {
         localStorage.setItem('cart', JSON.stringify(state.cart))
-      }
-
-      if (localStorage.getItem('token')) {
-        state.token = localStorage.getItem('token')
-        state.isAuthenticated = true
-      } else {
-        state.token = ''
-        state.isAuthenticated = false
       }
     },
     addToCart(state, item) {
@@ -46,53 +37,28 @@ export default createStore({
 
       localStorage.setItem('cart', JSON.stringify(state.cart))
     },
-    setToken(state, token) {
-      state.token = token
-      state.isAuthenticated = true
-    },
-    removeToken(state) {
-      state.token = ''
-      state.isAuthenticated = false
-    },
     clearCart(state) {
       state.cart = { items: [] }
 
       localStorage.setItem('cart', JSON.stringify(state.cart))
     },
-    async logout(state) {
-      await axios
-        .post('/auth/token/logout/', null, {
-          headers: {
-            Authorization: `Token ${state.token}`,
-          },
-        })
-        .then(() => {
-          state.token = null
-          localStorage.removeItem('token')
-          axios.defaults.headers.common['Authorization'] = ''
-        })
-        .catch((error) => {
-          if (error.response) {
-            for (const property in error.response.data) {
-              error.response.data[property].map((e) => this.errors.push(e))
-            }
-            console.log(JSON.stringify(error.response.data))
-          } else {
-            this.errors.push('Something went wrong. Please try again')
-
-            console.log(JSON.stringify(error))
-          }
-        })
+    setMessage(state, message) {
+      state.message = message
+    },
+    clearMessage(state) {
+      state.message = null
     },
   },
-  actions: {},
-  modules: {},
-  getters: {
-    token(state) {
-      return state.token
-    },
-    isAuthenticated(_, getters) {
-      return !!getters.token
+  actions: {
+    setMessage({ commit }, message) {
+      commit('setMessage', message)
+      setTimeout(() => {
+        commit('clearMessage')
+      }, 5000)
     },
   },
+  modules: {
+    authToken,
+  },
+  getters: {},
 })

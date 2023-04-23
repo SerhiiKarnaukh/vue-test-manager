@@ -192,7 +192,7 @@ export default {
         .post('/api/v1/checkout/', data)
         .then(() => {
           this.$store.commit('clearCart')
-          this.$router.push('/cart/success')
+          this.$router.push('/taberna/cart/success')
         })
         .catch((error) => {
           this.errors.push('Something went wrong. Please try again')

@@ -27,7 +27,7 @@
           ></v-text-field>
           <v-divider></v-divider>
           <v-card-actions>
-            <v-btn variant="flat" color="success" to="/signup">
+            <v-btn variant="flat" color="success" to="/taberna/signup">
               Register
             </v-btn>
             <v-spacer></v-spacer>

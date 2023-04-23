@@ -61,7 +61,7 @@
           <v-card-actions>
             <v-btn variant="flat" color="success" type="submit">Submit</v-btn>
             <v-spacer></v-spacer>
-            <v-btn variant="flat" color="warning" to="/login">
+            <v-btn variant="flat" color="warning" to="/taberna/login">
               I have an account
             </v-btn>
           </v-card-actions>
@@ -119,7 +119,7 @@ export default {
           }
           try {
             await store.dispatch('authToken/register', formData)
-            router.push('/login')
+            router.push('/taberna/login')
           } catch (e) {
             return
           }

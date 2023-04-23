@@ -6,7 +6,7 @@
         @click.stop="drawer = !drawer"
         class="d-sm-flex d-md-none"
       ></v-app-bar-nav-icon>
-      <router-link to="/" style="text-decoration: none">
+      <router-link to="/taberna" style="text-decoration: none">
         <v-app-bar-title>
           <h3 class="main_title ml-3">Taberna</h3>
         </v-app-bar-title>
@@ -48,7 +48,7 @@
           <v-btn
             flat
             color="white"
-            to="/dashboard"
+            to="/taberna/dashboard"
             prepend-icon="mdi-view-dashboard-outline"
           >
             Dashboard
@@ -66,7 +66,7 @@
         >
           Toggle Theme
         </v-btn>
-        <v-btn flat color="white" prepend-icon="mdi-basket" to="/cart">
+        <v-btn flat color="white" prepend-icon="mdi-basket" to="/taberna/cart">
           Cart ({{ cartTotalLength }})
         </v-btn>
         <v-btn
@@ -82,7 +82,7 @@
               >
             </v-toolbar>
             <v-card-text>
-              <v-form action="/search">
+              <v-form action="/taberna/search">
                 <v-text-field
                   density="compact"
                   variant="outlined"
@@ -130,7 +130,7 @@
         </div>
         <div v-if="$store.state.authToken.token">
           <v-list-item
-            to="/dashboard"
+            to="/taberna/dashboard"
             prepend-icon="mdi-view-dashboard-outline"
           >
             Dashboard
@@ -152,7 +152,12 @@
         >
           Toggle Theme
         </v-list-item>
-        <v-list-item flat color="white" prepend-icon="mdi-basket" to="/cart">
+        <v-list-item
+          flat
+          color="white"
+          prepend-icon="mdi-basket"
+          to="/taberna/cart"
+        >
           Cart ({{ cartTotalLength }})
         </v-list-item>
         <v-list-item
@@ -187,7 +192,7 @@ export default {
           : 'dark'),
       logout: () => {
         store.dispatch('authToken/logout')
-        router.push('/login')
+        router.push('/taberna/login')
       },
     }
   },
@@ -198,12 +203,12 @@ export default {
       {
         icon: 'login',
         label: 'Login',
-        url: '/login',
+        url: '/taberna/login',
       },
       {
         icon: 'pencil-lock',
         label: 'Signup',
-        url: '/signup',
+        url: '/taberna/signup',
       },
     ],
     categories: [],

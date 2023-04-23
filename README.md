@@ -1,5 +1,7 @@
 # Vue.js Test Applications Manager
 
+### App on Firebase: <https://karnaukh-vue-test.web.app>
+
 ## Node.js version
 
 ```

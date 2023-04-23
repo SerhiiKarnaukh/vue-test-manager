@@ -1,20 +1,23 @@
 <template>
-  <v-app class="background">
-    <the-navbar></the-navbar>
-    <router-view />
-    <the-footer></the-footer>
+  <v-app>
+    <component :is="layout">
+      <router-view />
+    </component>
   </v-app>
 </template>
 
 <script>
-import TheNavbar from '@/components/TheNavbar.vue'
-import TheFooter from '@/components/TheFooter.vue'
-
+import MainTabernaLayout from '@/layouts/taberna/MainTabernaLayout.vue'
 export default {
   name: 'App',
-  components: { TheNavbar, TheFooter },
-
-  data: () => ({}),
+  computed: {
+    layout() {
+      return (this.$route.meta.layout || 'div') + '-layout'
+    },
+  },
+  components: {
+    MainTabernaLayout,
+  },
 }
 </script>
 <style lang="scss"></style>

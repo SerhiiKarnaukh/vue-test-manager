@@ -40,7 +40,7 @@
                 variant="flat"
                 color="success"
                 class="mr-4"
-                to="/cart/checkout"
+                to="/taberna/cart/checkout"
               >
                 Proceed to checkout
               </v-btn>

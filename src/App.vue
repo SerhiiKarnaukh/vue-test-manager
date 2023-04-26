@@ -8,6 +8,7 @@
 
 <script>
 import MainTabernaLayout from '@/layouts/taberna/MainTabernaLayout.vue'
+import MainTVmanagerLayout from '@/layouts/tvmanager/MainTVmanagerLayout.vue'
 export default {
   name: 'App',
   computed: {
@@ -17,6 +18,7 @@ export default {
   },
   components: {
     MainTabernaLayout,
+    MainTVmanagerLayout,
   },
 }
 </script>

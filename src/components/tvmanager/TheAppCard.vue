@@ -1,7 +1,7 @@
 <template>
-  <v-col cols="12" sm="6" md="4">
+  <v-col cols="12" lg="4" sm="6">
     <v-card class="mx-auto pb-2">
-      <v-img :src="product.image" aspect-ratio="1.5">
+      <v-img :src="application.photo" height="200px" cover>
         <template v-slot:placeholder>
           <v-row align="center" class="fill-height ma-0" justify="center">
             <v-progress-circular
@@ -13,18 +13,27 @@
       </v-img>
 
       <v-card-title class="text-capitalize">
-        {{ product.name }}
+        {{ application.title }}
       </v-card-title>
-      <v-card-title class="grey--text text-grey-darken-1 caption mt-n4">
-        {{ product.description }}
-      </v-card-title>
-
-      <v-card-subtitle> ${{ product.price }} </v-card-subtitle>
       <v-divider></v-divider>
       <v-card-actions>
+        <v-btn
+          :href="application.url"
+          target="_blank"
+          prepend-icon="mdi-text-box-outline"
+          variant="flat"
+          color="#ff4800"
+          class="text-white"
+          >Description</v-btn
+        >
         <v-spacer></v-spacer>
-        <v-btn :to="product.get_absolute_url" variant="flat" color="primary"
-          >Details</v-btn
+        <v-btn
+          :href="application.view_url"
+          target="_blank"
+          prepend-icon="mdi-monitor-dashboard"
+          variant="tonal"
+          color="primary"
+          >View App</v-btn
         >
       </v-card-actions>
     </v-card>
@@ -33,9 +42,9 @@
 
 <script>
 export default {
-  name: 'TheProductCard',
+  name: 'TheAppCard',
   props: {
-    product: Object,
+    application: Object,
   },
 }
 </script>

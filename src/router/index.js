@@ -7,6 +7,9 @@ const routes = [
     path: '/',
     name: 'homeTVmanager',
     component: () => import('@/views/tvmanager/HomeView.vue'),
+    meta: {
+      layout: 'mainTVmanager',
+    },
   },
   {
     path: '/:NotFound(.*)*',
@@ -14,6 +17,15 @@ const routes = [
     component: () => import('@/views/tvmanager/NotFoundView.vue'),
     meta: {
       auth: false,
+      layout: 'mainTVmanager',
+    },
+  },
+  {
+    path: '/tvmanager/search',
+    name: 'searchTVmanager',
+    component: () => import('@/views/tvmanager/SearchView.vue'),
+    meta: {
+      layout: 'mainTVmanager',
     },
   },
   //Taberna

@@ -10,7 +10,7 @@
                   <v-carousel hide-delimiters>
                     <v-carousel-item
                       :src="product.image"
-                      cover
+                      aspect-ratio="1.5"
                     ></v-carousel-item>
                     <v-carousel-item
                       v-for="(item, i) in product.productgallery"

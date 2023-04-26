@@ -4,21 +4,20 @@ import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 
 const CustomLightTheme = {
-    dark: false,
-    colors: {
-      background: '#ECEFF1',
-      primary: '#1867C0',
-      secondary: '#5CBBF6',
-    }
-  }
-
+  dark: false,
+  colors: {
+    background: '#ECEFF1',
+    primary: '#3a3a3a',
+    secondary: '#5CBBF6',
+    manager: '#1f1f2e',
+  },
+}
 
 export default createVuetify({
- theme: {
+  theme: {
     defaultTheme: 'CustomLightTheme',
     icons: {
-      iconfont: 'md' || 'fa' || 'md'
-
+      iconfont: 'md' || 'fa' || 'md',
     },
     themes: {
       CustomLightTheme,
@@ -28,16 +27,6 @@ export default createVuetify({
           secondary: '#5CBBF6',
         },
       },
-    },
-  },
-  display: {
-    mobileBreakpoint: 'sm',
-    thresholds: {
-      xs: 0,
-      sm: 340,
-      md: 540,
-      lg: 800,
-      xl: 1280,
     },
   },
 })

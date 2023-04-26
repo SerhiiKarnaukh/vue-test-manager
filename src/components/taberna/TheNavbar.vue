@@ -15,6 +15,25 @@
       <div class="d-md-flex d-sm-none d-none mr-3">
         <v-menu open-on-hover>
           <template v-slot:activator="{ props }">
+            <v-btn
+              color="white"
+              v-bind="props"
+              prepend-icon="mdi-remote-desktop"
+            >
+              Apps Manager
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item :href="remoteHost"
+              ><v-list-item-title>All Apps</v-list-item-title></v-list-item
+            >
+            <v-list-item to="/"
+              ><v-list-item-title>Vue Apps</v-list-item-title></v-list-item
+            >
+          </v-list>
+        </v-menu>
+        <v-menu open-on-hover>
+          <template v-slot:activator="{ props }">
             <v-btn color="white" v-bind="props" prepend-icon="mdi-hanger">
               Category
             </v-btn>
@@ -102,6 +121,26 @@
       <v-list>
         <v-menu>
           <template v-slot:activator="{ props }">
+            <v-list-item
+              color="white"
+              v-bind="props"
+              prepend-icon="mdi-remote-desktop"
+            >
+              Apps Manager
+            </v-list-item>
+          </template>
+
+          <v-list>
+            <v-list-item :href="remoteHost"
+              ><v-list-item-title>All Apps</v-list-item-title></v-list-item
+            >
+            <v-list-item to="/"
+              ><v-list-item-title>Vue Apps</v-list-item-title></v-list-item
+            >
+          </v-list>
+        </v-menu>
+        <v-menu>
+          <template v-slot:activator="{ props }">
             <v-list-item color="white" v-bind="props" prepend-icon="mdi-hanger">
               Category
             </v-list-item>
@@ -152,14 +191,11 @@
         >
           Toggle Theme
         </v-list-item>
-        <v-list-item
-          flat
-          color="white"
-          prepend-icon="mdi-basket"
-          to="/taberna/cart"
-        >
+
+        <v-list-item flat prepend-icon="mdi-basket" to="/taberna/cart">
           Cart ({{ cartTotalLength }})
         </v-list-item>
+
         <v-list-item
           flat
           color="white"
@@ -211,6 +247,7 @@ export default {
         url: '/taberna/signup',
       },
     ],
+    remoteHost: import.meta.env.VITE_REMOTE_HOST,
     categories: [],
     cart: {
       items: [],

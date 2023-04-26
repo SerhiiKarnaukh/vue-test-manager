@@ -1,9 +1,9 @@
 <template>
-  <v-parallax src="https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg">
+  <v-parallax src="/bg-1.jpg">
     <div
-      class="d-flex flex-column fill-height justify-center align-center text-white"
+      class="d-flex flex-column fill-height justify-center align-center text-white bg-transparent-gray"
     >
-      <h1 class="text-h4 font-weight-thin mb-4">Taberna</h1>
+      <h1 class="text-h2 font-weight-thin mb-4">Taberna</h1>
       <h4 class="subheading">The best Store in the whole world!</h4>
     </div>
   </v-parallax>
@@ -57,4 +57,13 @@ export default {
   },
 }
 </script>
-<style scoped></style>
+<style scoped>
+.bg-transparent-gray {
+  background-color: rgba(
+    128,
+    128,
+    128,
+    0.5
+  ); /* Use rgba() to set the alpha channel */
+}
+</style>

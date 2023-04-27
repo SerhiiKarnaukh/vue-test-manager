@@ -77,7 +77,7 @@ export default {
         }
         try {
           await store.dispatch('authToken/login', formData)
-          router.push('/')
+          router.push('/taberna')
         } catch (e) {
           return
         }

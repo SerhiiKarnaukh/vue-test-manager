@@ -81,7 +81,9 @@ export default {
         dispatch(
           'setMessage',
           {
-            value: ['Account successfully registered. You can login'],
+            value: [
+              `Thank you for registering with us. We have sent you a verification email to your email address [${payload.email}]`,
+            ],
             type: 'success',
           },
           { root: true }

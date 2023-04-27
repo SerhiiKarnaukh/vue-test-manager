@@ -38,7 +38,7 @@ export default {
   },
   watch: {
     $route(to) {
-      if (to.name === 'Category') {
+      if (to.name === 'categoryTaberna') {
         this.getCategory()
       }
     },

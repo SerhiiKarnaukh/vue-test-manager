@@ -12,14 +12,13 @@
         </template>
       </v-img>
 
-      <v-card-title class="text-capitalize">
+      <v-card-title>
         {{ application.title }}
       </v-card-title>
       <v-divider></v-divider>
       <v-card-actions>
         <v-btn
           :href="application.url"
-          target="_blank"
           prepend-icon="mdi-text-box-outline"
           variant="flat"
           color="#ff4800"
@@ -29,10 +28,8 @@
         <v-spacer></v-spacer>
         <v-btn
           :href="application.view_url"
-          target="_blank"
           prepend-icon="mdi-monitor-dashboard"
           variant="tonal"
-          color="primary"
           >View App</v-btn
         >
       </v-card-actions>

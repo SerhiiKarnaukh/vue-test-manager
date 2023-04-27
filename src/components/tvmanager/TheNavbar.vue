@@ -25,7 +25,7 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item :href="remoteHost" target="_blank"
+            <v-list-item :href="remoteHost"
               ><v-list-item-title>All Apps</v-list-item-title></v-list-item
             >
             <v-list-item to="/"
@@ -36,7 +36,6 @@
         <v-btn
           flat
           color="white"
-          target="_blank"
           href="https://docs.google.com/document/d/11DNF9pFl0wQLNXac779DO6axLG67nMGIBC_bPTPulRQ/edit?usp=share_link"
           prepend-icon="mdi-file-account"
         >
@@ -45,7 +44,6 @@
         <v-btn
           flat
           color="white"
-          target="_blank"
           href="https://github.com/SerhiiKarnaukh"
           prepend-icon="mdi-github"
         >
@@ -54,11 +52,18 @@
         <v-btn
           flat
           color="white"
-          target="_blank"
           href="https://www.linkedin.com/in/serhiikarnaukh"
           prepend-icon="mdi-linkedin"
         >
           LinkedIn
+        </v-btn>
+        <v-btn
+          flat
+          color="white"
+          prepend-icon="mdi-toggle-switch"
+          @click="toggleTheme"
+        >
+          Toggle Theme
         </v-btn>
         <v-btn
           color="white"
@@ -104,7 +109,7 @@
           </template>
 
           <v-list>
-            <v-list-item :href="remoteHost" target="_blank"
+            <v-list-item :href="remoteHost"
               ><v-list-item-title>All Apps</v-list-item-title></v-list-item
             >
             <v-list-item to="/"
@@ -113,25 +118,30 @@
           </v-list>
         </v-menu>
         <v-list-item
-          target="_blank"
           href="https://docs.google.com/document/d/11DNF9pFl0wQLNXac779DO6axLG67nMGIBC_bPTPulRQ/edit?usp=share_link"
           prepend-icon="mdi-file-account"
         >
           CV
         </v-list-item>
         <v-list-item
-          target="_blank"
           href="https://github.com/SerhiiKarnaukh"
           prepend-icon="mdi-github"
         >
           GitHub
         </v-list-item>
         <v-list-item
-          target="_blank"
           href="https://www.linkedin.com/in/serhiikarnaukh"
           prepend-icon="mdi-linkedin"
         >
           LinkedIn
+        </v-list-item>
+        <v-list-item
+          flat
+          color="white"
+          prepend-icon="mdi-toggle-switch"
+          @click="toggleTheme"
+        >
+          Toggle Theme
         </v-list-item>
         <v-list-item
           flat
@@ -147,9 +157,17 @@
 </template>
 
 <script>
+import { useTheme } from 'vuetify'
 export default {
   setup() {
-    return {}
+    const theme = useTheme()
+    return {
+      theme,
+      toggleTheme: () =>
+        (theme.global.name.value = theme.global.current.value.dark
+          ? 'CustomLightTheme'
+          : 'dark'),
+    }
   },
   data: () => ({
     drawer: false,

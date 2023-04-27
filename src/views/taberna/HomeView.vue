@@ -3,8 +3,10 @@
     <div
       class="d-flex flex-column fill-height justify-center align-center text-white bg-transparent-gray"
     >
-      <h1 class="text-h2 font-weight-thin mb-4">Taberna</h1>
-      <h4 class="subheading">The best Store in the whole world!</h4>
+      <h1 class="text-h2 font-weight-thin mb-4 pt-16 pt-md-0">Taberna</h1>
+      <h4 class="subheading pb-14 pb-md-0">
+        The best Store in the whole world!
+      </h4>
     </div>
   </v-parallax>
   <v-container>
@@ -44,7 +46,6 @@ export default {
   },
   methods: {
     getLatestProducts() {
-      //   axios.defaults.headers.common['Authorization'] = 'Bearer  '
       axios
         .get('/store/api/v1/latest-products/')
         .then((response) => {

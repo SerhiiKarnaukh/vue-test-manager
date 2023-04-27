@@ -3,7 +3,7 @@
     <div
       class="d-flex flex-column fill-height justify-center align-center text-white bg-transparent-gray"
     >
-      <h1 class="text-h3 font-weight-thin text-center mb-4">
+      <h1 class="text-h3 font-weight-thin text-center mb-4 pt-14 pt-md-0">
         Vue.js Test Applications Manager
       </h1>
     </div>

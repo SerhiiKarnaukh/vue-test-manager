@@ -9,6 +9,7 @@
 <script>
 import MainTabernaLayout from '@/layouts/taberna/MainTabernaLayout.vue'
 import MainTVmanagerLayout from '@/layouts/tvmanager/MainTVmanagerLayout.vue'
+import MainSocialLayout from '@/layouts/social/MainSocialLayout.vue'
 export default {
   name: 'App',
   computed: {
@@ -19,6 +20,7 @@ export default {
   components: {
     MainTabernaLayout,
     MainTVmanagerLayout,
+    MainSocialLayout,
   },
 }
 </script>

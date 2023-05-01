@@ -1,5 +1,7 @@
 import { createStore, createLogger } from 'vuex'
 import authToken from './modules/authToken.module'
+import authJWT from './modules/authJWT.module'
+import socialUserData from './modules/socialUserData.module'
 const plugins = []
 
 if (process.env.NODE_ENV === 'development') {
@@ -59,6 +61,8 @@ export default createStore({
   },
   modules: {
     authToken,
+    authJWT,
+    socialUserData,
   },
   getters: {},
 })

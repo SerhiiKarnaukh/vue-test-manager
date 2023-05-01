@@ -115,6 +115,33 @@ const routes = [
       layout: 'mainTaberna',
     },
   },
+  //Social
+  {
+    path: '/social/home',
+    name: 'homeSocial',
+    component: () => import('@/views/social/HomeView.vue'),
+    meta: {
+      authJWT: true,
+      layout: 'mainSocial',
+    },
+  },
+  {
+    path: '/social/signup',
+    name: 'signupSocial',
+    component: () => import('@/views/social/SignupView.vue'),
+    meta: {
+      layout: 'mainSocial',
+    },
+  },
+  {
+    path: '/social/login',
+    name: 'loginSocial',
+    component: () => import('@/views/social/LoginView.vue'),
+    meta: {
+      authJWT: false,
+      layout: 'mainSocial',
+    },
+  },
 ]
 
 const router = createRouter({
@@ -129,6 +156,18 @@ router.beforeEach((to, from, next) => {
     next()
   } else if (requireAuth && !store.getters['authToken/isAuthenticated']) {
     next('/taberna/login?message=auth')
+  } else {
+    next()
+  }
+})
+
+router.beforeEach((to, from, next) => {
+  const requireAuthJWT = to.meta.authJWT
+
+  if (requireAuthJWT && store.getters['authJWT/isAuthenticated']) {
+    next()
+  } else if (requireAuthJWT && !store.getters['authJWT/isAuthenticated']) {
+    next('/social/login?message=auth')
   } else {
     next()
   }

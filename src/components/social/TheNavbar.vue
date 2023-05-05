@@ -13,17 +13,6 @@
       </router-link>
       <v-spacer></v-spacer>
       <div class="d-md-flex d-sm-none d-none mr-3">
-        <v-btn
-          flat
-          color="white"
-          class="ml-3"
-          :to="{
-            name: 'profileSocial',
-            params: { slug: 'john-dou' },
-          }"
-        >
-          John
-        </v-btn>
         <v-menu open-on-hover>
           <template v-slot:activator="{ props }">
             <v-btn
@@ -71,6 +60,13 @@
         >
           Toggle Theme
         </v-btn>
+        <v-btn
+          density="comfortable"
+          @click="searching = true"
+          icon="mdi-magnify"
+          to="/social/search"
+        >
+        </v-btn>
         <div v-if="$store.state.authJWT.access">
           <router-link
             :to="{
@@ -78,7 +74,7 @@
               params: { slug: userSlug },
             }"
           >
-            <v-avatar size="40">
+            <v-avatar size="40" class="ml-2">
               <img src="https://i.pravatar.cc/50?img=70" />
             </v-avatar>
           </router-link>
@@ -134,6 +130,9 @@
           @click="toggleTheme"
         >
           Toggle Theme
+        </v-list-item>
+        <v-list-item flat prepend-icon="mdi-magnify" to="/social/search">
+          Search
         </v-list-item>
       </v-list>
     </v-navigation-drawer>

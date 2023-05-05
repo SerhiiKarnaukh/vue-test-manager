@@ -135,6 +135,15 @@ const routes = [
     },
   },
   {
+    path: '/social/search',
+    name: 'searchSocial',
+    component: () => import('@/views/social/SearchView.vue'),
+    meta: {
+      authJWT: false,
+      layout: 'mainSocial',
+    },
+  },
+  {
     path: '/social/signup',
     name: 'signupSocial',
     component: () => import('@/views/social/SignupView.vue'),

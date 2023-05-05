@@ -3,48 +3,27 @@
     <v-container class="py-6" fluid>
       <v-row class="justify-center">
         <v-col cols="9" sm="5" md="3" lg="2" class="px-4">
-          <v-card class="py-4 rounded-lg text-center" elevation="2">
-            <v-img
-              src="https://i.pravatar.cc/300?img=70"
-              class="mb-6 rounded-full mx-auto"
-              width="150"
-              height="150"
-              aspect-ratio="1.5"
-              ><template v-slot:placeholder>
-                <v-row align="center" class="fill-height ma-0" justify="center">
-                  <v-progress-circular
-                    color="grey lighten-5"
-                    indeterminate
-                  ></v-progress-circular>
-                </v-row> </template
-            ></v-img>
-
-            <v-card-title class="pa-0">
-              <span class="headline">{{
-                profile.first_name + ' ' + profile.last_name
-              }}</span>
-            </v-card-title>
-
-            <v-card-subtitle class="mb-2">
-              <v-row
-                class="mx-auto d-flex justify-space-between"
-                style="max-width: 200px"
-              >
-                <v-col cols="auto">
-                  <span class="text-caption font-weight-light grey-text"
-                    >182 friends</span
-                  >
+          <v-card class="rounded-lg" elevation="2">
+            <v-card-text class="text-center">
+              <v-avatar size="150" class="mb-6">
+                <img src="https://i.pravatar.cc/150?img=70" />
+              </v-avatar>
+              <p class="mb-4">
+                <strong>{{
+                  profile.first_name + ' ' + profile.last_name
+                }}</strong>
+              </p>
+              <v-row>
+                <v-col>
+                  <p class="text-xs text-gray-500">182 friends</p>
                 </v-col>
-                <v-col cols="auto">
-                  <span class="text-caption font-weight-light grey-text"
-                    >120 posts</span
-                  >
+                <v-col>
+                  <p class="text-xs text-gray-500">120 posts</p>
                 </v-col>
               </v-row>
-            </v-card-subtitle>
+            </v-card-text>
           </v-card>
         </v-col>
-
         <v-col cols="12" md="5" lg="6" class="px-4">
           <v-card
             v-if="$store.state.socialUserData.user.id == profile.id"
@@ -109,7 +88,7 @@ export default {
     }
   },
   mounted() {
-    document.title = 'Home | Social Network'
+    document.title = 'Profile | Social Network'
     this.getFeed()
   },
   methods: {

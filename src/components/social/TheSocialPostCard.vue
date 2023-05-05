@@ -8,7 +8,14 @@
       </v-col>
       <v-col>
         <div class="text-overline">
-          {{ post.created_by.first_name + ' ' + post.created_by.last_name }}
+          <router-link
+            :to="{
+              name: 'profileSocial',
+              params: { slug: post.created_by.slug },
+            }"
+          >
+            {{ post.created_by.first_name + ' ' + post.created_by.last_name }}
+          </router-link>
         </div>
         <div class="text-caption">{{ post.created_at_formatted }} ago</div>
       </v-col>

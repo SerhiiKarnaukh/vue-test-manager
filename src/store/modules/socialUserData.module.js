@@ -1,55 +1,70 @@
 import axios from 'axios'
 
-export default {
-  namespaced: true,
-  state() {
-    return {
-      user: {
-        id: null,
-        username: null,
-        email: null,
-      },
+const state = () => ({
+  user: {
+    id: null,
+    username: null,
+    email: null,
+    slug: null,
+    fullName: null,
+  },
+})
+
+const mutations = {
+  setUserInfo(state, data) {
+    const fullName = data.first_name + ' ' + data.last_name
+    state.user = {
+      id: data.id,
+      username: data.username,
+      email: data.email,
+      slug: data.slug,
+      fullName: fullName,
+    }
+    Object.keys(state.user).forEach((key) =>
+      localStorage.setItem(`user.${key}`, data[key])
+    )
+    localStorage.setItem('user.fullName', fullName)
+  },
+  initSocial(state) {
+    if (localStorage.getItem('access')) {
+      Object.keys(state.user).forEach((key) => {
+        state.user[key] = localStorage.getItem(`user.${key}`)
+      })
+      state.user.fullName = localStorage.getItem('user.fullName')
+    } else {
+      state.user = {
+        id: false,
+        username: false,
+        email: false,
+        slug: false,
+        fullName: false,
+      }
+      Object.keys(state.user).forEach((key) =>
+        localStorage.setItem(`user.${key}`, '')
+      )
     }
   },
-  mutations: {
-    setUserInfo(state, data) {
-      state.user.id = data.id
-      state.user.username = data.username
-      state.user.email = data.email
-      localStorage.setItem('user.id', data.id)
-      localStorage.setItem('user.username', data.username)
-      localStorage.setItem('user.email', data.email)
-    },
-    initSocial(state) {
-      if (localStorage.getItem('access')) {
-        state.user.id = localStorage.getItem('user.id')
-        state.user.username = localStorage.getItem('user.username')
-        state.user.email = localStorage.getItem('user.email')
-      } else {
-        this.removeUserData(state)
-      }
-    },
-    removeUserData(state) {
-      state.user.id = false
-      state.user.username = false
-      state.user.email = false
-      localStorage.setItem('user.id', '')
-      localStorage.setItem('user.username', '')
-      localStorage.setItem('user.email', '')
-    },
+}
+
+const actions = {
+  async getUserData({ commit }) {
+    try {
+      const response = await axios.get('accounts/api/me/')
+      commit('setUserInfo', response.data)
+    } catch (error) {
+      console.error('error', error)
+    }
   },
-  actions: {
-    async getUserData({ commit }) {
-      await axios
-        .get('accounts/api/me/')
-        .then((response) => {
-          console.log(response.data)
-          commit('setUserInfo', response.data)
-        })
-        .catch((error) => {
-          console.log('error', error)
-        })
-    },
-  },
-  getters: {},
+}
+
+const getters = {
+  userSlug: (state) => state.user.slug,
+}
+
+export default {
+  namespaced: true,
+  state,
+  mutations,
+  actions,
+  getters,
 }

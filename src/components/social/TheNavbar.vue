@@ -13,6 +13,17 @@
       </router-link>
       <v-spacer></v-spacer>
       <div class="d-md-flex d-sm-none d-none mr-3">
+        <v-btn
+          flat
+          color="white"
+          class="ml-3"
+          :to="{
+            name: 'profileSocial',
+            params: { slug: 'john-dou' },
+          }"
+        >
+          John
+        </v-btn>
         <v-menu open-on-hover>
           <template v-slot:activator="{ props }">
             <v-btn
@@ -60,6 +71,18 @@
         >
           Toggle Theme
         </v-btn>
+        <div v-if="$store.state.authJWT.access">
+          <router-link
+            :to="{
+              name: 'profileSocial',
+              params: { slug: userSlug },
+            }"
+          >
+            <v-avatar size="40">
+              <img src="https://i.pravatar.cc/50?img=70" />
+            </v-avatar>
+          </router-link>
+        </div>
       </div>
     </v-app-bar>
     <v-navigation-drawer temporary v-model="drawer" location="left">
@@ -120,7 +143,7 @@
 <script>
 import { useTheme } from 'vuetify'
 import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
+import { useStore, mapGetters } from 'vuex'
 export default {
   setup() {
     const theme = useTheme()
@@ -159,6 +182,11 @@ export default {
     $route() {
       this.drawer = false
     },
+  },
+  computed: {
+    ...mapGetters('socialUserData', {
+      userSlug: 'userSlug',
+    }),
   },
 }
 </script>

@@ -13,8 +13,8 @@ export default {
   components: { TheNavbar, TheFooter },
   setup() {},
   beforeCreate() {
-    this.$store.commit('socialUserData/initSocial')
     this.$store.dispatch('authJWT/initJWT')
+    this.$store.commit('socialUserData/initSocial')
     const token = this.$store.getters['authJWT/token']
     if (token) {
       axios.defaults.headers.common['Authorization'] = 'Bearer ' + token

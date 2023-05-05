@@ -48,8 +48,8 @@ export default {
         throw new Error()
       }
     },
-    async refreshToken({ state, commit }) {
-      await axios
+    refreshToken({ state, commit }) {
+      axios
         .post('/api/v1/token/refresh/', {
           refresh: state.refresh,
         })
@@ -66,11 +66,11 @@ export default {
           commit('removeToken')
         })
     },
-    async initJWT({ state, dispatch, getters }) {
+    initJWT({ state, dispatch, getters }) {
       if (getters.token) {
         state.access = localStorage.getItem(ACCESS)
         state.refresh = localStorage.getItem(REFRESH)
-        await dispatch('refreshToken')
+        dispatch('refreshToken')
       }
     },
   },

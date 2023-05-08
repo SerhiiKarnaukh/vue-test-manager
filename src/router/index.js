@@ -121,7 +121,7 @@ const routes = [
     name: 'homeSocial',
     component: () => import('@/views/social/HomeView.vue'),
     meta: {
-      authJWT: true,
+      authJWT: false,
       layout: 'mainSocial',
     },
   },
@@ -129,6 +129,15 @@ const routes = [
     path: '/social/profile/:slug',
     name: 'profileSocial',
     component: () => import('@/views/social/ProfileView.vue'),
+    meta: {
+      authJWT: true,
+      layout: 'mainSocial',
+    },
+  },
+  {
+    path: '/social/profile/:slug/friends',
+    name: 'friendsSocial',
+    component: () => import('@/views/social/FriendsView.vue'),
     meta: {
       authJWT: true,
       layout: 'mainSocial',

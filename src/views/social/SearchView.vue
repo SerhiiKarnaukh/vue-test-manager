@@ -42,8 +42,9 @@
                     <v-card-text class="text-center">
                       <v-avatar size="125" class="mb-6">
                         <img
-                          src="https://i.pravatar.cc/150?img=70"
+                          :src="profile.avatar_url"
                           aspect-ratio="1.5"
+                          style="max-width: 100%"
                         />
                       </v-avatar>
                       <p class="mb-4">
@@ -60,7 +61,9 @@
                       </p>
                       <v-row>
                         <v-col>
-                          <p class="text-xs text-gray-500">182 friends</p>
+                          <p class="text-xs text-gray-500">
+                            {{ profile.friends_count }} friends
+                          </p>
                         </v-col>
                         <v-col>
                           <p class="text-xs text-gray-500">120 posts</p>
@@ -118,7 +121,6 @@ export default {
         .then((response) => {
           this.profiles = response.data.profiles
           this.posts = response.data.posts
-          console.log(response.data.posts)
         })
         .catch((error) => {
           console.log('error:', error)

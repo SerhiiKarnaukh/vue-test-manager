@@ -79,6 +79,9 @@ export default {
           await store.dispatch('authJWT/login', formData)
           await store.dispatch('socialUserData/getUserData')
           router.push('/social/home')
+          setInterval(async () => {
+            await store.dispatch('authJWT/refreshToken')
+          }, 5 * 60 * 1000) // 5 minutes
         } catch (e) {
           return
         }

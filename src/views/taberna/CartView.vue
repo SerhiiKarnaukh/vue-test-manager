@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import TheCartItem from '@/components/TheCartItem.vue'
+import TheCartItem from '@/components/taberna/TheCartItem.vue'
 export default {
   name: 'CartView',
   components: {

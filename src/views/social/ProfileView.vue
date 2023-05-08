@@ -6,7 +6,7 @@
           <v-card class="rounded-lg" elevation="2">
             <v-card-text class="text-center">
               <v-avatar size="150" class="mb-6">
-                <img src="https://i.pravatar.cc/150?img=70" />
+                <img :src="profile.avatar_url" style="max-width: 100%" />
               </v-avatar>
               <p class="mb-4">
                 <strong>{{
@@ -15,16 +15,34 @@
               </p>
               <v-row>
                 <v-col>
-                  <p class="text-xs text-gray-500">182 friends</p>
+                  <router-link
+                    :to="{
+                      name: 'friendsSocial',
+                      params: { slug: this.$route.params.slug },
+                    }"
+                  >
+                    <p class="text-xs text-gray-500">
+                      {{ profile.friends_count }} friends
+                    </p>
+                  </router-link>
                 </v-col>
                 <v-col>
                   <p class="text-xs text-gray-500">120 posts</p>
                 </v-col>
               </v-row>
+              <v-btn
+                v-if="$store.state.socialUserData.user.id != profile.id"
+                @click="sendFriendshipRequest"
+                color="primary"
+                class="mx-auto mt-4"
+              >
+                Add as Friend
+              </v-btn>
             </v-card-text>
           </v-card>
         </v-col>
         <v-col cols="12" md="5" lg="6" class="px-4">
+          <app-message />
           <v-card
             v-if="$store.state.socialUserData.user.id == profile.id"
             class="rounded-lg mb-6"
@@ -71,14 +89,17 @@
 
 <script>
 import axios from 'axios'
+import AppMessage from '@/components/ui/AppMessage.vue'
 import ThePeopleYouMayKnow from '@/components/social/ThePeopleYouMayKnow.vue'
 import TheTrends from '@/components/social/TheTrends.vue'
 import TheSocialPostCard from '@/components/social/TheSocialPostCard.vue'
+import store from '@/store'
 export default {
   components: {
     ThePeopleYouMayKnow,
     TheTrends,
     TheSocialPostCard,
+    AppMessage,
   },
   data() {
     return {
@@ -92,6 +113,29 @@ export default {
     this.getFeed()
   },
   methods: {
+    sendFriendshipRequest() {
+      axios
+        .post(
+          `/api/social-profiles/friends/${this.$route.params.slug}/request/`
+        )
+        .then((response) => {
+          console.log('data', response.data)
+          if (response.data.message == 'request already sent') {
+            store.dispatch('setMessage', {
+              value: ['The request has already been sent!'],
+              type: 'error',
+            })
+          } else {
+            store.dispatch('setMessage', {
+              value: ['The request was sent!'],
+              type: 'success',
+            })
+          }
+        })
+        .catch((error) => {
+          console.log('error', error)
+        })
+    },
     getFeed() {
       const slug = this.$route.params.slug
       if (slug) {

@@ -32,7 +32,9 @@
             >
           </v-list>
         </v-menu>
-        <div v-if="!$store.state.authJWT.access">
+        <v-btn to="/social/home" flat prepend-icon="mdi-home">Main</v-btn>
+
+        <div v-if="!$store.state.authJWT.accessToken">
           <v-btn
             v-for="link in links"
             flat
@@ -46,7 +48,7 @@
           </v-btn>
         </div>
 
-        <div v-if="$store.state.authJWT.access">
+        <div v-if="$store.state.authJWT.accessToken">
           <v-btn flat color="white" prepend-icon="mdi-logout" @click="logout">
             Logout
           </v-btn>
@@ -67,7 +69,7 @@
           to="/social/search"
         >
         </v-btn>
-        <div v-if="$store.state.authJWT.access">
+        <div v-if="$store.state.authJWT.accessToken">
           <router-link
             :to="{
               name: 'profileSocial',
@@ -103,7 +105,10 @@
             >
           </v-list>
         </v-menu>
-        <div v-if="!$store.state.authJWT.access">
+        <v-list-item to="/social/home" flat prepend-icon="mdi-home"
+          >Main</v-list-item
+        >
+        <div v-if="!$store.state.authJWT.accessToken">
           <v-list-item
             v-for="item in links"
             :key="`${item.label}-navbar-drawer-link`"
@@ -113,7 +118,7 @@
             {{ item.label }}
           </v-list-item>
         </div>
-        <div v-if="$store.state.authJWT.access">
+        <div v-if="$store.state.authJWT.accessToken">
           <v-list-item
             flat
             color="white"
@@ -156,7 +161,16 @@ export default {
           ? 'CustomLightTheme'
           : 'dark'),
       logout: () => {
-        // store.dispatch('authToken/logout')
+        const intervalIds = Object.keys(window).filter((key) =>
+          key.startsWith('intervalId')
+        )
+        console.log(intervalIds)
+        intervalIds.forEach((id) => {
+          clearInterval(window[id])
+        })
+
+        store.dispatch('authJWT/logout')
+        store.commit('socialUserData/initSocial')
         router.push('/social/login')
       },
     }

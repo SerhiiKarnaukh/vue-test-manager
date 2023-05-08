@@ -2,8 +2,8 @@
   <v-card class="mb-6 pa-4 rounded-lg" elevation="2">
     <v-row align="center">
       <v-col cols="auto">
-        <v-avatar size="40">
-          <img src="https://i.pravatar.cc/50?img=70"
+        <v-avatar size="50">
+          <img :src="post.created_by.avatar_url" style="max-width: 100%"
         /></v-avatar>
       </v-col>
       <v-col>

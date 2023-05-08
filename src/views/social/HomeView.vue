@@ -3,7 +3,12 @@
     <v-container class="py-6" fluid>
       <v-row class="justify-center">
         <v-col cols="12" md="5" lg="6" class="px-4">
-          <v-card class="rounded-lg mb-6" color="white" elevation="2">
+          <v-card
+            v-if="$store.state.authJWT.accessToken"
+            class="rounded-lg mb-6"
+            color="white"
+            elevation="2"
+          >
             <v-form @submit.prevent="submitForm" method="post">
               <v-card-text class="p-4">
                 <v-textarea
@@ -26,11 +31,20 @@
               </v-card-actions>
             </v-form>
           </v-card>
-          <TheSocialPostCard
-            v-for="post in posts"
-            :key="post.id"
-            v-bind:post="post"
-          />
+          <div v-if="!$store.state.authJWT.accessToken">
+            <TheSocialPostCard
+              v-for="post in posts"
+              :key="post.id"
+              v-bind:post="post"
+            />
+          </div>
+          <div v-if="$store.state.authJWT.accessToken">
+            <TheSocialPostCard
+              v-for="post in friends_posts"
+              :key="post.id"
+              v-bind:post="post"
+            />
+          </div>
         </v-col>
 
         <v-col cols="12" md="4" lg="3" class="px-4">
@@ -56,6 +70,7 @@ export default {
   data() {
     return {
       posts: [],
+      friends_posts: [],
       body: '',
     }
   },
@@ -68,7 +83,8 @@ export default {
       axios
         .get('/api/social-posts/')
         .then((response) => {
-          this.posts = response.data
+          this.posts = response.data.posts
+          this.friends_posts = response.data.friends_posts
         })
         .catch((error) => {
           console.log('error', error)

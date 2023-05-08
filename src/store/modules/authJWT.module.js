@@ -1,85 +1,97 @@
 import axios from 'axios'
 import { error } from '@/utils/error'
-const ACCESS = 'access'
-const REFRESH = 'refresh'
+const state = {
+  accessToken: localStorage.getItem('access') || null,
+  refreshToken: localStorage.getItem('refresh') || null,
+}
+
+const mutations = {
+  authSuccess(state, token) {
+    state.accessToken = token
+  },
+  authLogout(state) {
+    state.accessToken = null
+    state.refreshToken = null
+  },
+  updateRefreshToken(state, token) {
+    state.refreshToken = token
+  },
+}
+
+const actions = {
+  login({ commit, dispatch }, credentials) {
+    return new Promise((resolve, reject) => {
+      axios
+        .post('/api/v1/token/', { ...credentials })
+        .then((response) => {
+          const token = response.data.access
+          const refreshToken = response.data.refresh
+          localStorage.setItem('access', token)
+          localStorage.setItem('refresh', refreshToken)
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+          commit('authSuccess', token)
+          commit('updateRefreshToken', refreshToken)
+          commit('clearMessage', null, { root: true })
+          resolve(response)
+        })
+        .catch(async (e) => {
+          dispatch(
+            'setMessage',
+            {
+              value: error(e.response.data),
+              type: 'error',
+            },
+            { root: true }
+          )
+          localStorage.removeItem('access')
+          localStorage.removeItem('refresh')
+          reject(error)
+        })
+    })
+  },
+  logout({ commit }) {
+    return new Promise((resolve) => {
+      localStorage.removeItem('access')
+      localStorage.removeItem('refresh')
+      commit('authLogout')
+      delete axios.defaults.headers.common['Authorization']
+      resolve()
+    })
+  },
+  refreshToken({ commit }) {
+    return new Promise((resolve, reject) => {
+      axios
+        .post('/api/v1/token/refresh/', {
+          refresh: localStorage.getItem('refresh'),
+        })
+        .then((response) => {
+          const token = response.data.access
+          localStorage.setItem('access', token)
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+          commit('authSuccess', token)
+          resolve(response)
+        })
+        .catch((error) => {
+          localStorage.removeItem('access')
+          localStorage.removeItem('refresh')
+          commit('authLogout')
+          delete axios.defaults.headers.common['Authorization']
+          reject(error)
+        })
+    })
+  },
+}
+
+const getters = {
+  isAuthenticated: (state) => !!state.accessToken,
+  accessToken: (state) => state.accessToken,
+  refreshToken: (state) => state.refreshToken,
+}
 
 export default {
   namespaced: true,
-  state() {
-    return {
-      access: localStorage.getItem(ACCESS),
-      refresh: localStorage.getItem(REFRESH),
-    }
-  },
-  mutations: {
-    setToken(state, data) {
-      state.access = data.access
-      state.refresh = data.refresh
-      localStorage.setItem(ACCESS, data.access)
-      localStorage.setItem(REFRESH, data.refresh)
-    },
-    removeToken(state) {
-      state.access = null
-      state.refresh = null
-      localStorage.removeItem(ACCESS)
-      localStorage.removeItem(REFRESH)
-    },
-  },
-  actions: {
-    async login({ commit, dispatch }, payload) {
-      try {
-        const url = '/api/v1/token/'
-        const { data } = await axios.post(url, {
-          ...payload,
-        })
-        commit('setToken', data)
-        axios.defaults.headers.common['Authorization'] = 'Bearer ' + data.access
-        commit('clearMessage', null, { root: true })
-      } catch (e) {
-        dispatch(
-          'setMessage',
-          {
-            value: error(e.response.data),
-            type: 'error',
-          },
-          { root: true }
-        )
-
-        throw new Error()
-      }
-    },
-    refreshToken({ state, commit }) {
-      axios
-        .post('/api/v1/token/refresh/', {
-          refresh: state.refresh,
-        })
-        .then((response) => {
-          state.access = response.data.access
-
-          localStorage.setItem(ACCESS, response.data.access)
-
-          axios.defaults.headers.common['Authorization'] =
-            'Bearer ' + response.data.access
-        })
-        .catch((error) => {
-          console.log(error)
-          commit('removeToken')
-        })
-    },
-    initJWT({ state, dispatch, getters }) {
-      if (getters.token) {
-        state.access = localStorage.getItem(ACCESS)
-        state.refresh = localStorage.getItem(REFRESH)
-        dispatch('refreshToken')
-      }
-    },
-  },
-  getters: {
-    token(state) {
-      return state.access
-    },
-    isAuthenticated(_, getters) {
-      return !!getters.token
-    },
-  },
+  state,
+  mutations,
+  actions,
+  getters,
 }

@@ -29,7 +29,7 @@
 
 <script>
 import axios from 'axios'
-import TheProductCard from '@/components/TheProductCard.vue'
+import TheProductCard from '@/components/taberna/TheProductCard.vue'
 export default {
   name: 'HomeView',
   components: {

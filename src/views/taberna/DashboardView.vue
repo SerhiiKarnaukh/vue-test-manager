@@ -15,7 +15,7 @@
 
 <script>
 import axios from 'axios'
-import TheOrderSummary from '@/components/TheOrderSummary.vue'
+import TheOrderSummary from '@/components/taberna/TheOrderSummary.vue'
 export default {
   name: 'DashboardView',
   components: {

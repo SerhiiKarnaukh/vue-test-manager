@@ -130,7 +130,7 @@ const routes = [
     name: 'profileSocial',
     component: () => import('@/views/social/ProfileView.vue'),
     meta: {
-      authJWT: true,
+      authJWT: false,
       layout: 'mainSocial',
     },
   },

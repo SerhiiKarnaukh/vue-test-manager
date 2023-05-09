@@ -34,23 +34,75 @@
     <v-card-actions>
       <v-row align="center">
         <v-col cols="auto">
-          <v-icon small class="mr-1">mdi-thumb-up-outline</v-icon>
-          <span>34</span>
+          <v-icon @click="likePost(post.id)" small class="mr-1"
+            >mdi-thumb-up-outline</v-icon
+          >
+          <span>{{ likesCount }}</span>
         </v-col>
         <v-col cols="auto">
           <v-icon small class="mr-1">mdi-comment-outline</v-icon>
-          <span>45</span>
+          <span>0</span>
         </v-col>
       </v-row>
     </v-card-actions>
+    <v-dialog v-model="showModal" max-width="500">
+      <v-card>
+        <v-card-text>
+          <app-message />
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" @click="showModal = false">OK</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 
 <script>
+import axios from 'axios'
+import AppMessage from '@/components/ui/AppMessage.vue'
+import store from '@/store'
 export default {
   name: 'TheSocialPostCard',
   props: {
     post: Object,
+  },
+  components: {
+    AppMessage,
+  },
+  data() {
+    return {
+      likesCount: this.post.likes_count,
+      showModal: false,
+    }
+  },
+  methods: {
+    likePost(id) {
+      let timeoutId
+      axios
+        .post(`/api/social-posts/${id}/like/`)
+        .then((response) => {
+          if (response.data.message == 'like created') {
+            this.likesCount += 1
+          }
+        })
+        .catch((error) => {
+          console.log('error', error)
+          store.dispatch('setMessage', {
+            value: ['You must be logged in!'],
+            type: 'error',
+          })
+          this.showModal = true
+          if (timeoutId) {
+            console.log('TimeOutID', timeoutId)
+            clearTimeout(timeoutId)
+          }
+          timeoutId = setTimeout(() => {
+            this.showModal = false
+          }, 5000)
+          console.log('TimeOutID2', timeoutId)
+        })
+    },
   },
 }
 </script>

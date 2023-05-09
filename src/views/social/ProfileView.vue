@@ -134,6 +134,10 @@ export default {
         })
         .catch((error) => {
           console.log('error', error)
+          store.dispatch('setMessage', {
+            value: ['You must be logged in!'],
+            type: 'error',
+          })
         })
     },
     getFeed() {

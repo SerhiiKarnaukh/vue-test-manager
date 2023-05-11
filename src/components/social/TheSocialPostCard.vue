@@ -40,8 +40,12 @@
           <span>{{ likesCount }}</span>
         </v-col>
         <v-col cols="auto">
-          <v-icon small class="mr-1">mdi-comment-outline</v-icon>
-          <span>0</span>
+          <router-link :to="{ name: 'postSocial', params: { id: post.id } }">
+            <v-icon small class="mr-1" color="black"
+              >mdi-comment-outline</v-icon
+            >
+          </router-link>
+          <span>{{ post.comments_count }} comments</span>
         </v-col>
       </v-row>
     </v-card-actions>
@@ -78,7 +82,6 @@ export default {
   },
   methods: {
     likePost(id) {
-      let timeoutId
       axios
         .post(`/api/social-posts/${id}/like/`)
         .then((response) => {
@@ -93,14 +96,9 @@ export default {
             type: 'error',
           })
           this.showModal = true
-          if (timeoutId) {
-            console.log('TimeOutID', timeoutId)
-            clearTimeout(timeoutId)
-          }
-          timeoutId = setTimeout(() => {
+          setTimeout(() => {
             this.showModal = false
           }, 5000)
-          console.log('TimeOutID2', timeoutId)
         })
     },
   },

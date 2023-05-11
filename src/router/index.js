@@ -144,6 +144,15 @@ const routes = [
     },
   },
   {
+    path: '/social/:id',
+    name: 'postSocial',
+    component: () => import('@/views/social/PostView.vue'),
+    meta: {
+      authJWT: false,
+      layout: 'mainSocial',
+    },
+  },
+  {
     path: '/social/search',
     name: 'searchSocial',
     component: () => import('@/views/social/SearchView.vue'),

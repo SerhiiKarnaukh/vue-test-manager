@@ -49,6 +49,14 @@
         </div>
 
         <div v-if="$store.state.authJWT.accessToken">
+          <v-btn
+            flat
+            color="white"
+            prepend-icon="mdi-chat-processing-outline"
+            to="/social/chat"
+          >
+            Chat
+          </v-btn>
           <v-btn flat color="white" prepend-icon="mdi-logout" @click="logout">
             Logout
           </v-btn>
@@ -119,6 +127,13 @@
           </v-list-item>
         </div>
         <div v-if="$store.state.authJWT.accessToken">
+          <v-list-item
+            flat
+            prepend-icon="mdi-chat-processing-outline"
+            to="/social/chat"
+          >
+            Chat
+          </v-list-item>
           <v-list-item
             flat
             color="white"

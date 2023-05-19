@@ -153,6 +153,15 @@ const routes = [
     },
   },
   {
+    path: '/social/chat',
+    name: 'chatSocial',
+    component: () => import('@/views/social/ChatView.vue'),
+    meta: {
+      authJWT: true,
+      layout: 'mainSocial',
+    },
+  },
+  {
     path: '/social/search',
     name: 'searchSocial',
     component: () => import('@/views/social/SearchView.vue'),

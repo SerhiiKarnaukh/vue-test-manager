@@ -38,6 +38,14 @@
               >
                 Add as Friend
               </v-btn>
+              <v-btn
+                v-if="$store.state.socialUserData.user.id != profile.id"
+                @click="sendMessage"
+                color="social"
+                class="mx-auto mt-4"
+              >
+                Send Message
+              </v-btn>
             </v-card-text>
           </v-card>
         </v-col>
@@ -113,6 +121,18 @@ export default {
     this.getFeed()
   },
   methods: {
+    sendMessage() {
+      axios
+        .get(`/api/social-chat/${this.$route.params.slug}/get-or-create/`)
+        .then((response) => {
+          console.log(response.data)
+
+          this.$router.push('/social/chat')
+        })
+        .catch((error) => {
+          console.log('error', error)
+        })
+    },
     sendFriendshipRequest() {
       axios
         .post(

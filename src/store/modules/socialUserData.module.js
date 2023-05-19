@@ -59,6 +59,7 @@ const actions = {
 
 const getters = {
   userSlug: (state) => state.user.slug,
+  userId: (state) => state.user.id,
 }
 
 export default {

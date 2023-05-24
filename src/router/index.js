@@ -153,6 +153,15 @@ const routes = [
     },
   },
   {
+    path: '/social/trends/:id',
+    name: 'trendSocial',
+    component: () => import('@/views/social/TrendView.vue'),
+    meta: {
+      authJWT: false,
+      layout: 'mainSocial',
+    },
+  },
+  {
     path: '/social/chat',
     name: 'chatSocial',
     component: () => import('@/views/social/ChatView.vue'),

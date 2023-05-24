@@ -66,7 +66,9 @@
                           </p>
                         </v-col>
                         <v-col>
-                          <p class="text-xs text-gray-500">120 posts</p>
+                          <p class="text-xs text-gray-500">
+                            {{ profile.posts_count }} posts
+                          </p>
                         </v-col>
                       </v-row>
                     </v-card-text>

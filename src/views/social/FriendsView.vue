@@ -20,7 +20,9 @@
                   </p>
                 </v-col>
                 <v-col>
-                  <p class="text-xs text-gray-500">120 posts</p>
+                  <p class="text-xs text-gray-500">
+                    {{ profile.posts_count }} posts
+                  </p>
                 </v-col>
               </v-row>
             </v-card-text>
@@ -79,7 +81,9 @@
                           </p>
                         </v-col>
                         <v-col>
-                          <p class="text-xs text-gray-500">120 posts</p>
+                          <p class="text-xs text-gray-500">
+                            {{ friendshipRequest.created_by.posts_count }} posts
+                          </p>
                         </v-col>
                       </v-row>
                       <v-card-actions class="mt-6">
@@ -168,7 +172,9 @@
                           </p>
                         </v-col>
                         <v-col>
-                          <p class="text-xs text-gray-500">120 posts</p>
+                          <p class="text-xs text-gray-500">
+                            {{ user.posts_count }} posts
+                          </p>
                         </v-col>
                       </v-row>
                     </v-card-text>

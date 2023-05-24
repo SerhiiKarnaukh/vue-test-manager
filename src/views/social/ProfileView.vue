@@ -14,11 +14,11 @@
                 }}</strong>
               </p>
               <v-row>
-                <v-col>
+                <v-col v-if="profile.slug">
                   <router-link
                     :to="{
                       name: 'friendsSocial',
-                      params: { slug: this.$route.params.slug },
+                      params: { slug: profile.slug },
                     }"
                   >
                     <p class="text-xs text-gray-500">
@@ -27,7 +27,9 @@
                   </router-link>
                 </v-col>
                 <v-col>
-                  <p class="text-xs text-gray-500">120 posts</p>
+                  <p class="text-xs text-gray-500">
+                    {{ profile.posts_count }} posts
+                  </p>
                 </v-col>
               </v-row>
               <v-btn
@@ -131,6 +133,10 @@ export default {
         })
         .catch((error) => {
           console.log('error', error)
+          store.dispatch('setMessage', {
+            value: ['You must be logged in!'],
+            type: 'error',
+          })
         })
     },
     sendFriendshipRequest() {

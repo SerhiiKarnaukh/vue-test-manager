@@ -84,9 +84,9 @@
               params: { slug: userSlug },
             }"
           >
-            <v-avatar size="40" class="ml-2">
-              <img src="https://i.pravatar.cc/50?img=70" />
-            </v-avatar>
+            <v-avatar size="40">
+              <img :src="avatarUrl" style="max-width: 100%"
+            /></v-avatar>
           </router-link>
         </div>
       </div>
@@ -163,11 +163,15 @@
 import { useTheme } from 'vuetify'
 import { useRouter } from 'vue-router'
 import { useStore, mapGetters } from 'vuex'
+import { computed } from 'vue'
 export default {
   setup() {
     const theme = useTheme()
     const router = useRouter()
     const store = useStore()
+    const avatarUrl = computed(
+      () => store.getters['socialUserData/user'].avatar_url
+    )
 
     return {
       theme,
@@ -188,6 +192,7 @@ export default {
         store.commit('socialUserData/initSocial')
         router.push('/social/login')
       },
+      avatarUrl,
     }
   },
   data: () => ({

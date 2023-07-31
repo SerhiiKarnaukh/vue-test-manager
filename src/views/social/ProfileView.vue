@@ -48,6 +48,14 @@
               >
                 Send Message
               </v-btn>
+              <v-btn
+                v-if="$store.state.socialUserData.user.id == profile.id"
+                to="/social/profile/edit"
+                color="social"
+                class="mx-auto mt-4"
+              >
+                Edit Profile
+              </v-btn>
             </v-card-text>
           </v-card>
         </v-col>

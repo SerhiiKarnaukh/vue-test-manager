@@ -1,46 +1,53 @@
 import axios from 'axios'
+import { encryptData, decryptData } from '@/utils/cryptoUtils'
 
 const state = () => ({
   user: {
     id: null,
     username: null,
+    first_name: null,
+    last_name: null,
     email: null,
     slug: null,
-    fullName: null,
+    full_name: null,
+    avatar_url: null,
   },
 })
 
 const mutations = {
   setUserInfo(state, data) {
-    const fullName = data.first_name + ' ' + data.last_name
     state.user = {
       id: data.id,
       username: data.username,
+      first_name: data.first_name,
+      last_name: data.last_name,
       email: data.email,
       slug: data.slug,
-      fullName: fullName,
+      full_name: data.full_name,
+      avatar_url: data.avatar_url,
     }
     Object.keys(state.user).forEach((key) =>
-      localStorage.setItem(`user.${key}`, data[key])
+      localStorage.setItem(`user.${key}`, encryptData(data[key]))
     )
-    localStorage.setItem('user.fullName', fullName)
   },
   initSocial(state) {
     if (localStorage.getItem('access')) {
       Object.keys(state.user).forEach((key) => {
-        state.user[key] = localStorage.getItem(`user.${key}`)
+        state.user[key] = decryptData(localStorage.getItem(`user.${key}`))
       })
-      state.user.fullName = localStorage.getItem('user.fullName')
     } else {
       state.user = {
         id: false,
         username: false,
+        first_name: false,
+        last_name: false,
         email: false,
         slug: false,
-        fullName: false,
+        full_name: false,
+        avatar_url: false,
       }
       Object.keys(state.user).forEach((key) =>
-        localStorage.setItem(`user.${key}`, '')
+        localStorage.removeItem(`user.${key}`)
       )
     }
   },
@@ -49,7 +56,7 @@ const mutations = {
 const actions = {
   async getUserData({ commit }) {
     try {
-      const response = await axios.get('accounts/api/me/')
+      const response = await axios.get('/api/social-profiles/me/')
       commit('setUserInfo', response.data)
     } catch (error) {
       console.error('error', error)
@@ -60,6 +67,7 @@ const actions = {
 const getters = {
   userSlug: (state) => state.user.slug,
   userId: (state) => state.user.id,
+  user: (state) => state.user,
 }
 
 export default {

@@ -197,6 +197,7 @@ export default {
         .then((response) => {
           this.posts.unshift(response.data)
           this.body = ''
+          this.profile.posts_count += 1
         })
         .catch((error) => {
           console.log('error', error)

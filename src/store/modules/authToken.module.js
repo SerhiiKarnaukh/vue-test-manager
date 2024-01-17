@@ -77,7 +77,12 @@ export default {
     async register({ dispatch }, payload) {
       try {
         const url = '/api/v1/authusers/'
-        await axios.post(url, { ...payload })
+        const socialProfileUrl = '/api/social-profiles/register/'
+        if (payload.registration_source) {
+          await axios.post(socialProfileUrl, { ...payload })
+        } else {
+          await axios.post(url, { ...payload })
+        }
         dispatch(
           'setMessage',
           {

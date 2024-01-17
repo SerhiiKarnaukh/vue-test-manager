@@ -115,7 +115,7 @@ export default {
             last_name: state.last_name,
             email: state.email,
             password: state.password,
-            is_active: true,
+            registration_source: true,
           }
           try {
             await store.dispatch('authToken/register', formData)

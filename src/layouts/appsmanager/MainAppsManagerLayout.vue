@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import TheNavbar from '@/components/tvmanager/TheNavbar.vue'
-import TheFooter from '@/components/tvmanager/TheFooter.vue'
+import TheNavbar from '@/components/appsmanager/TheNavbar.vue'
+import TheFooter from '@/components/appsmanager/TheFooter.vue'
 export default {
   components: { TheNavbar, TheFooter },
   setup() {

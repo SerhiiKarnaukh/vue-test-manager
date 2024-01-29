@@ -14,7 +14,7 @@
         Vue Apps
       </v-btn>
       <v-col class="text-center mt-4" cols="12">
-        {{ new Date().getFullYear() }} — <strong>Vue Manager</strong>
+        {{ new Date().getFullYear() }} — <strong>Vue Apps Manager</strong>
       </v-col>
     </v-row>
   </v-footer>

@@ -104,7 +104,7 @@ export default {
       const isFormCorrect = await v$._value.$validate()
       if (isFormCorrect) {
         if (state.password !== state.password2) {
-          store.dispatch('setMessage', {
+          store.dispatch('alert/setMessage', {
             value: ["The passwords doesn't match"],
             type: 'error',
           })

@@ -4,7 +4,7 @@
       class="d-flex flex-column fill-height justify-center align-center text-white bg-transparent-gray"
     >
       <h1 class="text-h3 font-weight-thin text-center mb-4 pt-14 pt-md-0">
-        Vue.js Test Applications Manager
+        Vue Applications Manager
       </h1>
     </div>
   </v-parallax>
@@ -28,7 +28,7 @@
 
 <script>
 import axios from 'axios'
-import TheAppCard from '@/components/tvmanager/TheAppCard.vue'
+import TheAppCard from '@/components/appsmanager/TheAppCard.vue'
 export default {
   name: 'HomeView',
   components: {

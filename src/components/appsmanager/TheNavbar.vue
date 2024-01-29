@@ -9,7 +9,7 @@
       ></v-app-bar-nav-icon>
       <router-link to="/" style="text-decoration: none">
         <v-app-bar-title>
-          <h3 class="main_title ml-3">Vue Manager</h3>
+          <h3 class="main_title ml-3">Vue Apps Manager</h3>
         </v-app-bar-title>
       </router-link>
       <v-spacer></v-spacer>
@@ -79,7 +79,7 @@
               >
             </v-toolbar>
             <v-card-text>
-              <v-form action="/tvmanager/search">
+              <v-form action="/apps_manager/search">
                 <v-text-field
                   density="compact"
                   variant="outlined"

@@ -74,7 +74,7 @@
 import AppMessage from '@/components/ui/AppMessage.vue'
 import { reactive } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
-import { required, email, minLength } from '@vuelidate/validators'
+import { required, email, minLength, maxLength } from '@vuelidate/validators'
 import router from '@/router'
 import { useStore } from 'vuex'
 export default {
@@ -90,12 +90,28 @@ export default {
       password2: '',
     })
     const rules = {
-      username: { required, minLength: minLength(3) },
-      first_name: { required, minLength: minLength(3) },
-      last_name: { required, minLength: minLength(3) },
-      email: { required, email },
-      password: { required, minLength: minLength(6) },
-      password2: { required, minLength: minLength(6) },
+      username: { required, minLength: minLength(3), maxLength: maxLength(50) },
+      first_name: {
+        required,
+        minLength: minLength(3),
+        maxLength: maxLength(50),
+      },
+      last_name: {
+        required,
+        minLength: minLength(3),
+        maxLength: maxLength(50),
+      },
+      email: { required, email, maxLength: maxLength(100) },
+      password: {
+        required,
+        minLength: minLength(6),
+        maxLength: maxLength(128),
+      },
+      password2: {
+        required,
+        minLength: minLength(6),
+        maxLength: maxLength(128),
+      },
     }
 
     const v$ = useVuelidate(rules, state)
@@ -104,7 +120,7 @@ export default {
       const isFormCorrect = await v$._value.$validate()
       if (isFormCorrect) {
         if (state.password !== state.password2) {
-          store.dispatch('setMessage', {
+          store.dispatch('alert/setMessage', {
             value: ["The passwords doesn't match"],
             type: 'error',
           })

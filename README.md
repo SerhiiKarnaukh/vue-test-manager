@@ -1,4 +1,4 @@
-# Vue.js Test Applications Manager
+# Vue Applications Manager
 
 ### App on Firebase: <https://karnaukh-vue-test.web.app>
 

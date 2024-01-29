@@ -10,7 +10,7 @@ const CustomLightTheme = {
     primary: '#3a3a3a',
     secondary: '#5CBBF6',
     manager: '#1f1f2e',
-    social: 'FF8400',
+    social: '7E2553',
   },
 }
 
@@ -27,7 +27,7 @@ export default createVuetify({
           primary: '#385155',
           secondary: '#5CBBF6',
           manager: '#535f7c',
-          social: '4F200D',
+          social: '1D2B53',
         },
       },
     },

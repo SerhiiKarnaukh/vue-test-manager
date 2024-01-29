@@ -1,7 +1,8 @@
 import { createStore, createLogger } from 'vuex'
 import authToken from './modules/authToken.module'
 import authJWT from './modules/authJWT.module'
-import socialUserData from './modules/socialUserData.module'
+import alert from './modules/alert.module'
+import socialUserData from './modules/socialNetworkData/socialUserData.module'
 const plugins = []
 
 if (process.env.NODE_ENV === 'development') {
@@ -15,7 +16,6 @@ export default createStore({
       cart: {
         items: [],
       },
-      message: null,
     }
   },
   mutations: {
@@ -44,24 +44,12 @@ export default createStore({
 
       localStorage.setItem('cart', JSON.stringify(state.cart))
     },
-    setMessage(state, message) {
-      state.message = message
-    },
-    clearMessage(state) {
-      state.message = null
-    },
   },
-  actions: {
-    setMessage({ commit }, message) {
-      commit('setMessage', message)
-      setTimeout(() => {
-        commit('clearMessage')
-      }, 5000)
-    },
-  },
+  actions: {},
   modules: {
     authToken,
     authJWT,
+    alert,
     socialUserData,
   },
   getters: {},

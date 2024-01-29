@@ -102,7 +102,7 @@ export default {
           })
           .then((response) => {
             if (response.data.message === 'Information updated successfully') {
-              store.dispatch('setMessage', {
+              store.dispatch('alert/setMessage', {
                 value: [response.data.message],
                 type: 'success',
               })
@@ -125,7 +125,7 @@ export default {
                 },
               })
             } else {
-              store.dispatch('setMessage', {
+              store.dispatch('alert/setMessage', {
                 value: [response.data.message],
                 type: 'error',
               })

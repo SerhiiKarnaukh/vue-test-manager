@@ -52,7 +52,7 @@ export default {
     const route = useRoute()
     const store = useStore()
     if (route.query.message) {
-      store.dispatch('setMessage', {
+      store.dispatch('alert/setMessage', {
         value: ['Please login'],
         type: 'warning',
       })

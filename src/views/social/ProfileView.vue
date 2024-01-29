@@ -141,7 +141,7 @@ export default {
         })
         .catch((error) => {
           console.log('error', error)
-          store.dispatch('setMessage', {
+          store.dispatch('alert/setMessage', {
             value: ['You must be logged in!'],
             type: 'error',
           })
@@ -155,12 +155,12 @@ export default {
         .then((response) => {
           console.log('data', response.data)
           if (response.data.message == 'request already sent') {
-            store.dispatch('setMessage', {
+            store.dispatch('alert/setMessage', {
               value: ['The request has already been sent!'],
               type: 'error',
             })
           } else {
-            store.dispatch('setMessage', {
+            store.dispatch('alert/setMessage', {
               value: ['The request was sent!'],
               type: 'success',
             })
@@ -168,7 +168,7 @@ export default {
         })
         .catch((error) => {
           console.log('error', error)
-          store.dispatch('setMessage', {
+          store.dispatch('alert/setMessage', {
             value: ['You must be logged in!'],
             type: 'error',
           })

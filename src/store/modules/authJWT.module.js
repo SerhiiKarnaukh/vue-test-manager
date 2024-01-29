@@ -31,12 +31,12 @@ const actions = {
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
           commit('authSuccess', token)
           commit('updateRefreshToken', refreshToken)
-          commit('clearMessage', null, { root: true })
+          commit('alert/clearMessage', null, { root: true })
           resolve(response)
         })
         .catch(async (e) => {
           dispatch(
-            'setMessage',
+            'alert/setMessage',
             {
               value: error(e.response.data),
               type: 'error',

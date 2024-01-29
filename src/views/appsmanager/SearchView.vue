@@ -23,7 +23,7 @@
 
 <script>
 import axios from 'axios'
-import TheAppCard from '@/components/tvmanager/TheAppCard.vue'
+import TheAppCard from '@/components/appsmanager/TheAppCard.vue'
 export default {
   name: 'SearchView',
   components: {

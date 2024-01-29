@@ -2,30 +2,30 @@ import { createRouter, createWebHistory } from 'vue-router'
 import store from '@/store'
 
 const routes = [
-  //Test Vue Manager
+  //Vue Applications Manager
   {
     path: '/',
-    name: 'homeTVmanager',
-    component: () => import('@/views/tvmanager/HomeView.vue'),
+    name: 'homeAppsManager',
+    component: () => import('@/views/appsmanager/HomeView.vue'),
     meta: {
-      layout: 'mainTVmanager',
+      layout: 'mainAppsManager',
     },
   },
   {
     path: '/:NotFound(.*)*',
     name: 'notFound',
-    component: () => import('@/views/tvmanager/NotFoundView.vue'),
+    component: () => import('@/views/appsmanager/NotFoundView.vue'),
     meta: {
       auth: false,
-      layout: 'mainTVmanager',
+      layout: 'mainAppsManager',
     },
   },
   {
-    path: '/tvmanager/search',
-    name: 'searchTVmanager',
-    component: () => import('@/views/tvmanager/SearchView.vue'),
+    path: '/apps_manager/search',
+    name: 'searchAppsManager',
+    component: () => import('@/views/appsmanager/SearchView.vue'),
     meta: {
-      layout: 'mainTVmanager',
+      layout: 'mainAppsManager',
     },
   },
   //Taberna

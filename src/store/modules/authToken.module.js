@@ -27,10 +27,10 @@ export default {
           ...payload,
         })
         commit('setToken', data.auth_token)
-        commit('clearMessage', null, { root: true })
+        commit('alert/clearMessage', null, { root: true })
       } catch (e) {
         dispatch(
-          'setMessage',
+          'alert/setMessage',
           {
             value: error(e.response.data),
             type: 'error',
@@ -55,7 +55,7 @@ export default {
         .catch((error) => {
           if (error.response) {
             dispatch(
-              'setMessage',
+              'alert/setMessage',
               {
                 value: error(error.response.data),
                 type: 'error',
@@ -64,7 +64,7 @@ export default {
             )
           } else {
             dispatch(
-              'setMessage',
+              'alert/setMessage',
               {
                 value: ['Something went wrong. Please try again'],
                 type: 'error',
@@ -84,7 +84,7 @@ export default {
           await axios.post(url, { ...payload })
         }
         dispatch(
-          'setMessage',
+          'alert/setMessage',
           {
             value: [
               `Thank you for registering with us. We have sent you a verification email to your email address [${payload.email}]`,
@@ -95,7 +95,7 @@ export default {
         )
       } catch (e) {
         dispatch(
-          'setMessage',
+          'alert/setMessage',
           {
             value: error(e.response.data),
             type: 'error',

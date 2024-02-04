@@ -16,13 +16,13 @@
           ></v-text-field>
           <v-text-field
             v-model.trim="state.password"
-            :type="showPassword ? 'text' : 'password'"
+            :type="state.showPassword ? 'text' : 'password'"
             clearable
             label="Password"
             placeholder="Enter your password"
             prepend-icon="mdi-lock"
-            :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-            @click:append-inner="showPassword = !showPassword"
+            :append-inner-icon="state.showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+            @click:append-inner="state.showPassword = !state.showPassword"
             :error-messages="v$.password.$errors.map((e) => e.$message)"
           ></v-text-field>
           <v-divider></v-divider>
@@ -51,19 +51,22 @@ export default {
   setup() {
     const route = useRoute()
     const store = useStore()
+    const state = reactive({
+      email: '',
+      password: '',
+      showPassword: false,
+    })
+
+    const rules = {
+      email: { required, email },
+      password: { required, minLength: minLength(6) },
+    }
+
     if (route.query.message) {
       store.dispatch('alert/setMessage', {
         value: ['Please login'],
         type: 'warning',
       })
-    }
-    const state = reactive({
-      email: '',
-      password: '',
-    })
-    const rules = {
-      email: { required, email },
-      password: { required, minLength: minLength(6) },
     }
 
     const v$ = useVuelidate(rules, state)
@@ -79,9 +82,6 @@ export default {
           await store.dispatch('authJWT/login', formData)
           await store.dispatch('socialUserData/getUserData')
           router.push('/social/home')
-          setInterval(async () => {
-            await store.dispatch('authJWT/refreshToken')
-          }, 5 * 60 * 1000) // 5 minutes
         } catch (e) {
           return
         }
@@ -91,8 +91,5 @@ export default {
 
     return { state, v$, loginHandler }
   },
-  data: () => ({
-    showPassword: false,
-  }),
 }
 </script>

@@ -76,13 +76,17 @@ export default {
     },
     async register({ dispatch }, payload) {
       try {
-        const url = '/api/v1/authusers/'
+        let url = '/api/v1/authusers/'
         const socialProfileUrl = '/api/social-profiles/register/'
-        if (payload.registration_source) {
-          await axios.post(socialProfileUrl, { ...payload })
-        } else {
-          await axios.post(url, { ...payload })
+
+        switch (payload.registration_source) {
+          case 'social_network':
+            url = socialProfileUrl
+            break
+          default:
+            break
         }
+        await axios.post(url, { ...payload })
         dispatch(
           'alert/setMessage',
           {

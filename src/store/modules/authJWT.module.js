@@ -28,7 +28,7 @@ const actions = {
           const refreshToken = response.data.refresh
           localStorage.setItem('access', token)
           localStorage.setItem('refresh', refreshToken)
-          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+
           commit('authSuccess', token)
           commit('updateRefreshToken', refreshToken)
           commit('alert/clearMessage', null, { root: true })

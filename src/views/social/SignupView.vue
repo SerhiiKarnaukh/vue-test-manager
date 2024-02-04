@@ -37,24 +37,24 @@
           ></v-text-field>
           <v-text-field
             v-model.trim="state.password"
-            :type="showPassword ? 'text' : 'password'"
+            :type="state.showPassword ? 'text' : 'password'"
             clearable
             label="Password"
             placeholder="Enter your password"
             prepend-icon="mdi-lock"
-            :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-            @click:append-inner="showPassword = !showPassword"
+            :append-inner-icon="state.showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+            @click:append-inner="state.showPassword = !state.showPassword"
             :error-messages="v$.password.$errors.map((e) => e.$message)"
           ></v-text-field>
           <v-text-field
             v-model.trim="state.password2"
-            :type="showPassword ? 'text' : 'password'"
+            :type="state.showPassword ? 'text' : 'password'"
             clearable
             label="Repeat password"
             placeholder="Repeat your password"
             prepend-icon="mdi-lock"
-            :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-            @click:append-inner="showPassword = !showPassword"
+            :append-inner-icon="state.showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+            @click:append-inner="state.showPassword = !state.showPassword"
             :error-messages="v$.password2.$errors.map((e) => e.$message)"
           ></v-text-field>
           <v-divider></v-divider>
@@ -88,6 +88,7 @@ export default {
       email: '',
       password: '',
       password2: '',
+      showPassword: false,
     })
     const rules = {
       username: { required, minLength: minLength(3), maxLength: maxLength(50) },
@@ -131,7 +132,7 @@ export default {
             last_name: state.last_name,
             email: state.email,
             password: state.password,
-            registration_source: true,
+            registration_source: 'social_network',
           }
           try {
             await store.dispatch('authToken/register', formData)
@@ -146,8 +147,5 @@ export default {
 
     return { state, v$, registerHandler }
   },
-  data: () => ({
-    showPassword: false,
-  }),
 }
 </script>

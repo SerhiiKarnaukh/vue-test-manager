@@ -119,12 +119,12 @@ export default {
   mounted() {
     document.title = 'Checkout | Taberna'
     this.cart = this.$store.state.cart
-    if (this.cartTotalLength > 0) {
-      this.stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx')
-      const elements = this.stripe.elements()
-      this.card = elements.create('card', { hidePostalCode: true })
-      this.card.mount('#card-element')
-    }
+    // if (this.cartTotalLength > 0) {
+    //   this.stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx')
+    //   const elements = this.stripe.elements()
+    //   this.card = elements.create('card', { hidePostalCode: true })
+    //   this.card.mount('#card-element')
+    // }
   },
   methods: {
     getItemTotal(item) {

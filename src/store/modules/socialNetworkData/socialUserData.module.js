@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { encryptData, decryptData } from '@/utils/cryptoUtils'
+import router from '@/router'
 
 const state = () => ({
   user: {
@@ -54,12 +55,24 @@ const mutations = {
 }
 
 const actions = {
-  async getUserData({ commit }) {
+  async getUserData({ commit, dispatch }) {
     try {
       const response = await axios.get('/api/social-profiles/me/')
       commit('setUserInfo', response.data)
     } catch (error) {
-      console.error('error', error)
+      if (error.response && error.response.status === 404) {
+        router.push({ name: 'loginSocial' })
+        dispatch('authJWT/logout', null, { root: true })
+        dispatch(
+          'alert/setMessage',
+          {
+            value: [error.response.data.message],
+            type: 'error',
+          },
+          { root: true }
+        )
+        return Promise.reject(error)
+      }
     }
   },
 }

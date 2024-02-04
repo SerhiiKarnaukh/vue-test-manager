@@ -180,14 +180,6 @@ export default {
           ? 'CustomLightTheme'
           : 'dark'),
       logout: () => {
-        const intervalIds = Object.keys(window).filter((key) =>
-          key.startsWith('intervalId')
-        )
-        console.log(intervalIds)
-        intervalIds.forEach((id) => {
-          clearInterval(window[id])
-        })
-
         store.dispatch('authJWT/logout')
         store.commit('socialUserData/initSocial')
         router.push('/social/login')

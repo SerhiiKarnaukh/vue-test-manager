@@ -1,5 +1,6 @@
 <template>
   <v-card class="mb-6 pa-4 rounded-lg" elevation="2">
+    <app-message />
     <v-row align="center">
       <v-col cols="auto">
         <v-avatar size="50">
@@ -29,8 +30,8 @@
         class="mt-4"
         src="https://images.unsplash.com/photo-1661956602868-6ae368943878?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2670&q=80"
         rounded
-      ></v-img
-    ></v-card-text>
+      ></v-img>
+    </v-card-text>
     <v-card-actions>
       <v-row align="center">
         <v-col cols="auto">
@@ -49,16 +50,6 @@
         </v-col>
       </v-row>
     </v-card-actions>
-    <v-dialog v-model="showModal" max-width="500">
-      <v-card>
-        <v-card-text>
-          <app-message />
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" @click="showModal = false">OK</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-card>
 </template>
 
@@ -77,7 +68,6 @@ export default {
   data() {
     return {
       likesCount: this.post.likes_count,
-      showModal: false,
     }
   },
   methods: {
@@ -95,10 +85,6 @@ export default {
             value: ['You must be logged in!'],
             type: 'error',
           })
-          this.showModal = true
-          setTimeout(() => {
-            this.showModal = false
-          }, 5000)
         })
     },
   },

@@ -18,7 +18,7 @@
             <v-form @submit.prevent="submitForm" method="post">
               <v-card-text class="p-4">
                 <v-textarea
-                  v-model.trim="body"
+                  v-model.trim="state.body"
                   class="p-4 w-full rounded-lg"
                   placeholder="What do you think?"
                   color="grey lighten-3"
@@ -45,11 +45,14 @@
 </template>
 
 <script>
-import axios from 'axios'
 import ThePeopleYouMayKnow from '@/components/social/ThePeopleYouMayKnow.vue'
 import TheTrends from '@/components/social/TheTrends.vue'
 import TheSocialPostCard from '@/components/social/TheSocialPostCard.vue'
 import TheCommentItem from '@/components/social/TheCommentItem.vue'
+import { reactive, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
+
 export default {
   name: 'PostView',
   components: {
@@ -58,42 +61,38 @@ export default {
     TheSocialPostCard,
     TheCommentItem,
   },
-  data() {
-    return {
-      post: {},
+  setup() {
+    const route = useRoute()
+    const store = useStore()
+    const state = reactive({
       body: '',
-    }
-  },
-  mounted() {
-    document.title = 'Post | Social Network'
-    this.getPost()
-  },
-  methods: {
-    getPost() {
-      axios
-        .get(`/api/social-posts/${this.$route.params.id}/`)
-        .then((response) => {
-          this.post = response.data.post
-        })
-        .catch((error) => {
-          console.log('error', error)
-        })
-    },
+    })
 
-    submitForm() {
-      axios
-        .post(`/api/social-posts/${this.$route.params.id}/comment/`, {
-          body: this.body,
-        })
-        .then((response) => {
-          this.post.comments.push(response.data)
-          this.post.comments_count += 1
-          this.body = ''
-        })
-        .catch((error) => {
-          console.log('error', error)
-        })
-    },
+    const post = computed(() => {
+      return store.getters['socialPostData/post']
+    })
+
+    const submitForm = async () => {
+      const payload = {
+        postId: route.params.id,
+        commentBody: state.body,
+      }
+      if (state.body !== '') {
+        await store.dispatch('socialPostData/submitPostCommentForm', payload)
+        state.body = ''
+      }
+    }
+
+    onMounted(async () => {
+      document.title = 'Post | Social Network'
+      await store.dispatch('socialPostData/getPostData', route.params.id)
+    })
+
+    return {
+      state,
+      post,
+      submitForm,
+    }
   },
 }
 </script>

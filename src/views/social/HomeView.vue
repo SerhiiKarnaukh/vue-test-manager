@@ -12,7 +12,7 @@
             <v-form @submit.prevent="submitForm" method="post">
               <v-card-text class="p-4">
                 <v-textarea
-                  v-model.trim="body"
+                  v-model.trim="state.body"
                   class="p-4 w-full rounded-lg"
                   placeholder="What are you thinking about?"
                   color="grey lighten-3"
@@ -40,7 +40,7 @@
           </div>
           <div v-if="$store.state.authJWT.accessToken">
             <TheSocialPostCard
-              v-for="post in friends_posts"
+              v-for="post in friendsPostList"
               :key="post.id"
               v-bind:post="post"
             />
@@ -57,53 +57,50 @@
 </template>
 
 <script>
-import axios from 'axios'
 import ThePeopleYouMayKnow from '@/components/social/ThePeopleYouMayKnow.vue'
 import TheTrends from '@/components/social/TheTrends.vue'
 import TheSocialPostCard from '@/components/social/TheSocialPostCard.vue'
+import { reactive, onMounted, computed } from 'vue'
+import { useStore } from 'vuex'
+
 export default {
   components: {
     ThePeopleYouMayKnow,
     TheTrends,
     TheSocialPostCard,
   },
-  data() {
-    return {
-      posts: [],
-      friends_posts: [],
+  setup() {
+    const store = useStore()
+    const state = reactive({
       body: '',
-    }
-  },
-  mounted() {
-    document.title = 'Home | Social Network'
-    this.getFeed()
-  },
-  methods: {
-    getFeed() {
-      axios
-        .get('/api/social-posts/')
-        .then((response) => {
-          this.posts = response.data.posts
-          this.friends_posts = response.data.friends_posts
-        })
-        .catch((error) => {
-          console.log('error', error)
-        })
-    },
+    })
 
-    submitForm() {
-      axios
-        .post('/api/social-posts/create/', {
-          body: this.body,
-        })
-        .then((response) => {
-          this.posts.unshift(response.data)
-          this.body = ''
-        })
-        .catch((error) => {
-          console.log('error', error)
-        })
-    },
+    const posts = computed(() => {
+      return store.getters['socialPostData/postList']
+    })
+
+    const friendsPostList = computed(() => {
+      return store.getters['socialPostData/friendsPostList']
+    })
+
+    const submitForm = async () => {
+      if (state.body !== '') {
+        await store.dispatch('socialPostData/submitPostForm', state.body)
+        state.body = ''
+      }
+    }
+
+    onMounted(async () => {
+      document.title = 'Home | Social Network'
+      await store.dispatch('socialPostData/getFeed')
+    })
+
+    return {
+      state,
+      posts,
+      friendsPostList,
+      submitForm,
+    }
   },
 }
 </script>

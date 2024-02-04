@@ -3,6 +3,7 @@ import authToken from './modules/authToken.module'
 import authJWT from './modules/authJWT.module'
 import alert from './modules/alert.module'
 import socialUserData from './modules/socialNetworkData/socialUserData.module'
+import socialPostData from './modules/socialNetworkData/socialPostData.module'
 const plugins = []
 
 if (process.env.NODE_ENV === 'development') {
@@ -51,6 +52,7 @@ export default createStore({
     authJWT,
     alert,
     socialUserData,
+    socialPostData,
   },
   getters: {},
 })

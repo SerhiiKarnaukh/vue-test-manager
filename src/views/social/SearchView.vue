@@ -13,7 +13,7 @@
                       placeholder="What are you looking for?"
                       outlined
                       dense
-                      v-model.trim="query"
+                      v-model.trim="state.query"
                       type="search"
                       required
                     ></v-text-field>
@@ -94,40 +94,46 @@
 </template>
 
 <script>
-import axios from 'axios'
 import ThePeopleYouMayKnow from '@/components/social/ThePeopleYouMayKnow.vue'
 import TheTrends from '@/components/social/TheTrends.vue'
 import TheSocialPostCard from '@/components/social/TheSocialPostCard.vue'
+import { reactive, onMounted, computed } from 'vue'
+import { useStore } from 'vuex'
+
 export default {
   components: {
     ThePeopleYouMayKnow,
     TheTrends,
     TheSocialPostCard,
   },
-  data() {
-    return {
+  setup() {
+    const store = useStore()
+    const state = reactive({
       query: '',
-      profiles: [],
-      posts: [],
+    })
+
+    const posts = computed(() => {
+      return store.getters['socialPostData/searchPosts']
+    })
+
+    const profiles = computed(() => {
+      return store.getters['socialPostData/searchProfiles']
+    })
+
+    const submitForm = async () => {
+      await store.dispatch('socialPostData/search', state.query)
     }
-  },
-  mounted() {
-    document.title = 'Search | Social Network'
-  },
-  methods: {
-    submitForm() {
-      axios
-        .post('/api/social-posts/search/', {
-          query: this.query,
-        })
-        .then((response) => {
-          this.profiles = response.data.profiles
-          this.posts = response.data.posts
-        })
-        .catch((error) => {
-          console.log('error:', error)
-        })
-    },
+
+    onMounted(async () => {
+      await store.dispatch('setPageTitle', 'Search')
+    })
+
+    return {
+      state,
+      posts,
+      profiles,
+      submitForm,
+    }
   },
 }
 </script>

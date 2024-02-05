@@ -6,6 +6,8 @@ const state = () => ({
   profilePostList: [],
   post: {},
   profile: {},
+  searchPosts: [],
+  searchProfiles: {},
 })
 
 const mutations = {
@@ -28,6 +30,11 @@ const mutations = {
   },
   setProfile(state, profile) {
     state.profile = profile
+  },
+  setSearchData(state, searchData) {
+    const { searchPosts, searchProfiles } = searchData
+    state.searchPosts = searchPosts
+    state.searchProfiles = searchProfiles
   },
 }
 
@@ -85,6 +92,20 @@ const actions = {
       console.log('error', error)
     }
   },
+  async search({ commit }, query) {
+    try {
+      const response = await axios.post('/api/social-posts/search/', {
+        query: query,
+      })
+      const payload = {
+        searchPosts: response.data.posts,
+        searchProfiles: response.data.profiles,
+      }
+      commit('setSearchData', payload)
+    } catch (error) {
+      console.log('error', error)
+    }
+  },
 }
 
 const getters = {
@@ -93,6 +114,8 @@ const getters = {
   profilePostList: (state) => state.profilePostList,
   post: (state) => state.post,
   profile: (state) => state.profile,
+  searchPosts: (state) => state.searchPosts,
+  searchProfiles: (state) => state.searchProfiles,
 }
 
 export default {

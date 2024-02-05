@@ -170,7 +170,7 @@ export default {
     const router = useRouter()
     const store = useStore()
     const avatarUrl = computed(
-      () => store.getters['socialUserData/user'].avatar_url
+      () => store.getters['socialProfileData/user'].avatar_url
     )
 
     return {
@@ -181,7 +181,7 @@ export default {
           : 'dark'),
       logout: () => {
         store.dispatch('authJWT/logout')
-        store.commit('socialUserData/initSocial')
+        store.commit('socialProfileData/initSocial')
         router.push('/social/login')
       },
       avatarUrl,
@@ -209,7 +209,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('socialUserData', {
+    ...mapGetters('socialProfileData', {
       userSlug: 'userSlug',
     }),
   },

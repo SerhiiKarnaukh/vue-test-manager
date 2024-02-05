@@ -4,7 +4,6 @@
       <v-card-title class="mb-6">
         <h2 class="text-md-h3 font-weight-medium">Edit Profile</h2>
       </v-card-title>
-      <app-message />
       <v-card-text>
         <v-form @submit.prevent="submitForm">
           <v-text-field
@@ -53,7 +52,6 @@
   </v-main>
 </template>
 <script>
-import AppMessage from '@/components/ui/AppMessage.vue'
 import axios from 'axios'
 import { reactive } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
@@ -61,16 +59,15 @@ import { required, email, minLength } from '@vuelidate/validators'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 export default {
-  components: { AppMessage },
   setup() {
     const router = useRouter()
     const store = useStore()
 
     const state = reactive({
-      username: store.getters['socialUserData/user'].username,
-      first_name: store.getters['socialUserData/user'].first_name,
-      last_name: store.getters['socialUserData/user'].last_name,
-      email: store.getters['socialUserData/user'].email,
+      username: store.getters['socialProfileData/user'].username,
+      first_name: store.getters['socialProfileData/user'].first_name,
+      last_name: store.getters['socialProfileData/user'].last_name,
+      email: store.getters['socialProfileData/user'].email,
       avatar: null,
     })
     const rules = {
@@ -108,7 +105,7 @@ export default {
               })
               const fullName = state.first_name + ' ' + state.last_name
               const userData = {
-                id: store.getters['socialUserData/userId'],
+                id: store.getters['socialProfileData/userId'],
                 username: state.username,
                 first_name: state.first_name,
                 last_name: state.last_name,
@@ -117,7 +114,7 @@ export default {
                 full_name: fullName,
                 avatar_url: response.data.new_avatar,
               }
-              store.commit('socialUserData/setUserInfo', userData)
+              store.commit('socialProfileData/setUserInfo', userData)
               router.push({
                 name: 'profileSocial',
                 params: {

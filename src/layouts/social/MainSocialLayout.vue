@@ -16,7 +16,8 @@ export default {
     const store = useStore()
 
     onBeforeMount(async () => {
-      store.commit('socialUserData/initSocial')
+      store.commit('setAppName', 'Social Network')
+      store.commit('socialProfileData/initSocial')
     })
   },
 }

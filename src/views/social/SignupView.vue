@@ -4,7 +4,6 @@
       <v-card-title class="mb-6">
         <h2 class="text-md-h3 font-weight-medium">Create an account</h2>
       </v-card-title>
-      <app-message />
       <v-card-text>
         <v-form @submit.prevent="registerHandler">
           <v-text-field
@@ -71,14 +70,12 @@
   </v-main>
 </template>
 <script>
-import AppMessage from '@/components/ui/AppMessage.vue'
 import { reactive } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, minLength, maxLength } from '@vuelidate/validators'
 import router from '@/router'
 import { useStore } from 'vuex'
 export default {
-  components: { AppMessage },
   setup() {
     const store = useStore()
     const state = reactive({

@@ -4,7 +4,6 @@
       <v-card-title class="mb-6">
         <h1>Login</h1>
       </v-card-title>
-      <app-message />
       <v-card-text>
         <v-form @submit.prevent="loginHandler">
           <v-text-field
@@ -39,7 +38,6 @@
   </v-main>
 </template>
 <script>
-import AppMessage from '@/components/ui/AppMessage.vue'
 import { reactive } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, minLength } from '@vuelidate/validators'
@@ -47,7 +45,6 @@ import router from '@/router'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 export default {
-  components: { AppMessage },
   setup() {
     const route = useRoute()
     const store = useStore()
@@ -80,7 +77,7 @@ export default {
         }
         try {
           await store.dispatch('authJWT/login', formData)
-          await store.dispatch('socialUserData/getUserData')
+          await store.dispatch('socialProfileData/getUserData')
           router.push('/social/home')
         } catch (e) {
           return

@@ -102,7 +102,7 @@ export default {
     this.getConversations()
   },
   computed: {
-    ...mapGetters('socialUserData', {
+    ...mapGetters('socialProfileData', {
       userId: 'userId',
     }),
   },

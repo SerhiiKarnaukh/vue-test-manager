@@ -1,6 +1,5 @@
 <template>
   <v-card class="mb-6 pa-4 rounded-lg" elevation="2">
-    <app-message />
     <v-row align="center">
       <v-col cols="auto">
         <v-avatar size="50">
@@ -55,15 +54,11 @@
 
 <script>
 import axios from 'axios'
-import AppMessage from '@/components/ui/AppMessage.vue'
 import store from '@/store'
 export default {
   name: 'TheSocialPostCard',
   props: {
     post: Object,
-  },
-  components: {
-    AppMessage,
   },
   data() {
     return {

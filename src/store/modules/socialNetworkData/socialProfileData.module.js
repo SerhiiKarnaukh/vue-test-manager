@@ -75,6 +75,42 @@ const actions = {
       }
     }
   },
+  async sendFriendshipRequest({ dispatch }, userSlug) {
+    try {
+      const response = await axios.post(
+        `/api/social-profiles/friends/${userSlug}/request/`
+      )
+      if (response.data.message == 'request already sent') {
+        dispatch(
+          'alert/setMessage',
+          {
+            value: ['The request has already been sent!'],
+            type: 'error',
+          },
+          { root: true }
+        )
+      } else {
+        dispatch(
+          'alert/setMessage',
+          {
+            value: ['The request was sent!'],
+            type: 'success',
+          },
+          { root: true }
+        )
+      }
+    } catch (error) {
+      console.log('error', error)
+      dispatch(
+        'alert/setMessage',
+        {
+          value: ['You must be logged in!'],
+          type: 'error',
+        },
+        { root: true }
+      )
+    }
+  },
 }
 
 const getters = {

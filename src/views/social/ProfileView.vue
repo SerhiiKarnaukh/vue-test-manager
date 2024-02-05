@@ -33,7 +33,7 @@
                 </v-col>
               </v-row>
               <v-btn
-                v-if="$store.state.socialUserData.user.id != profile.id"
+                v-if="$store.state.socialProfileData.user.id != profile.id"
                 @click="sendFriendshipRequest"
                 color="primary"
                 class="mx-auto mt-4"
@@ -41,7 +41,7 @@
                 Add as Friend
               </v-btn>
               <v-btn
-                v-if="$store.state.socialUserData.user.id != profile.id"
+                v-if="$store.state.socialProfileData.user.id != profile.id"
                 @click="sendMessage"
                 color="social"
                 class="mx-auto mt-4"
@@ -49,7 +49,7 @@
                 Send Message
               </v-btn>
               <v-btn
-                v-if="$store.state.socialUserData.user.id == profile.id"
+                v-if="$store.state.socialProfileData.user.id == profile.id"
                 to="/social/profile/edit"
                 color="social"
                 class="mx-auto mt-4"
@@ -60,9 +60,8 @@
           </v-card>
         </v-col>
         <v-col cols="12" md="5" lg="6" class="px-4">
-          <app-message />
           <v-card
-            v-if="$store.state.socialUserData.user.id == profile.id"
+            v-if="$store.state.socialProfileData.user.id == profile.id"
             class="rounded-lg mb-6"
             color="white"
             elevation="2"
@@ -70,7 +69,7 @@
             <v-form @submit.prevent="submitForm" method="post">
               <v-card-text class="p-4">
                 <v-textarea
-                  v-model.trim="body"
+                  v-model.trim="state.body"
                   class="p-4 w-full rounded-lg"
                   placeholder="What are you thinking about?"
                   color="grey lighten-3"
@@ -106,108 +105,87 @@
 </template>
 
 <script>
-import axios from 'axios'
-import AppMessage from '@/components/ui/AppMessage.vue'
 import ThePeopleYouMayKnow from '@/components/social/ThePeopleYouMayKnow.vue'
 import TheTrends from '@/components/social/TheTrends.vue'
 import TheSocialPostCard from '@/components/social/TheSocialPostCard.vue'
-import store from '@/store'
+import { reactive, onMounted, watch, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
+import router from '@/router'
+
 export default {
   components: {
     ThePeopleYouMayKnow,
     TheTrends,
     TheSocialPostCard,
-    AppMessage,
   },
-  data() {
-    return {
-      posts: [],
-      profile: {},
+  setup() {
+    const route = useRoute()
+    const store = useStore()
+    const state = reactive({
       body: '',
-    }
-  },
-  mounted() {
-    document.title = 'Profile | Social Network'
-    this.getFeed()
-  },
-  methods: {
-    sendMessage() {
-      axios
-        .get(`/api/social-chat/${this.$route.params.slug}/get-or-create/`)
-        .then((response) => {
-          console.log(response.data)
+    })
 
-          this.$router.push('/social/chat')
-        })
-        .catch((error) => {
-          console.log('error', error)
-          store.dispatch('alert/setMessage', {
-            value: ['You must be logged in!'],
-            type: 'error',
-          })
-        })
-    },
-    sendFriendshipRequest() {
-      axios
-        .post(
-          `/api/social-profiles/friends/${this.$route.params.slug}/request/`
+    const posts = computed(() => {
+      return store.getters['socialPostData/profilePostList']
+    })
+
+    const profile = computed(() => {
+      return store.getters['socialPostData/profile']
+    })
+
+    const sendMessage = async () => {
+      try {
+        await store.dispatch(
+          'socialChatData/getOrCreateChat',
+          route.params.slug
         )
-        .then((response) => {
-          console.log('data', response.data)
-          if (response.data.message == 'request already sent') {
-            store.dispatch('alert/setMessage', {
-              value: ['The request has already been sent!'],
-              type: 'error',
-            })
-          } else {
-            store.dispatch('alert/setMessage', {
-              value: ['The request was sent!'],
-              type: 'success',
-            })
-          }
-        })
-        .catch((error) => {
-          console.log('error', error)
-          store.dispatch('alert/setMessage', {
-            value: ['You must be logged in!'],
-            type: 'error',
-          })
-        })
-    },
-    getFeed() {
-      const slug = this.$route.params.slug
-      if (slug) {
-        axios
-          .get(`/api/social-posts/profile/${slug}/`)
-          .then((response) => {
-            this.posts = response.data.posts
-            this.profile = response.data.profile
-          })
-          .catch((error) => {
-            console.log('error', error)
-          })
+        router.push('/social/chat')
+      } catch (error) {
+        console.log(error)
       }
-    },
+    }
 
-    submitForm() {
-      axios
-        .post('/api/social-posts/create/', {
-          body: this.body,
-        })
-        .then((response) => {
-          this.posts.unshift(response.data)
-          this.body = ''
-          this.profile.posts_count += 1
-        })
-        .catch((error) => {
-          console.log('error', error)
-        })
-    },
-  },
-  watch: {
-    '$route.params.slug': function () {
-      this.getFeed()
-    },
+    const sendFriendshipRequest = async () => {
+      await store.dispatch(
+        'socialProfileData/sendFriendshipRequest',
+        route.params.slug
+      )
+    }
+
+    const submitForm = async () => {
+      if (state.body !== '') {
+        await store.dispatch('socialPostData/submitPostForm', state.body)
+        state.body = ''
+      }
+    }
+
+    onMounted(async () => {
+      await store.dispatch(
+        'socialPostData/getProfilePostList',
+        route.params.slug
+      )
+      await store.dispatch('setPageTitle', profile.value.full_name)
+    })
+
+    watch(
+      () => route.params.slug,
+      async () => {
+        await store.dispatch(
+          'socialPostData/getProfilePostList',
+          route.params.slug
+        )
+      }
+    )
+
+    return {
+      state,
+      posts,
+      profile,
+      sendMessage,
+      sendFriendshipRequest,
+      submitForm,
+    }
   },
 }
 </script>

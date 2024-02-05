@@ -84,7 +84,7 @@ export default {
     }
 
     onMounted(async () => {
-      document.title = 'Post | Social Network'
+      await store.dispatch('setPageTitle', 'Post')
       await store.dispatch('socialPostData/getPostData', route.params.id)
     })
 

@@ -3,18 +3,31 @@ import axios from 'axios'
 const state = () => ({
   postList: [],
   friendsPostList: [],
+  profilePostList: [],
   post: {},
+  profile: {},
 })
 
 const mutations = {
   setPostList(state, postList) {
     state.postList = postList
   },
+  setPostToAllList(state, post) {
+    state.profilePostList.unshift(post)
+    state.postList.unshift(post)
+    state.friendsPostList.unshift(post)
+  },
   setFriendsPostList(state, friendsPostList) {
     state.friendsPostList = friendsPostList
   },
+  setProfilePostList(state, profilePostList) {
+    state.profilePostList = profilePostList
+  },
   setPostData(state, post) {
     state.post = post
+  },
+  setProfile(state, profile) {
+    state.profile = profile
   },
 }
 
@@ -28,12 +41,12 @@ const actions = {
       console.log('error', error)
     }
   },
-  async submitPostForm({ dispatch }, post) {
+  async submitPostForm({ commit }, post) {
     try {
-      await axios.post('/api/social-posts/create/', {
+      const response = await axios.post('/api/social-posts/create/', {
         body: post,
       })
-      await dispatch('getFeed')
+      commit('setPostToAllList', response.data)
     } catch (error) {
       console.log('error', error)
     }
@@ -42,6 +55,17 @@ const actions = {
     try {
       const response = await axios.get(`/api/social-posts/${postId}/`)
       commit('setPostData', response.data.post)
+    } catch (error) {
+      console.log('error', error)
+    }
+  },
+  async getProfilePostList({ commit }, profileSlug) {
+    try {
+      const response = await axios.get(
+        `/api/social-posts/profile/${profileSlug}/`
+      )
+      commit('setProfilePostList', response.data.posts)
+      commit('setProfile', response.data.profile)
     } catch (error) {
       console.log('error', error)
     }
@@ -66,7 +90,9 @@ const actions = {
 const getters = {
   postList: (state) => state.postList,
   friendsPostList: (state) => state.friendsPostList,
+  profilePostList: (state) => state.profilePostList,
   post: (state) => state.post,
+  profile: (state) => state.profile,
 }
 
 export default {

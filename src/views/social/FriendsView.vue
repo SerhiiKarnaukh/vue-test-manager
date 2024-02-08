@@ -195,52 +195,54 @@
 </template>
 
 <script>
-import axios from 'axios'
 import ThePeopleYouMayKnow from '@/components/social/ThePeopleYouMayKnow.vue'
 import TheTrends from '@/components/social/TheTrends.vue'
+import { onMounted, computed } from 'vue'
+import { useStore } from 'vuex'
+import { useRoute } from 'vue-router'
+
 export default {
   name: 'FriendsView',
   components: {
     ThePeopleYouMayKnow,
     TheTrends,
   },
-  data() {
-    return {
-      profile: {},
-      friendshipRequests: [],
-      friends: [],
+  setup() {
+    const route = useRoute()
+    const store = useStore()
+
+    const profile = computed(() => {
+      return store.getters['socialProfileData/currentProfile']
+    })
+    const friendshipRequests = computed(() => {
+      return store.getters['socialProfileData/friendshipRequests']
+    })
+    const friends = computed(() => {
+      return store.getters['socialProfileData/currentProfileFriends']
+    })
+
+    const handleRequest = async (status, slug) => {
+      const payload = {
+        status: status,
+        slug: slug,
+      }
+      await store.dispatch('socialProfileData/handleFriendshipRequest', payload)
     }
-  },
-  mounted() {
-    this.getFriends()
-    document.title = 'Friends | Social Network'
-  },
-  methods: {
-    getFriends() {
-      axios
-        .get(`/api/social-profiles/friends/${this.$route.params.slug}/`)
-        .then((response) => {
-          this.friendshipRequests = response.data.requests
-          this.friends = response.data.friends
-          this.profile = response.data.user
-        })
-        .catch((error) => {
-          console.log('error', error)
-        })
-    },
 
-    handleRequest(status, slug) {
-      console.log('handleRequest', status)
+    onMounted(async () => {
+      await store.dispatch('setPageTitle', 'Friends')
+      await store.dispatch(
+        'socialProfileData/getCurrentProfileFriendsData',
+        route.params.slug
+      )
+    })
 
-      axios
-        .post(`/api/social-profiles/friends/${slug}/${status}/`)
-        .then((response) => {
-          console.log('data', response.data)
-        })
-        .catch((error) => {
-          console.log('error', error)
-        })
-    },
+    return {
+      profile,
+      friendshipRequests,
+      friends,
+      handleRequest,
+    }
   },
 }
 </script>

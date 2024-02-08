@@ -121,10 +121,17 @@ export default {
     })
 
     const submitForm = async () => {
-      await store.dispatch('socialPostData/search', state.query)
+      if (state.query !== '') {
+        await store.dispatch('socialPostData/search', state.query)
+      }
     }
 
     onMounted(async () => {
+      const payload = {
+        searchPosts: [],
+        searchProfiles: [],
+      }
+      store.commit('socialPostData/setSearchData', payload)
       await store.dispatch('setPageTitle', 'Search')
     })
 

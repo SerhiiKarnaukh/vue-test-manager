@@ -3,7 +3,7 @@
     <v-app-bar color="social">
       <v-app-bar-nav-icon
         variant="text"
-        @click.stop="drawer = !drawer"
+        @click.stop="state.drawer = !state.drawer"
         class="d-sm-flex d-md-none"
       ></v-app-bar-nav-icon>
       <router-link to="/social/home" style="text-decoration: none">
@@ -91,7 +91,7 @@
         </div>
       </div>
     </v-app-bar>
-    <v-navigation-drawer temporary v-model="drawer" location="left">
+    <v-navigation-drawer temporary v-model="state.drawer" location="left">
       <v-list>
         <v-menu>
           <template v-slot:activator="{ props }">
@@ -162,34 +162,24 @@
 <script>
 import { useTheme } from 'vuetify'
 import { useRouter } from 'vue-router'
-import { useStore, mapGetters } from 'vuex'
-import { computed } from 'vue'
+import { useStore } from 'vuex'
+import { computed, reactive } from 'vue'
 export default {
   setup() {
     const theme = useTheme()
     const router = useRouter()
     const store = useStore()
+    const state = reactive({
+      drawer: false,
+    })
+
     const avatarUrl = computed(
       () => store.getters['socialProfileData/user'].avatar_url
     )
 
-    return {
-      theme,
-      toggleTheme: () =>
-        (theme.global.name.value = theme.global.current.value.dark
-          ? 'CustomLightTheme'
-          : 'dark'),
-      logout: () => {
-        store.dispatch('authJWT/logout')
-        store.commit('socialProfileData/initSocial')
-        router.push('/social/login')
-      },
-      avatarUrl,
-    }
-  },
-  data: () => ({
-    drawer: false,
-    links: [
+    const userSlug = computed(() => store.getters['socialProfileData/userSlug'])
+
+    const links = [
       {
         icon: 'login',
         label: 'Login',
@@ -200,18 +190,30 @@ export default {
         label: 'Signup',
         url: '/social/signup',
       },
-    ],
-    remoteHost: import.meta.env.VITE_REMOTE_HOST,
-  }),
-  watch: {
-    $route() {
-      this.drawer = false
-    },
-  },
-  computed: {
-    ...mapGetters('socialProfileData', {
-      userSlug: 'userSlug',
-    }),
+    ]
+
+    const toggleTheme = () => {
+      return (theme.global.name.value = theme.global.current.value.dark
+        ? 'CustomLightTheme'
+        : 'dark')
+    }
+
+    const logout = () => {
+      store.dispatch('authJWT/logout')
+      store.commit('socialProfileData/initSocial')
+      router.push('/social/login')
+    }
+
+    return {
+      state,
+      theme,
+      remoteHost: import.meta.env.VITE_REMOTE_HOST,
+      avatarUrl,
+      links,
+      userSlug,
+      toggleTheme,
+      logout,
+    }
   },
 }
 </script>

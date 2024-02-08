@@ -13,6 +13,9 @@ const state = () => ({
     full_name: null,
     avatar_url: null,
   },
+  currentProfile: {},
+  friendshipRequests: [],
+  currentProfileFriends: [],
 })
 
 const mutations = {
@@ -47,10 +50,20 @@ const mutations = {
         full_name: false,
         avatar_url: false,
       }
+      state.currentProfile = {}
+      state.friendshipRequests = []
+      state.currentProfileFriends = []
+
       Object.keys(state.user).forEach((key) =>
         localStorage.removeItem(`user.${key}`)
       )
     }
+  },
+  setCurrentProfileFriendsData(state, payload) {
+    const { requests, friends, user } = payload
+    state.friendshipRequests = requests
+    state.currentProfileFriends = friends
+    state.currentProfile = user
   },
 }
 
@@ -111,12 +124,37 @@ const actions = {
       )
     }
   },
+  async getCurrentProfileFriendsData({ commit }, userSlug) {
+    try {
+      const response = await axios.get(
+        `/api/social-profiles/friends/${userSlug}/`
+      )
+      commit('setCurrentProfileFriendsData', response.data)
+    } catch (error) {
+      console.log('error', error)
+    }
+  },
+  async handleFriendshipRequest({ state, dispatch }, payload) {
+    try {
+      const { status, slug } = payload
+      const response = await axios.post(
+        `/api/social-profiles/friends/${slug}/${status}/`
+      )
+      console.log('data', response.data)
+      dispatch('getCurrentProfileFriendsData', state.user.slug)
+    } catch (error) {
+      console.log('error', error)
+    }
+  },
 }
 
 const getters = {
   userSlug: (state) => state.user.slug,
   userId: (state) => state.user.id,
   user: (state) => state.user,
+  currentProfile: (state) => state.currentProfile,
+  friendshipRequests: (state) => state.friendshipRequests,
+  currentProfileFriends: (state) => state.currentProfileFriends,
 }
 
 export default {

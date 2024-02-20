@@ -8,9 +8,22 @@ const state = () => ({
   profile: {},
   searchPosts: [],
   searchProfiles: {},
+  trends: [],
+  trendPosts: [],
 })
 
 const mutations = {
+  clearPostData(state) {
+    state.postList = []
+    state.friendsPostList = []
+    state.profilePostList = []
+    state.post = {}
+    state.profile = {}
+    state.searchPosts = []
+    state.searchProfiles = {}
+    state.trends = []
+    state.trendPosts = []
+  },
   setPostList(state, postList) {
     state.postList = postList
   },
@@ -36,6 +49,12 @@ const mutations = {
     state.searchPosts = searchPosts
     state.searchProfiles = searchProfiles
   },
+  setTrends(state, trends) {
+    state.trends = trends
+  },
+  setTrendPosts(state, posts) {
+    state.trendPosts = posts
+  },
 }
 
 const actions = {
@@ -48,12 +67,13 @@ const actions = {
       console.log('error', error)
     }
   },
-  async submitPostForm({ commit }, post) {
+  async submitPostForm({ state, commit }, post) {
     try {
       const response = await axios.post('/api/social-posts/create/', {
         body: post,
       })
       commit('setPostToAllList', response.data)
+      state.profile.posts_count += 1
     } catch (error) {
       console.log('error', error)
     }
@@ -106,6 +126,22 @@ const actions = {
       console.log('error', error)
     }
   },
+  async getTrends({ commit }) {
+    try {
+      const response = await axios.get('/api/social-posts/trends/')
+      commit('setTrends', response.data)
+    } catch (error) {
+      console.log('error', error)
+    }
+  },
+  async getTrendPosts({ commit }, trendId) {
+    try {
+      const response = await axios.get(`/api/social-posts/?trend=${trendId}`)
+      commit('setTrendPosts', response.data.posts)
+    } catch (error) {
+      console.log('error', error)
+    }
+  },
 }
 
 const getters = {
@@ -116,6 +152,8 @@ const getters = {
   profile: (state) => state.profile,
   searchPosts: (state) => state.searchPosts,
   searchProfiles: (state) => state.searchProfiles,
+  trends: (state) => state.trends,
+  trendPosts: (state) => state.trendPosts,
 }
 
 export default {

@@ -1,5 +1,10 @@
 <template>
-  <v-card class="mt-6 p-4 rounded-lg" color="white" outlined>
+  <v-card
+    v-if="trends.length != 0"
+    class="mt-6 p-4 rounded-lg"
+    color="white"
+    outlined
+  >
     <v-card-title class="mb-6 text-xl">Trends</v-card-title>
     <v-card-text class="space-y-4">
       <v-row
@@ -20,8 +25,8 @@
             :to="{ name: 'trendSocial', params: { id: trend.hashtag } }"
             variant="flat"
             color="social"
-            >Explore</v-btn
-          >
+            >Explore
+          </v-btn>
         </v-col>
       </v-row>
     </v-card-text>
@@ -29,32 +34,26 @@
 </template>
 
 <script>
-import axios from 'axios'
+import { onMounted, computed } from 'vue'
+
+import { useStore } from 'vuex'
 
 export default {
   name: 'TheTrends',
 
-  data() {
+  setup() {
+    const store = useStore()
+    const trends = computed(() => {
+      return store.getters['socialPostData/trends']
+    })
+
+    onMounted(async () => {
+      await store.dispatch('socialPostData/getTrends')
+    })
+
     return {
-      trends: [],
+      trends,
     }
-  },
-
-  mounted() {
-    this.getTrends()
-  },
-
-  methods: {
-    getTrends() {
-      axios
-        .get('/api/social-posts/trends/')
-        .then((response) => {
-          this.trends = response.data
-        })
-        .catch((error) => {
-          console.log('Error: ', error)
-        })
-    },
   },
 }
 </script>

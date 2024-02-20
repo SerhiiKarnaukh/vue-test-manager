@@ -5,7 +5,7 @@
         <v-col cols="12" md="5" lg="6" class="px-4">
           <v-card class="mb-6 pa-4 rounded-lg" elevation="2">
             <v-card-text class="py-4"
-              ><h2>Trend: #{{ $route.params.id }}</h2></v-card-text
+              ><h2>Trend: #{{ route.params.id }}</h2></v-card-text
             >
           </v-card>
           <TheSocialPostCard
@@ -24,45 +24,43 @@
 </template>
 
 <script>
-import axios from 'axios'
 import ThePeopleYouMayKnow from '@/components/social/ThePeopleYouMayKnow.vue'
 import TheTrends from '@/components/social/TheTrends.vue'
 import TheSocialPostCard from '@/components/social/TheSocialPostCard.vue'
+import { onMounted, watch, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
+
 export default {
   components: {
     ThePeopleYouMayKnow,
     TheTrends,
     TheSocialPostCard,
   },
-  data() {
+  setup() {
+    const route = useRoute()
+    const store = useStore()
+
+    const posts = computed(() => {
+      return store.getters['socialPostData/trendPosts']
+    })
+
+    onMounted(async () => {
+      await store.dispatch('setPageTitle', 'Trends')
+      await store.dispatch('socialPostData/getTrendPosts', route.params.id)
+    })
+
+    watch(
+      () => route.params.id,
+      async () => {
+        await store.dispatch('socialPostData/getTrendPosts', route.params.id)
+      }
+    )
+
     return {
-      posts: [],
+      route,
+      posts,
     }
-  },
-  mounted() {
-    document.title = 'Trends | Social Network'
-    this.getFeed()
-  },
-  watch: {
-    '$route.params.id': {
-      handler: function () {
-        this.getFeed()
-      },
-      deep: true,
-      immediate: true,
-    },
-  },
-  methods: {
-    getFeed() {
-      axios
-        .get(`/api/social-posts/?trend=${this.$route.params.id}`)
-        .then((response) => {
-          this.posts = response.data.posts
-        })
-        .catch((error) => {
-          console.log('error', error)
-        })
-    },
   },
 }
 </script>

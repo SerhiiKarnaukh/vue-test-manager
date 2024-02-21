@@ -45,6 +45,9 @@
               >Save changes</v-btn
             >
             <v-spacer></v-spacer>
+            <v-btn variant="flat" color="error" to="/social/edit/password">
+              Edit Password
+            </v-btn>
           </v-card-actions>
         </v-form>
       </v-card-text>
@@ -136,6 +139,5 @@ export default {
 
     return { state, v$, submitForm, handleFileChange }
   },
-  data: () => ({}),
 }
 </script>

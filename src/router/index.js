@@ -205,6 +205,15 @@ const routes = [
       layout: 'mainSocial',
     },
   },
+  {
+    path: '/social/edit/password',
+    name: 'editPassword',
+    component: () => import('@/views/social/EditPasswordView.vue'),
+    meta: {
+      authJWT: true,
+      layout: 'mainSocial',
+    },
+  },
 ]
 
 const router = createRouter({

@@ -146,6 +146,46 @@ const actions = {
       console.log('error', error)
     }
   },
+  async editPassword({ state, dispatch }, payload) {
+    try {
+      const response = await axios.post(
+        '/api/social-profiles/editpassword/',
+        payload
+      )
+      if (response.data.message === 'success') {
+        dispatch(
+          'alert/setMessage',
+          {
+            value: ['The information was saved'],
+            type: 'success',
+          },
+          { root: true }
+        )
+        router.push({
+          name: 'profileSocial',
+          params: {
+            slug: state.user.slug,
+          },
+        })
+      } else {
+        let errorMessages = []
+        const data = JSON.parse(response.data.message)
+        for (const key in data) {
+          errorMessages.push(data[key][0].message)
+        }
+        dispatch(
+          'alert/setMessage',
+          {
+            value: errorMessages,
+            type: 'error',
+          },
+          { root: true }
+        )
+      }
+    } catch (error) {
+      console.log('error', error)
+    }
+  },
 }
 
 const getters = {

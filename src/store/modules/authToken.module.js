@@ -86,13 +86,16 @@ export default {
           default:
             break
         }
-        await axios.post(url, { ...payload })
+        const response = await axios.post(url, { ...payload })
+
+        let responseMessage = `Thank you for registering with us. We have sent you a verification email to your email address [${payload.email}]`
+        if (response.data.detail == 'social_profile_created') {
+          responseMessage = 'Yor Social Profile created'
+        }
         dispatch(
           'alert/setMessage',
           {
-            value: [
-              `Thank you for registering with us. We have sent you a verification email to your email address [${payload.email}]`,
-            ],
+            value: [responseMessage],
             type: 'success',
           },
           { root: true }

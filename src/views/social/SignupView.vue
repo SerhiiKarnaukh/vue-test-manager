@@ -1,9 +1,18 @@
 <template>
   <v-main class="px-4 pb-4">
-    <v-card max-width="700" class="mx-auto">
+    <v-card-title v-if="state.loading">
+      <v-row align="center" class="fill-height ma-0" justify="center">
+        <v-progress-circular
+          color="grey lighten-5"
+          indeterminate
+        ></v-progress-circular>
+      </v-row>
+    </v-card-title>
+    <v-card v-else max-width="700" class="mx-auto">
       <v-card-title class="mb-6">
         <h2 class="text-md-h3 font-weight-medium">Create an account</h2>
       </v-card-title>
+
       <v-card-text>
         <v-form @submit.prevent="registerHandler">
           <v-text-field
@@ -86,6 +95,7 @@ export default {
       password: '',
       password2: '',
       showPassword: false,
+      loading: false,
     })
     const rules = {
       username: { required, minLength: minLength(3), maxLength: maxLength(50) },
@@ -132,10 +142,13 @@ export default {
             registration_source: 'social_network',
           }
           try {
+            state.loading = true
             await store.dispatch('authToken/register', formData)
             router.push('/social/login')
           } catch (e) {
             return
+          } finally {
+            state.loading = false
           }
           return
         }

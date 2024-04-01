@@ -114,6 +114,7 @@
 <script>
 import { reactive, onMounted, computed } from 'vue'
 import { useStore } from 'vuex'
+import { onBeforeRouteLeave } from 'vue-router'
 
 export default {
   name: 'ChatView',
@@ -157,6 +158,10 @@ export default {
     onMounted(async () => {
       await store.dispatch('setPageTitle', 'Chat')
       await store.dispatch('socialChatData/getConversations')
+    })
+    onBeforeRouteLeave((to, from, next) => {
+      store.dispatch('socialChatData/disconnectWebSocket')
+      next()
     })
 
     return {

@@ -1,14 +1,17 @@
 import axios from 'axios'
+import { extractDomain } from '@/utils/domainUtils'
 
 const state = () => ({
   conversations: [],
   activeConversation: {},
+  chatWebSocket: null,
 })
 
 const mutations = {
   clearChatData(state) {
     state.conversations = []
     state.activeConversation = {}
+    state.chatWebSocket = null
   },
   setActiveConversation(state, id) {
     state.activeConversation = id
@@ -19,6 +22,37 @@ const mutations = {
 }
 
 const actions = {
+  connectWebSocket({ state, rootGetters, dispatch }, conversationId) {
+    const url = extractDomain(import.meta.env.VITE_REMOTE_HOST)
+    let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+    const userId = rootGetters['socialProfileData/userId']
+    if (conversationId) {
+      state.chatWebSocket = new WebSocket(
+        `${protocol}//${url}/ws/social-chat/${conversationId}/${userId}/`
+      )
+      state.chatWebSocket.onopen = () => {
+        console.log('Chat WebSocket connected')
+      }
+
+      state.chatWebSocket.onmessage = (event) => {
+        const message = JSON.parse(event.data).message
+        if (message) {
+          console.log(message)
+          //   dispatch('getSelectedTicketComments', conversationId)
+        }
+      }
+
+      state.chatWebSocket.onclose = () => {
+        console.log('Chat WebSocket disabled')
+      }
+    }
+  },
+  disconnectWebSocket({ state }) {
+    const chatWebSocket = state.chatWebSocket
+    if (chatWebSocket && chatWebSocket.readyState === WebSocket.OPEN) {
+      chatWebSocket.close()
+    }
+  },
   async getOrCreateChat({ dispatch }, userSlug) {
     try {
       await axios.get(`/api/social-chat/${userSlug}/get-or-create/`)
@@ -50,6 +84,8 @@ const actions = {
       commit('setConversations', response.data)
       if (state.conversations.length) {
         commit('setActiveConversation', state.conversations[0].id)
+        await dispatch('disconnectWebSocket')
+        await dispatch('connectWebSocket', state.conversations[0].id)
       }
       dispatch('getChatMessages')
     } catch (error) {

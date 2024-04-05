@@ -22,7 +22,7 @@ const mutations = {
 }
 
 const actions = {
-  connectWebSocket({ state, rootGetters, dispatch }, conversationId) {
+  connectWebSocket({ state, rootGetters }, conversationId) {
     const url = extractDomain(import.meta.env.VITE_REMOTE_HOST)
     let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
     const userId = rootGetters['socialProfileData/userId']
@@ -34,11 +34,10 @@ const actions = {
         console.log('Chat WebSocket connected')
       }
 
-      state.chatWebSocket.onmessage = (event) => {
+      state.chatWebSocket.onmessage = async (event) => {
         const message = JSON.parse(event.data).message
         if (message) {
-          console.log(message)
-          //   dispatch('getSelectedTicketComments', conversationId)
+          state.activeConversation.messages.push(message)
         }
       }
 
@@ -94,13 +93,12 @@ const actions = {
   },
   async submitChatForm({ state }, message) {
     try {
-      const response = await axios.post(
+      await axios.post(
         `/api/social-chat/${state.activeConversation.id}/send/`,
         {
           body: message,
         }
       )
-      state.activeConversation.messages.push(response.data)
     } catch (error) {
       return Promise.reject(error)
     }

@@ -143,15 +143,19 @@ export default {
 
     const setActiveConversation = async (id) => {
       store.commit('socialChatData/setActiveConversation', id)
+      await store.dispatch('socialChatData/disconnectWebSocket')
+      await store.dispatch('socialChatData/connectWebSocket', id)
       await store.dispatch('socialChatData/getChatMessages')
     }
 
     const submitForm = async () => {
-      try {
-        await store.dispatch('socialChatData/submitChatForm', state.body)
-        state.body = ''
-      } catch (error) {
-        console.log(error)
+      if (state.body !== '') {
+        try {
+          await store.dispatch('socialChatData/submitChatForm', state.body)
+          state.body = ''
+        } catch (error) {
+          console.log(error)
+        }
       }
     }
 

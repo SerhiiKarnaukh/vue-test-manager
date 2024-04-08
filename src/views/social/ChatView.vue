@@ -19,7 +19,11 @@
             >
               <v-col cols="3">
                 <v-avatar size="50" v-if="user.id != userId">
-                  <img :src="user.avatar_url" style="max-width: 100%"
+                  <img
+                    :src="
+                      user.avatar_url ? user.avatar_url : state.defaultAvatar
+                    "
+                    style="max-width: 100%"
                 /></v-avatar>
               </v-col>
               <v-col cols="5">
@@ -61,7 +65,11 @@
                   >
                     <v-avatar size="50">
                       <img
-                        :src="message.created_by.avatar_url"
+                        :src="
+                          message.created_by.avatar_url
+                            ? message.created_by.avatar_url
+                            : state.defaultAvatar
+                        "
                         style="max-width: 100%"
                     /></v-avatar>
                   </v-col>
@@ -123,6 +131,7 @@ export default {
     const store = useStore()
     const state = reactive({
       body: '',
+      defaultAvatar: store.getters['socialProfileData/defaultAvatar'],
     })
 
     const conversations = computed(() => {

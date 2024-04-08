@@ -3,7 +3,13 @@
     <v-row align="center">
       <v-col cols="auto">
         <v-avatar size="50">
-          <img :src="comment.created_by.avatar_url" style="max-width: 100%"
+          <img
+            :src="
+              comment.created_by.avatar_url
+                ? comment.created_by.avatar_url
+                : state.defaultAvatar
+            "
+            style="max-width: 100%"
         /></v-avatar>
       </v-col>
       <v-col>
@@ -33,11 +39,22 @@
 
 <script>
 import { RouterLink } from 'vue-router'
+import { reactive } from 'vue'
+import { useStore } from 'vuex'
 export default {
   props: {
     comment: Object,
   },
   components: { RouterLink },
+  setup() {
+    const store = useStore()
+    const state = reactive({
+      defaultAvatar: store.getters['socialProfileData/defaultAvatar'],
+    })
+    return {
+      state,
+    }
+  },
 }
 </script>
 

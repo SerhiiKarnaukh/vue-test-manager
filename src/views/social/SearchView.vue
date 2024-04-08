@@ -42,7 +42,11 @@
                     <v-card-text class="text-center">
                       <v-avatar size="125" class="mb-6">
                         <img
-                          :src="profile.avatar_url"
+                          :src="
+                            profile.avatar_url
+                              ? profile.avatar_url
+                              : state.defaultAvatar
+                          "
                           aspect-ratio="1.5"
                           style="max-width: 100%"
                         />
@@ -110,6 +114,7 @@ export default {
     const store = useStore()
     const state = reactive({
       query: '',
+      defaultAvatar: store.getters['socialProfileData/defaultAvatar'],
     })
 
     const posts = computed(() => {

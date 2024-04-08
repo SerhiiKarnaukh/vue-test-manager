@@ -6,7 +6,14 @@
           <v-card class="rounded-lg" elevation="2">
             <v-card-text class="text-center">
               <v-avatar size="150" class="mb-6">
-                <img :src="profile.avatar_url" style="max-width: 100%" />
+                <img
+                  :src="
+                    profile.avatar_url
+                      ? profile.avatar_url
+                      : state.defaultAvatar
+                  "
+                  style="max-width: 100%"
+                />
               </v-avatar>
               <p class="mb-4">
                 <strong>{{
@@ -51,7 +58,11 @@
                     <v-card-text class="text-center">
                       <v-avatar size="125" class="mb-6">
                         <img
-                          :src="friendshipRequest.created_by.avatar_url"
+                          :src="
+                            friendshipRequest.created_by.avatar_url
+                              ? friendshipRequest.created_by.avatar_url
+                              : state.defaultAvatar
+                          "
                           aspect-ratio="1.5"
                           style="max-width: 100%"
                         />
@@ -146,7 +157,11 @@
                     <v-card-text class="text-center">
                       <v-avatar size="125" class="mb-6">
                         <img
-                          :src="user.avatar_url"
+                          :src="
+                            user.avatar_url
+                              ? user.avatar_url
+                              : state.defaultAvatar
+                          "
                           aspect-ratio="1.5"
                           style="max-width: 100%"
                         />
@@ -197,7 +212,7 @@
 <script>
 import ThePeopleYouMayKnow from '@/components/social/ThePeopleYouMayKnow.vue'
 import TheTrends from '@/components/social/TheTrends.vue'
-import { onMounted, computed } from 'vue'
+import { onMounted, computed, reactive } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 
@@ -210,6 +225,9 @@ export default {
   setup() {
     const route = useRoute()
     const store = useStore()
+    const state = reactive({
+      defaultAvatar: store.getters['socialProfileData/defaultAvatar'],
+    })
 
     const profile = computed(() => {
       return store.getters['socialProfileData/currentProfile']
@@ -238,6 +256,7 @@ export default {
     })
 
     return {
+      state,
       profile,
       friendshipRequests,
       friends,

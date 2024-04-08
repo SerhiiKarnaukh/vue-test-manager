@@ -6,7 +6,14 @@
           <v-card class="rounded-lg" elevation="2">
             <v-card-text class="text-center">
               <v-avatar size="150" class="mb-6">
-                <img :src="profile.avatar_url" style="max-width: 100%" />
+                <img
+                  :src="
+                    profile.avatar_url
+                      ? profile.avatar_url
+                      : state.defaultAvatar
+                  "
+                  style="max-width: 100%"
+                />
               </v-avatar>
               <p class="mb-4">
                 <strong>{{
@@ -124,6 +131,7 @@ export default {
     const store = useStore()
     const state = reactive({
       body: '',
+      defaultAvatar: store.getters['socialProfileData/defaultAvatar'],
     })
 
     const posts = computed(() => {

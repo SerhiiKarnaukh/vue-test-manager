@@ -16,6 +16,8 @@ const state = () => ({
   currentProfile: {},
   friendshipRequests: [],
   currentProfileFriends: [],
+  defaultAvatar:
+    'https://doodleipsum.com/700/avatar-4?i=be176fd7d38de78c85dbfba873eb723a',
 })
 
 const mutations = {
@@ -195,6 +197,7 @@ const getters = {
   currentProfile: (state) => state.currentProfile,
   friendshipRequests: (state) => state.friendshipRequests,
   currentProfileFriends: (state) => state.currentProfileFriends,
+  defaultAvatar: (state) => state.defaultAvatar,
 }
 
 export default {

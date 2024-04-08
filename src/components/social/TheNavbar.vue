@@ -85,7 +85,9 @@
             }"
           >
             <v-avatar size="40">
-              <img :src="avatarUrl" style="max-width: 100%"
+              <img
+                :src="avatarUrl ? avatarUrl : state.defaultAvatar"
+                style="max-width: 100%"
             /></v-avatar>
           </router-link>
         </div>
@@ -171,6 +173,7 @@ export default {
     const store = useStore()
     const state = reactive({
       drawer: false,
+      defaultAvatar: store.getters['socialProfileData/defaultAvatar'],
     })
 
     const avatarUrl = computed(

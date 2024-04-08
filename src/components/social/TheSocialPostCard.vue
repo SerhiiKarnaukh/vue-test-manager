@@ -3,7 +3,13 @@
     <v-row align="center">
       <v-col cols="auto">
         <v-avatar size="50">
-          <img :src="post.created_by.avatar_url" style="max-width: 100%"
+          <img
+            :src="
+              post.created_by.avatar_url
+                ? post.created_by.avatar_url
+                : state.defaultAvatar
+            "
+            style="max-width: 100%"
         /></v-avatar>
       </v-col>
       <v-col>
@@ -55,10 +61,21 @@
 <script>
 import axios from 'axios'
 import store from '@/store'
+import { reactive } from 'vue'
+import { useStore } from 'vuex'
 export default {
   name: 'TheSocialPostCard',
   props: {
     post: Object,
+  },
+  setup() {
+    const store = useStore()
+    const state = reactive({
+      defaultAvatar: store.getters['socialProfileData/defaultAvatar'],
+    })
+    return {
+      state,
+    }
   },
   data() {
     return {

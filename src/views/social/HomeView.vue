@@ -20,8 +20,40 @@
                 ></v-textarea>
               </v-card-text>
 
+              <v-row v-if="postImages.length != 0" class="border-t">
+                <v-col
+                  v-for="image in postImages"
+                  cols="2"
+                  class="text-left mb-4"
+                  :key="`${image.file.name}-navbar-link`"
+                >
+                  <v-img
+                    :src="image.url"
+                    style="max-height: 100px"
+                    class="ml-3"
+                    rounded
+                  >
+                  </v-img>
+                </v-col>
+              </v-row>
+
               <v-card-actions class="p-4 border-t">
-                <v-btn color="grey darken-2" variant="flat">
+                <v-file-input
+                  id="fileUpload"
+                  style="display: none"
+                  accept="image/png, image/jpeg, image/bmp"
+                  placeholder=""
+                  variant="solo"
+                  prepend-icon=""
+                  multiple
+                  flat
+                  @change="handleFileChange"
+                ></v-file-input>
+                <v-btn
+                  @click="chooseFiles()"
+                  color="grey darken-2"
+                  variant="flat"
+                >
                   Attach image
                 </v-btn>
 
@@ -83,10 +115,41 @@ export default {
       return store.getters['socialPostData/friendsPostList']
     })
 
+    const postImages = computed(() => {
+      return store.getters['socialPostData/postImages']
+    })
+
+    const chooseFiles = () => {
+      document.getElementById('fileUpload').click()
+    }
+
+    const handleFileChange = (event) => {
+      const files = event.target.files
+      const allowedFormats = ['image/jpeg', 'image/png', 'image/jpg']
+
+      const newPostImages = Array.from(files)
+        .map((file) => {
+          if (allowedFormats.includes(file.type)) {
+            return {
+              url: URL.createObjectURL(file),
+              file: file,
+            }
+          } else {
+            return null
+          }
+        })
+        .filter(Boolean)
+      store.commit('socialPostData/uploadSelectedPostImages', newPostImages)
+    }
+
     const submitForm = async () => {
-      if (state.body !== '') {
-        await store.dispatch('socialPostData/submitPostForm', state.body)
+      if (state.body !== '' || postImages.value.length != 0) {
+        let formData = new FormData()
+        formData.append('body', state.body)
+        await store.dispatch('socialPostData/submitPostForm', formData)
         state.body = ''
+        state.postImage = null
+        store.commit('socialPostData/uploadSelectedPostImages', [])
       }
     }
 
@@ -99,6 +162,9 @@ export default {
       state,
       posts,
       friendsPostList,
+      postImages,
+      chooseFiles,
+      handleFileChange,
       submitForm,
     }
   },

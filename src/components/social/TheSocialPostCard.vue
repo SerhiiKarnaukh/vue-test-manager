@@ -10,7 +10,8 @@
                 : state.defaultAvatar
             "
             style="max-width: 100%"
-        /></v-avatar>
+          />
+        </v-avatar>
       </v-col>
       <v-col>
         <div class="text-overline">
@@ -31,11 +32,16 @@
     </v-row>
     <v-card-text class="py-4"
       >{{ post.body }}
-      <v-img
-        class="mt-4"
-        src="https://images.unsplash.com/photo-1661956602868-6ae368943878?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2670&q=80"
-        rounded
-      ></v-img>
+      <template v-if="post.attachments.length">
+        <v-img
+          class="mt-4"
+          v-for="image in post.attachments"
+          v-bind:key="image.id"
+          :src="image.image_url"
+          rounded
+        >
+        </v-img>
+      </template>
     </v-card-text>
     <v-card-actions>
       <v-row align="center">
@@ -73,6 +79,7 @@ export default {
     const state = reactive({
       defaultAvatar: store.getters['socialProfileData/defaultAvatar'],
     })
+
     return {
       state,
     }

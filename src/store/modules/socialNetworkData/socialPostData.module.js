@@ -10,6 +10,7 @@ const state = () => ({
   searchProfiles: {},
   trends: [],
   trendPosts: [],
+  postImages: [],
 })
 
 const mutations = {
@@ -55,6 +56,13 @@ const mutations = {
   setTrendPosts(state, posts) {
     state.trendPosts = posts
   },
+  uploadSelectedPostImages(state, images) {
+    if (images.length != 0) {
+      state.postImages.push(...images)
+    } else {
+      state.postImages = images
+    }
+  },
 }
 
 const actions = {
@@ -67,10 +75,17 @@ const actions = {
       console.log('error', error)
     }
   },
-  async submitPostForm({ state, commit }, post) {
+  async submitPostForm({ state, commit }, formData) {
+    if (state.postImages) {
+      state.postImages.forEach((object, index) => {
+        formData.append(`images[${index}]`, object.file)
+      })
+    }
     try {
-      const response = await axios.post('/api/social-posts/create/', {
-        body: post,
+      const response = await axios.post('/api/social-posts/create/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       })
       commit('setPostToAllList', response.data)
       state.profile.posts_count += 1
@@ -154,6 +169,7 @@ const getters = {
   searchProfiles: (state) => state.searchProfiles,
   trends: (state) => state.trends,
   trendPosts: (state) => state.trendPosts,
+  postImages: (state) => state.postImages,
 }
 
 export default {

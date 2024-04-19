@@ -1,7 +1,7 @@
 <template>
   <v-main>
     <v-container class="py-6" fluid>
-      <v-row class="justify-center">
+      <v-row v-if="conversations.length != 0" class="justify-center">
         <v-col cols="12" md="4" lg="3" class="px-4">
           <v-card
             v-for="conversation in conversations"
@@ -115,6 +115,9 @@
             </v-form>
           </v-card>
         </v-col>
+      </v-row>
+      <v-row v-else class="justify-center">
+        <v-card class="pa-6"><h2>You have no active conversations!</h2></v-card>
       </v-row>
     </v-container>
   </v-main>

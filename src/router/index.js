@@ -180,6 +180,15 @@ const routes = [
     },
   },
   {
+    path: '/social/notifications',
+    name: 'notificationsSocial',
+    component: () => import('@/views/social/NotificationsView.vue'),
+    meta: {
+      authJWT: true,
+      layout: 'mainSocial',
+    },
+  },
+  {
     path: '/social/search',
     name: 'searchSocial',
     component: () => import('@/views/social/SearchView.vue'),

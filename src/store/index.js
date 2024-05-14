@@ -5,6 +5,7 @@ import alert from './modules/alert.module'
 import socialProfileData from './modules/socialNetworkData/socialProfileData.module'
 import socialPostData from './modules/socialNetworkData/socialPostData.module'
 import socialChatData from './modules/socialNetworkData/socialChatData.module'
+import socialNotificationData from './modules/socialNetworkData/socialNotificationData.module'
 const plugins = []
 
 if (process.env.NODE_ENV === 'development') {
@@ -63,6 +64,7 @@ export default createStore({
     socialProfileData,
     socialPostData,
     socialChatData,
+    socialNotificationData,
   },
   getters: {},
 })

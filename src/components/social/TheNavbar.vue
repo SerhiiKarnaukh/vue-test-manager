@@ -24,17 +24,20 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item :href="remoteHost"
-              ><v-list-item-title>All Apps</v-list-item-title></v-list-item
-            >
-            <v-list-item to="/"
-              ><v-list-item-title>Vue Apps</v-list-item-title></v-list-item
-            >
+            <v-list-item :href="remoteHost">
+              <v-list-item-title>All Apps</v-list-item-title>
+            </v-list-item>
+            <v-list-item to="/">
+              <v-list-item-title>Vue Apps</v-list-item-title>
+            </v-list-item>
+            <v-list-item prepend-icon="mdi-toggle-switch" @click="toggleTheme">
+              <v-list-item-title class="ml-1">Toggle Theme</v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
         <v-btn to="/social/home" flat prepend-icon="mdi-home">Main</v-btn>
 
-        <div v-if="!$store.state.authJWT.accessToken">
+        <template v-if="!$store.state.authJWT.accessToken">
           <v-btn
             v-for="link in links"
             flat
@@ -46,9 +49,9 @@
           >
             {{ link.label }}
           </v-btn>
-        </div>
+        </template>
 
-        <div v-if="$store.state.authJWT.accessToken">
+        <template v-if="$store.state.authJWT.accessToken">
           <v-btn
             flat
             color="white"
@@ -60,16 +63,7 @@
           <v-btn flat color="white" prepend-icon="mdi-logout" @click="logout">
             Logout
           </v-btn>
-        </div>
-
-        <v-btn
-          flat
-          color="white"
-          prepend-icon="mdi-toggle-switch"
-          @click="toggleTheme"
-        >
-          Toggle Theme
-        </v-btn>
+        </template>
         <v-btn
           density="comfortable"
           @click="searching = true"
@@ -77,7 +71,14 @@
           to="/social/search"
         >
         </v-btn>
-        <div v-if="$store.state.authJWT.accessToken">
+        <template v-if="$store.state.authJWT.accessToken">
+          <v-btn
+            to="/social/notifications"
+            flat
+            color="white"
+            prepend-icon="mdi-bell-outline"
+            >(5)</v-btn
+          >
           <router-link
             :to="{
               name: 'profileSocial',
@@ -90,7 +91,7 @@
                 style="max-width: 100%"
             /></v-avatar>
           </router-link>
-        </div>
+        </template>
       </div>
     </v-app-bar>
     <v-navigation-drawer temporary v-model="state.drawer" location="left">
@@ -107,12 +108,15 @@
           </template>
 
           <v-list>
-            <v-list-item :href="remoteHost"
-              ><v-list-item-title>All Apps</v-list-item-title></v-list-item
-            >
-            <v-list-item to="/"
-              ><v-list-item-title>Vue Apps</v-list-item-title></v-list-item
-            >
+            <v-list-item :href="remoteHost">
+              <v-list-item-title>All Apps</v-list-item-title>
+            </v-list-item>
+            <v-list-item to="/">
+              <v-list-item-title>Vue Apps</v-list-item-title>
+            </v-list-item>
+            <v-list-item prepend-icon="mdi-toggle-switch" @click="toggleTheme">
+              <v-list-item-title>Toggle Theme</v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
         <v-list-item to="/social/home" flat prepend-icon="mdi-home"
@@ -145,17 +149,15 @@
             Logout
           </v-list-item>
         </div>
-        <v-list-item
-          flat
-          color="white"
-          prepend-icon="mdi-toggle-switch"
-          @click="toggleTheme"
-        >
-          Toggle Theme
-        </v-list-item>
         <v-list-item flat prepend-icon="mdi-magnify" to="/social/search">
           Search
         </v-list-item>
+        <v-list-item
+          to="/social/notifications"
+          flat
+          prepend-icon="mdi-bell-outline"
+          >(5)</v-list-item
+        >
       </v-list>
     </v-navigation-drawer>
   </v-container>

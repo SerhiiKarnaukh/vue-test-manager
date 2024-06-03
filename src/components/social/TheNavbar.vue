@@ -30,7 +30,7 @@
             <v-list-item to="/">
               <v-list-item-title>Vue Apps</v-list-item-title>
             </v-list-item>
-            <v-list-item prepend-icon="mdi-toggle-switch" @click="toggleTheme">
+            <v-list-item append-icon="mdi-toggle-switch" @click="toggleTheme">
               <v-list-item-title class="ml-1">Toggle Theme</v-list-item-title>
             </v-list-item>
           </v-list>
@@ -114,7 +114,7 @@
             <v-list-item to="/">
               <v-list-item-title>Vue Apps</v-list-item-title>
             </v-list-item>
-            <v-list-item prepend-icon="mdi-toggle-switch" @click="toggleTheme">
+            <v-list-item append-icon="mdi-toggle-switch" @click="toggleTheme">
               <v-list-item-title>Toggle Theme</v-list-item-title>
             </v-list-item>
           </v-list>

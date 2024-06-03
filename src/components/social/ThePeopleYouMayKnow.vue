@@ -5,7 +5,7 @@
       <v-row align="center">
         <v-col class="shrink-0">
           <v-avatar size="40">
-            <img src="https://i.pravatar.cc/300?img=70" />
+            <img :src="state.defaultAvatar" style="max-width: 100%" />
           </v-avatar>
         </v-col>
         <v-row>
@@ -20,9 +20,15 @@
 </template>
 
 <script>
+import { useStore } from 'vuex'
+import { reactive } from 'vue'
 export default {
   setup() {
-    return {}
+    const store = useStore()
+    const state = reactive({
+      defaultAvatar: store.getters['socialProfileData/defaultAvatar'],
+    })
+    return { state }
   },
 }
 </script>

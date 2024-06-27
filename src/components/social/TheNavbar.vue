@@ -77,7 +77,7 @@
             flat
             color="white"
             prepend-icon="mdi-bell-outline"
-            >(5)</v-btn
+            >({{ unreadCount }})</v-btn
           >
           <router-link
             :to="{
@@ -156,7 +156,7 @@
           to="/social/notifications"
           flat
           prepend-icon="mdi-bell-outline"
-          >(5)</v-list-item
+          >({{ unreadCount }})</v-list-item
         >
       </v-list>
     </v-navigation-drawer>
@@ -167,7 +167,7 @@
 import { useTheme } from 'vuetify'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import { computed, reactive } from 'vue'
+import { computed, reactive, onMounted } from 'vue'
 export default {
   setup() {
     const theme = useTheme()
@@ -180,6 +180,10 @@ export default {
 
     const avatarUrl = computed(
       () => store.getters['socialProfileData/user'].avatar_url
+    )
+
+    const unreadCount = computed(
+      () => store.getters['socialNotificationData/unreadCount']
     )
 
     const userSlug = computed(() => store.getters['socialProfileData/userSlug'])
@@ -197,6 +201,10 @@ export default {
       },
     ]
 
+    const isAuthenticated = computed(() => {
+      return store.getters['authJWT/isAuthenticated']
+    })
+
     const toggleTheme = () => {
       return (theme.global.name.value = theme.global.current.value.dark
         ? 'CustomLightTheme'
@@ -209,11 +217,18 @@ export default {
       router.push('/social/login')
     }
 
+    onMounted(async () => {
+      if (isAuthenticated.value) {
+        await store.dispatch('socialNotificationData/getNotifications')
+      }
+    })
+
     return {
       state,
       theme,
       remoteHost: import.meta.env.VITE_REMOTE_HOST,
       avatarUrl,
+      unreadCount,
       links,
       userSlug,
       toggleTheme,

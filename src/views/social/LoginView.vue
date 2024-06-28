@@ -78,6 +78,10 @@ export default {
         try {
           await store.dispatch('authJWT/login', formData)
           await store.dispatch('socialProfileData/getUserData')
+          await store.dispatch('socialNotificationData/getNotifications')
+          await store.dispatch(
+            'socialNotificationData/connectNotificationWebSocket'
+          )
           router.push('/social/home')
         } catch (e) {
           return

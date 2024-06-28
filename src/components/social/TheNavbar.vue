@@ -211,9 +211,12 @@ export default {
         : 'dark')
     }
 
-    const logout = () => {
+    const logout = async () => {
       store.dispatch('authJWT/logout')
       store.commit('socialProfileData/initSocial')
+      await store.dispatch(
+        'socialNotificationData/disconnectNotificationWebSocket'
+      )
       router.push('/social/login')
     }
 

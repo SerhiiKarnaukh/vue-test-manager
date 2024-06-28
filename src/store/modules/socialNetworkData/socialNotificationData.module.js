@@ -1,9 +1,11 @@
 import axios from 'axios'
 import router from '@/router'
+import { extractDomain } from '@/utils/domainUtils'
 
 const state = () => ({
   notifications: [],
   unreadCount: 0,
+  notificationWebSocket: null,
 })
 
 const mutations = {
@@ -51,6 +53,32 @@ const actions = {
       }
     } catch (error) {
       console.error(error)
+    }
+  },
+  connectNotificationWebSocket({ state, rootGetters, dispatch }) {
+    const url = extractDomain(import.meta.env.VITE_REMOTE_HOST)
+    let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+    const userId = rootGetters['socialProfileData/user'].id
+    state.notificationWebSocket = new WebSocket(
+      `${protocol}//${url}/ws/notification/${userId}/`
+    )
+    state.notificationWebSocket.onopen = () => {
+      //   console.log('Notification WebSocket connected')
+    }
+    state.notificationWebSocket.onmessage = async (event) => {
+      const message = JSON.parse(event.data).message
+      if (message) {
+        await dispatch('getNotifications')
+      }
+    }
+    state.notificationWebSocket.onclose = () => {
+      //   console.log('Notification WebSocket disabled')
+    }
+  },
+  disconnectNotificationWebSocket({ state }) {
+    const socket = state.notificationWebSocket
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.close()
     }
   },
 }

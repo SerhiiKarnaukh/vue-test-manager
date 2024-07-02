@@ -16,6 +16,7 @@ const state = () => ({
   currentProfile: {},
   friendshipRequests: [],
   currentProfileFriends: [],
+  friendSuggestions: [],
   defaultAvatar:
     'https://doodleipsum.com/700/avatar-4?i=be176fd7d38de78c85dbfba873eb723a',
 })
@@ -66,6 +67,9 @@ const mutations = {
     state.friendshipRequests = requests
     state.currentProfileFriends = friends
     state.currentProfile = user
+  },
+  setFriendSuggestions(state, suggestions) {
+    state.friendSuggestions = suggestions
   },
 }
 
@@ -188,6 +192,16 @@ const actions = {
       console.log('error', error)
     }
   },
+  async getFriendSuggestions({ commit }) {
+    try {
+      const response = await axios.get(
+        '/api/social-profiles/friends/suggested/'
+      )
+      commit('setFriendSuggestions', response.data)
+    } catch (error) {
+      console.log('error', error)
+    }
+  },
 }
 
 const getters = {
@@ -198,6 +212,7 @@ const getters = {
   friendshipRequests: (state) => state.friendshipRequests,
   currentProfileFriends: (state) => state.currentProfileFriends,
   defaultAvatar: (state) => state.defaultAvatar,
+  friendSuggestions: (state) => state.friendSuggestions,
 }
 
 export default {

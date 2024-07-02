@@ -47,7 +47,10 @@
                 </v-col>
               </v-row>
               <v-btn
-                v-if="$store.state.socialProfileData.user.id != profile.id"
+                v-if="
+                  $store.state.socialProfileData.user.id != profile.id &&
+                  canSendFriendshipRequest
+                "
                 @click="sendFriendshipRequest"
                 color="primary"
                 class="mx-auto mt-4"
@@ -180,6 +183,10 @@ export default {
       return store.getters['socialPostData/profile']
     })
 
+    const canSendFriendshipRequest = computed(() => {
+      return store.getters['socialPostData/canSendFriendshipRequest']
+    })
+
     const postImages = computed(() => {
       return store.getters['socialPostData/postImages']
     })
@@ -224,6 +231,7 @@ export default {
         'socialProfileData/sendFriendshipRequest',
         route.params.slug
       )
+      store.commit('socialPostData/setCanSendFriendshipRequest', false)
     }
 
     const submitForm = async () => {
@@ -265,6 +273,7 @@ export default {
       submitForm,
       chooseFiles,
       handleFileChange,
+      canSendFriendshipRequest,
     }
   },
 }

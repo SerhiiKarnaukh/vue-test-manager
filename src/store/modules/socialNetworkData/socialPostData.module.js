@@ -11,6 +11,7 @@ const state = () => ({
   trends: [],
   trendPosts: [],
   postImages: [],
+  canSendFriendshipRequest: true,
 })
 
 const mutations = {
@@ -63,6 +64,9 @@ const mutations = {
       state.postImages = images
     }
   },
+  setCanSendFriendshipRequest(state, data) {
+    state.canSendFriendshipRequest = data
+  },
 }
 
 const actions = {
@@ -108,6 +112,10 @@ const actions = {
       )
       commit('setProfilePostList', response.data.posts)
       commit('setProfile', response.data.profile)
+      commit(
+        'setCanSendFriendshipRequest',
+        response.data.can_send_friendship_request
+      )
     } catch (error) {
       console.log('error', error)
     }
@@ -170,6 +178,7 @@ const getters = {
   trends: (state) => state.trends,
   trendPosts: (state) => state.trendPosts,
   postImages: (state) => state.postImages,
+  canSendFriendshipRequest: (state) => state.canSendFriendshipRequest,
 }
 
 export default {

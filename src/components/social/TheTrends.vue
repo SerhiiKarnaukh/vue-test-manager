@@ -1,7 +1,7 @@
 <template>
   <v-card
     v-if="trends.length != 0"
-    class="mt-6 p-4 rounded-lg"
+    class="p-4 rounded-lg"
     color="white"
     outlined
   >

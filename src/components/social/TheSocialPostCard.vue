@@ -59,6 +59,10 @@
           </router-link>
           <span>{{ post.comments_count }} comments</span>
         </v-col>
+        <v-col v-if="post.is_private" cols="auto">
+          <v-icon small class="mr-1">mdi-eye-off-outline</v-icon>
+          <span>Private</span>
+        </v-col>
       </v-row>
     </v-card-actions>
   </v-card>

@@ -2,7 +2,6 @@ import axios from 'axios'
 
 const state = () => ({
   postList: [],
-  friendsPostList: [],
   profilePostList: [],
   post: {},
   profile: {},
@@ -17,7 +16,6 @@ const state = () => ({
 const mutations = {
   clearPostData(state) {
     state.postList = []
-    state.friendsPostList = []
     state.profilePostList = []
     state.post = {}
     state.profile = {}
@@ -32,10 +30,6 @@ const mutations = {
   setPostToAllList(state, post) {
     state.profilePostList.unshift(post)
     state.postList.unshift(post)
-    state.friendsPostList.unshift(post)
-  },
-  setFriendsPostList(state, friendsPostList) {
-    state.friendsPostList = friendsPostList
   },
   setProfilePostList(state, profilePostList) {
     state.profilePostList = profilePostList
@@ -74,7 +68,6 @@ const actions = {
     try {
       const response = await axios.get('/api/social-posts/')
       commit('setPostList', response.data.posts)
-      commit('setFriendsPostList', response.data.friends_posts)
     } catch (error) {
       console.log('error', error)
     }
@@ -169,7 +162,6 @@ const actions = {
 
 const getters = {
   postList: (state) => state.postList,
-  friendsPostList: (state) => state.friendsPostList,
   profilePostList: (state) => state.profilePostList,
   post: (state) => state.post,
   profile: (state) => state.profile,

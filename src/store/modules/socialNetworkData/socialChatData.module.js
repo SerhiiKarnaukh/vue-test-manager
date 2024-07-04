@@ -31,7 +31,7 @@ const actions = {
         `${protocol}//${url}/ws/social-chat/${conversationId}/${userId}/`
       )
       state.chatWebSocket.onopen = () => {
-        console.log('Chat WebSocket connected')
+        // console.log('Chat WebSocket connected')
       }
 
       state.chatWebSocket.onmessage = async (event) => {
@@ -42,7 +42,7 @@ const actions = {
       }
 
       state.chatWebSocket.onclose = () => {
-        console.log('Chat WebSocket disabled')
+        // console.log('Chat WebSocket disabled')
       }
     }
   },

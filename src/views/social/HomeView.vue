@@ -60,19 +60,22 @@
                 <v-btn color="social darken-2" variant="flat" type="submit">
                   Post
                 </v-btn>
+                <v-checkbox
+                  v-model="state.isPrivate"
+                  hide-details
+                  :append-icon="
+                    state.isPrivate ? 'mdi-eye-off-outline' : 'mdi-eye-outline'
+                  "
+                  :label="
+                    state.isPrivate ? 'It`s a private post' : 'Make it private'
+                  "
+                ></v-checkbox>
               </v-card-actions>
             </v-form>
           </v-card>
-          <div v-if="!$store.state.authJWT.accessToken">
+          <div>
             <TheSocialPostCard
               v-for="post in posts"
-              :key="post.id"
-              v-bind:post="post"
-            />
-          </div>
-          <div v-if="$store.state.authJWT.accessToken">
-            <TheSocialPostCard
-              v-for="post in friendsPostList"
               :key="post.id"
               v-bind:post="post"
             />
@@ -105,14 +108,11 @@ export default {
     const store = useStore()
     const state = reactive({
       body: '',
+      isPrivate: false,
     })
 
     const posts = computed(() => {
       return store.getters['socialPostData/postList']
-    })
-
-    const friendsPostList = computed(() => {
-      return store.getters['socialPostData/friendsPostList']
     })
 
     const postImages = computed(() => {
@@ -146,9 +146,11 @@ export default {
       if (state.body !== '' || postImages.value.length != 0) {
         let formData = new FormData()
         formData.append('body', state.body)
+        formData.append('is_private', state.isPrivate)
         await store.dispatch('socialPostData/submitPostForm', formData)
         state.body = ''
         state.postImage = null
+        state.isPrivate = false
         store.commit('socialPostData/uploadSelectedPostImages', [])
       }
     }
@@ -161,7 +163,6 @@ export default {
     return {
       state,
       posts,
-      friendsPostList,
       postImages,
       chooseFiles,
       handleFileChange,

@@ -68,7 +68,7 @@ const actions = {
         `${protocol}//${url}/ws/notification/${userId}/`
       )
       state.notificationWebSocket.onopen = () => {
-        console.log('Notification WebSocket connected')
+        // console.log('Notification WebSocket connected')
       }
       state.notificationWebSocket.onmessage = async (event) => {
         const message = JSON.parse(event.data).message
@@ -77,7 +77,7 @@ const actions = {
         }
       }
       state.notificationWebSocket.onclose = () => {
-        console.log('Notification WebSocket disabled')
+        // console.log('Notification WebSocket disabled')
       }
     }
   },

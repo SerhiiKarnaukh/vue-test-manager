@@ -201,10 +201,6 @@ export default {
       },
     ]
 
-    const isAuthenticated = computed(() => {
-      return store.getters['authJWT/isAuthenticated']
-    })
-
     const toggleTheme = () => {
       return (theme.global.name.value = theme.global.current.value.dark
         ? 'CustomLightTheme'
@@ -221,9 +217,7 @@ export default {
     }
 
     onMounted(async () => {
-      if (isAuthenticated.value) {
-        await store.dispatch('socialNotificationData/getNotifications')
-      }
+      await store.dispatch('socialNotificationData/getNotifications')
     })
 
     return {

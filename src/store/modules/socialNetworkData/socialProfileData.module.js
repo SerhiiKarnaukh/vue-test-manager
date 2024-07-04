@@ -192,14 +192,17 @@ const actions = {
       console.log('error', error)
     }
   },
-  async getFriendSuggestions({ commit }) {
-    try {
-      const response = await axios.get(
-        '/api/social-profiles/friends/suggested/'
-      )
-      commit('setFriendSuggestions', response.data)
-    } catch (error) {
-      console.log('error', error)
+  async getFriendSuggestions({ commit, rootGetters }) {
+    const isAuthenticated = rootGetters['authJWT/isAuthenticated']
+    if (isAuthenticated) {
+      try {
+        const response = await axios.get(
+          '/api/social-profiles/friends/suggested/'
+        )
+        commit('setFriendSuggestions', response.data)
+      } catch (error) {
+        console.log('error', error)
+      }
     }
   },
 }

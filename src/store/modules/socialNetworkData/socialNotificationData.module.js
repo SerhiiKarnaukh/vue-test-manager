@@ -21,14 +21,17 @@ const mutations = {
 }
 
 const actions = {
-  async getNotifications({ commit }) {
-    try {
-      const response = await axios.get('/api/social-notifications/')
-      const responseData = response.data
-      commit('setNotifications', responseData)
-      commit('setUnreadCount', responseData.length)
-    } catch (error) {
-      console.error(error)
+  async getNotifications({ commit, rootGetters }) {
+    const isAuthenticated = rootGetters['authJWT/isAuthenticated']
+    if (isAuthenticated) {
+      try {
+        const response = await axios.get('/api/social-notifications/')
+        const responseData = response.data
+        commit('setNotifications', responseData)
+        commit('setUnreadCount', responseData.length)
+      } catch (error) {
+        console.error(error)
+      }
     }
   },
 
@@ -56,23 +59,26 @@ const actions = {
     }
   },
   connectNotificationWebSocket({ state, rootGetters, dispatch }) {
-    const url = extractDomain(import.meta.env.VITE_REMOTE_HOST)
-    let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const userId = rootGetters['socialProfileData/user'].id
-    state.notificationWebSocket = new WebSocket(
-      `${protocol}//${url}/ws/notification/${userId}/`
-    )
-    state.notificationWebSocket.onopen = () => {
-      //   console.log('Notification WebSocket connected')
-    }
-    state.notificationWebSocket.onmessage = async (event) => {
-      const message = JSON.parse(event.data).message
-      if (message) {
-        await dispatch('getNotifications')
+    const isAuthenticated = rootGetters['authJWT/isAuthenticated']
+    if (isAuthenticated) {
+      const url = extractDomain(import.meta.env.VITE_REMOTE_HOST)
+      let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+      const userId = rootGetters['socialProfileData/user'].id
+      state.notificationWebSocket = new WebSocket(
+        `${protocol}//${url}/ws/notification/${userId}/`
+      )
+      state.notificationWebSocket.onopen = () => {
+        console.log('Notification WebSocket connected')
       }
-    }
-    state.notificationWebSocket.onclose = () => {
-      //   console.log('Notification WebSocket disabled')
+      state.notificationWebSocket.onmessage = async (event) => {
+        const message = JSON.parse(event.data).message
+        if (message) {
+          await dispatch('getNotifications')
+        }
+      }
+      state.notificationWebSocket.onclose = () => {
+        console.log('Notification WebSocket disabled')
+      }
     }
   },
   disconnectNotificationWebSocket({ state }) {

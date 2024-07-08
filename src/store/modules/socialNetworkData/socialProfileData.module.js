@@ -56,6 +56,7 @@ const mutations = {
       state.currentProfile = {}
       state.friendshipRequests = []
       state.currentProfileFriends = []
+      state.friendSuggestions = []
 
       Object.keys(state.user).forEach((key) =>
         localStorage.removeItem(`user.${key}`)

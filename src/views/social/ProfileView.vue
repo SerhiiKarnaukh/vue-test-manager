@@ -77,65 +77,9 @@
           </v-card>
         </v-col>
         <v-col cols="12" md="5" lg="6" class="px-4">
-          <v-card
+          <TheCreatePostForm
             v-if="$store.state.socialProfileData.user.id == profile.id"
-            class="rounded-lg mb-6"
-            color="white"
-            elevation="2"
-          >
-            <v-form @submit.prevent="submitForm" method="post">
-              <v-card-text class="p-4">
-                <v-textarea
-                  v-model.trim="state.body"
-                  class="p-4 w-full rounded-lg"
-                  placeholder="What are you thinking about?"
-                  color="grey lighten-3"
-                  required
-                ></v-textarea>
-              </v-card-text>
-              <v-row v-if="postImages.length != 0" class="border-t">
-                <v-col
-                  v-for="image in postImages"
-                  cols="2"
-                  class="text-left mb-4"
-                  :key="`${image.file.name}-navbar-link`"
-                >
-                  <v-img
-                    :src="image.url"
-                    style="max-height: 100px"
-                    class="ml-3"
-                    rounded
-                  >
-                  </v-img>
-                </v-col>
-              </v-row>
-
-              <v-card-actions class="p-4 border-t">
-                <v-file-input
-                  id="fileUpload"
-                  style="display: none"
-                  accept="image/png, image/jpeg, image/bmp"
-                  placeholder=""
-                  variant="solo"
-                  prepend-icon=""
-                  multiple
-                  flat
-                  @change="handleFileChange"
-                ></v-file-input>
-                <v-btn
-                  @click="chooseFiles()"
-                  color="grey darken-2"
-                  variant="flat"
-                >
-                  Attach image
-                </v-btn>
-
-                <v-btn color="social darken-2" variant="flat" type="submit">
-                  Post
-                </v-btn>
-              </v-card-actions>
-            </v-form>
-          </v-card>
+          />
           <TheSocialPostCard
             v-for="post in posts"
             :key="post.id"
@@ -156,6 +100,7 @@
 import ThePeopleYouMayKnow from '@/components/social/ThePeopleYouMayKnow.vue'
 import TheTrends from '@/components/social/TheTrends.vue'
 import TheSocialPostCard from '@/components/social/TheSocialPostCard.vue'
+import TheCreatePostForm from '@/components/social/TheCreatePostForm.vue'
 import { reactive, onMounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
@@ -166,12 +111,12 @@ export default {
     ThePeopleYouMayKnow,
     TheTrends,
     TheSocialPostCard,
+    TheCreatePostForm,
   },
   setup() {
     const route = useRoute()
     const store = useStore()
     const state = reactive({
-      body: '',
       defaultAvatar: store.getters['socialProfileData/defaultAvatar'],
     })
 
@@ -186,33 +131,6 @@ export default {
     const canSendFriendshipRequest = computed(() => {
       return store.getters['socialPostData/canSendFriendshipRequest']
     })
-
-    const postImages = computed(() => {
-      return store.getters['socialPostData/postImages']
-    })
-
-    const chooseFiles = () => {
-      document.getElementById('fileUpload').click()
-    }
-
-    const handleFileChange = (event) => {
-      const files = event.target.files
-      const allowedFormats = ['image/jpeg', 'image/png', 'image/jpg']
-
-      const newPostImages = Array.from(files)
-        .map((file) => {
-          if (allowedFormats.includes(file.type)) {
-            return {
-              url: URL.createObjectURL(file),
-              file: file,
-            }
-          } else {
-            return null
-          }
-        })
-        .filter(Boolean)
-      store.commit('socialPostData/uploadSelectedPostImages', newPostImages)
-    }
 
     const sendMessage = async () => {
       try {
@@ -232,17 +150,6 @@ export default {
         route.params.slug
       )
       store.commit('socialPostData/setCanSendFriendshipRequest', false)
-    }
-
-    const submitForm = async () => {
-      if (state.body !== '' || postImages.value.length != 0) {
-        let formData = new FormData()
-        formData.append('body', state.body)
-        await store.dispatch('socialPostData/submitPostForm', formData)
-        state.body = ''
-        state.postImage = null
-        store.commit('socialPostData/uploadSelectedPostImages', [])
-      }
     }
 
     onMounted(async () => {
@@ -268,12 +175,8 @@ export default {
       state,
       posts,
       profile,
-      postImages,
       sendMessage,
       sendFriendshipRequest,
-      submitForm,
-      chooseFiles,
-      handleFileChange,
       canSendFriendshipRequest,
     }
   },

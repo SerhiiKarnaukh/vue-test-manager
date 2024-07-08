@@ -27,7 +27,48 @@
         <div class="text-caption">{{ post.created_at_formatted }} ago</div>
       </v-col>
       <v-col class="text-right">
-        <v-icon>mdi-dots-vertical</v-icon>
+        <v-menu v-if="isAuthenticated" scroll-strategy="close" flat="true">
+          <template v-slot:activator="{ props }">
+            <v-btn
+              style="box-shadow: none"
+              icon="mdi-dots-vertical"
+              v-bind="props"
+              variant="text"
+              size="x-small"
+            >
+              <v-icon size="26px">mdi-dots-vertical</v-icon>
+            </v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item
+              v-if="
+                $store.state.socialProfileData.user.id != post.created_by.id
+              "
+            >
+              <v-list-item-title>
+                <v-btn @click="reportPost" class="pl-0" variant="text"
+                  ><v-icon size="24px" class="pr-1"
+                    >mdi-flag-variant-outline</v-icon
+                  >
+                  Report Post
+                </v-btn>
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item
+              v-if="
+                $store.state.socialProfileData.user.id == post.created_by.id
+              "
+            >
+              <v-list-item-title>
+                <v-btn @click="deletePost" class="pl-0" variant="text"
+                  ><v-icon size="24px" class="pr-1">mdi-delete</v-icon>
+                  Delete Post
+                </v-btn>
+              </v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </v-col>
     </v-row>
     <v-card-text class="py-4"
@@ -71,21 +112,36 @@
 <script>
 import axios from 'axios'
 import store from '@/store'
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
 import { useStore } from 'vuex'
 export default {
   name: 'TheSocialPostCard',
   props: {
     post: Object,
   },
-  setup() {
+  setup(props) {
     const store = useStore()
     const state = reactive({
       defaultAvatar: store.getters['socialProfileData/defaultAvatar'],
     })
 
+    const isAuthenticated = computed(
+      () => store.getters['authJWT/isAuthenticated']
+    )
+
+    const reportPost = async () => {
+      await store.dispatch('socialPostData/reportPost', props.post.id)
+    }
+
+    const deletePost = async () => {
+      await store.dispatch('socialPostData/deletePost', props.post.id)
+    }
+
     return {
       state,
+      isAuthenticated,
+      reportPost,
+      deletePost,
     }
   },
   data() {

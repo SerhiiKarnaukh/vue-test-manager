@@ -61,6 +61,12 @@ const mutations = {
   setCanSendFriendshipRequest(state, data) {
     state.canSendFriendshipRequest = data
   },
+  removePostFromAllList(state, postId) {
+    state.profilePostList = state.profilePostList.filter(
+      (post) => post.id !== postId
+    )
+    state.postList = state.postList.filter((post) => post.id !== postId)
+  },
 }
 
 const actions = {
@@ -154,6 +160,38 @@ const actions = {
     try {
       const response = await axios.get(`/api/social-posts/?trend=${trendId}`)
       commit('setTrendPosts', response.data.posts)
+    } catch (error) {
+      console.log('error', error)
+    }
+  },
+  async reportPost({ dispatch }, postId) {
+    try {
+      await axios.post(`/api/social-posts/${postId}/report/`)
+      await dispatch(
+        'alert/setMessage',
+        {
+          value: ['The post was reported'],
+          type: 'success',
+        },
+        { root: true }
+      )
+    } catch (error) {
+      console.log('error', error)
+    }
+  },
+  async deletePost({ state, commit, dispatch }, postId) {
+    try {
+      commit('removePostFromAllList', postId)
+      state.profile.posts_count -= 1
+      await axios.delete(`/api/social-posts/${postId}/delete/`)
+      await dispatch(
+        'alert/setMessage',
+        {
+          value: ['The post was deleted'],
+          type: 'success',
+        },
+        { root: true }
+      )
     } catch (error) {
       console.log('error', error)
     }

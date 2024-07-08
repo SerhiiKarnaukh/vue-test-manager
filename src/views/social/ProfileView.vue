@@ -46,33 +46,42 @@
                   </p>
                 </v-col>
               </v-row>
-              <v-btn
-                v-if="
-                  $store.state.socialProfileData.user.id != profile.id &&
-                  canSendFriendshipRequest
-                "
-                @click="sendFriendshipRequest"
-                color="primary"
-                class="mx-auto mt-4"
+              <v-alert
+                v-if="canSendFriendshipRequest == 'rejected'"
+                type="error"
+                :icon="false"
+                text="The friend request was rejected. Please try again later..."
               >
-                Add as Friend
-              </v-btn>
-              <v-btn
-                v-if="$store.state.socialProfileData.user.id != profile.id"
-                @click="sendMessage"
-                color="social"
-                class="mx-auto mt-4"
-              >
-                Send Message
-              </v-btn>
-              <v-btn
-                v-if="$store.state.socialProfileData.user.id == profile.id"
-                to="/social/profile/edit"
-                color="social"
-                class="mx-auto mt-4"
-              >
-                Edit Profile
-              </v-btn>
+              </v-alert>
+              <div v-else>
+                <v-btn
+                  v-if="
+                    $store.state.socialProfileData.user.id != profile.id &&
+                    canSendFriendshipRequest
+                  "
+                  @click="sendFriendshipRequest"
+                  color="primary"
+                  class="mx-auto mt-4"
+                >
+                  Add as Friend
+                </v-btn>
+                <v-btn
+                  v-if="$store.state.socialProfileData.user.id != profile.id"
+                  @click="sendMessage"
+                  color="social"
+                  class="mx-auto mt-4"
+                >
+                  Send Message
+                </v-btn>
+                <v-btn
+                  v-if="$store.state.socialProfileData.user.id == profile.id"
+                  to="/social/profile/edit"
+                  color="social"
+                  class="mx-auto mt-4"
+                >
+                  Edit Profile
+                </v-btn>
+              </div>
             </v-card-text>
           </v-card>
         </v-col>

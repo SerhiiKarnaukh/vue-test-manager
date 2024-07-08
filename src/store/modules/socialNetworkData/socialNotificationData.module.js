@@ -48,6 +48,10 @@ const actions = {
           name: 'postSocial',
           params: { id: notification.post_id },
         })
+      } else if (notification.type_of_notification == 'chat_message') {
+        router.push({
+          name: 'chatSocial',
+        })
       } else {
         router.push({
           name: 'friendsSocial',

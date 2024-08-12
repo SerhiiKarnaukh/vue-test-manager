@@ -283,7 +283,7 @@ export default {
   methods: {
     async getAllCategories() {
       axios
-        .get(`/store/api/v1/product-categories/`)
+        .get(`/taberna-store/api/v1/product-categories/`)
         .then((response) => {
           this.categories = response.data
         })

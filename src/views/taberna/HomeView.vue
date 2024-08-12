@@ -47,7 +47,7 @@ export default {
   methods: {
     getLatestProducts() {
       axios
-        .get('/store/api/v1/latest-products/')
+        .get('/taberna-store/api/v1/latest-products/')
         .then((response) => {
           this.latestProducts = response.data
         })

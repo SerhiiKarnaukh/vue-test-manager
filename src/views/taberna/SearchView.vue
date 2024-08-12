@@ -44,7 +44,7 @@ export default {
   methods: {
     async performSearch() {
       await axios
-        .post('/store/api/v1/products/search/', { query: this.query })
+        .post('/taberna-store/api/v1/products/search/', { query: this.query })
         .then((response) => {
           this.products = response.data
         })

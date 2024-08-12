@@ -47,7 +47,7 @@ export default {
     async getCategory() {
       const categorySlug = this.$route.params.category_slug
       axios
-        .get(`/store/api/v1/products/${categorySlug}/`)
+        .get(`/taberna-store/api/v1/products/${categorySlug}/`)
         .then((response) => {
           this.category = response.data
           document.title = this.category.name + ' | Taberna'

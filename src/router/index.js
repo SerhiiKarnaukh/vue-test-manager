@@ -65,7 +65,7 @@ const routes = [
     },
   },
   {
-    path: '/store/category/:category_slug/:product_slug',
+    path: '/taberna-store/category/:category_slug/:product_slug',
     name: 'productTaberna',
     component: () => import('@/views/taberna/ProductDetailView.vue'),
     meta: {
@@ -74,7 +74,7 @@ const routes = [
     },
   },
   {
-    path: '/store/category/:category_slug',
+    path: '/taberna-store/category/:category_slug',
     name: 'categoryTaberna',
     component: () => import('@/views/taberna/CategoryDetailView.vue'),
     meta: {

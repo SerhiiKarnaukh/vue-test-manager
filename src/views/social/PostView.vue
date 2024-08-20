@@ -3,7 +3,20 @@
     <v-container class="py-6" fluid>
       <v-row class="justify-center">
         <v-col cols="12" md="5" lg="6" class="px-4">
-          <div v-if="Object.keys(post).length !== 0">
+          <v-card
+            v-if="state.loading"
+            class="mb-6 pa-4 rounded-lg"
+            elevation="2"
+          >
+            <div class="d-flex justify-center align-center" cols="auto">
+              <v-progress-circular
+                color="primary"
+                indeterminate
+              ></v-progress-circular>
+            </div>
+          </v-card>
+
+          <div v-else-if="Object.keys(post).length !== 0">
             <TheSocialPostCard v-bind:post="post" />
           </div>
           <div v-for="comment in post.comments" :key="comment.id">
@@ -66,6 +79,7 @@ export default {
     const store = useStore()
     const state = reactive({
       body: '',
+      loading: true,
     })
 
     const post = computed(() => {
@@ -86,6 +100,7 @@ export default {
     onMounted(async () => {
       await store.dispatch('setPageTitle', 'Post')
       await store.dispatch('socialPostData/getPostData', route.params.id)
+      state.loading = false
     })
 
     return {

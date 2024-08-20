@@ -2,8 +2,16 @@
   <v-main>
     <v-container class="py-6" fluid>
       <v-row class="justify-center">
+        <v-col v-if="state.loading" cols="9" sm="5" md="3" lg="2" class="px-4">
+          <div class="d-flex justify-center align-center" cols="auto">
+            <v-progress-circular
+              color="primary"
+              indeterminate
+            ></v-progress-circular>
+          </div>
+        </v-col>
         <v-col
-          v-if="Object.keys(profile).length !== 0"
+          v-else-if="Object.keys(profile).length !== 0"
           cols="9"
           sm="5"
           md="3"
@@ -127,6 +135,7 @@ export default {
     const store = useStore()
     const state = reactive({
       defaultAvatar: store.getters['socialProfileData/defaultAvatar'],
+      loading: true,
     })
 
     const posts = computed(() => {
@@ -167,16 +176,19 @@ export default {
         'socialPostData/getProfilePostList',
         route.params.slug
       )
+      state.loading = false
       await store.dispatch('setPageTitle', profile.value.full_name)
     })
 
     watch(
       () => route.params.slug,
       async () => {
+        state.loading = true
         await store.dispatch(
           'socialPostData/getProfilePostList',
           route.params.slug
         )
+        state.loading = false
       }
     )
 

@@ -112,7 +112,7 @@
 <script>
 import axios from 'axios'
 import store from '@/store'
-import { reactive, computed } from 'vue'
+import { reactive, computed, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 export default {
   name: 'TheSocialPostCard',
@@ -129,6 +129,8 @@ export default {
       () => store.getters['authJWT/isAuthenticated']
     )
 
+    const likesCount = ref(props.post.likes_count)
+
     const reportPost = async () => {
       await store.dispatch('socialPostData/reportPost', props.post.id)
     }
@@ -137,35 +139,36 @@ export default {
       await store.dispatch('socialPostData/deletePost', props.post.id)
     }
 
+    const likePost = async (id) => {
+      try {
+        const response = await axios.post(`/api/social-posts/${id}/like/`)
+        if (response.data.message === 'like created') {
+          likesCount.value += 1
+        }
+      } catch (error) {
+        console.error('error', error)
+        store.dispatch('alert/setMessage', {
+          value: ['You must be logged in!'],
+          type: 'error',
+        })
+      }
+    }
+
+    watch(
+      () => props.post.likes_count,
+      (newLikesCount) => {
+        likesCount.value = newLikesCount
+      }
+    )
+
     return {
       state,
       isAuthenticated,
       reportPost,
       deletePost,
+      likesCount,
+      likePost,
     }
-  },
-  data() {
-    return {
-      likesCount: this.post.likes_count,
-    }
-  },
-  methods: {
-    likePost(id) {
-      axios
-        .post(`/api/social-posts/${id}/like/`)
-        .then((response) => {
-          if (response.data.message == 'like created') {
-            this.likesCount += 1
-          }
-        })
-        .catch((error) => {
-          console.log('error', error)
-          store.dispatch('alert/setMessage', {
-            value: ['You must be logged in!'],
-            type: 'error',
-          })
-        })
-    },
   },
 }
 </script>

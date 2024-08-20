@@ -98,6 +98,7 @@ const actions = {
   },
   async getPostData({ commit }, postId) {
     try {
+      commit('setPostData', {})
       const response = await axios.get(`/api/social-posts/${postId}/`)
       commit('setPostData', response.data.post)
     } catch (error) {
@@ -106,6 +107,7 @@ const actions = {
   },
   async getProfilePostList({ commit }, profileSlug) {
     try {
+      commit('setProfile', {})
       const response = await axios.get(
         `/api/social-posts/profile/${profileSlug}/`
       )

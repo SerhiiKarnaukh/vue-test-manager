@@ -102,6 +102,16 @@
             :key="post.id"
             v-bind:post="post"
           />
+          <div
+            v-if="state.isPostLoading"
+            class="d-flex justify-center align-center"
+            cols="auto"
+          >
+            <v-progress-circular
+              color="primary"
+              indeterminate
+            ></v-progress-circular>
+          </div>
         </v-col>
 
         <v-col cols="12" md="4" lg="3" class="px-4">
@@ -118,7 +128,7 @@ import ThePeopleYouMayKnow from '@/components/social/ThePeopleYouMayKnow.vue'
 import TheTrends from '@/components/social/TheTrends.vue'
 import TheSocialPostCard from '@/components/social/TheSocialPostCard.vue'
 import TheCreatePostForm from '@/components/social/TheCreatePostForm.vue'
-import { reactive, onMounted, watch, computed } from 'vue'
+import { reactive, onMounted, onUnmounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import router from '@/router'
@@ -136,6 +146,7 @@ export default {
     const state = reactive({
       defaultAvatar: store.getters['socialProfileData/defaultAvatar'],
       loading: true,
+      isPostLoading: false,
     })
 
     const posts = computed(() => {
@@ -149,6 +160,10 @@ export default {
     const canSendFriendshipRequest = computed(() => {
       return store.getters['socialPostData/canSendFriendshipRequest']
     })
+
+    const profilePostListNextPage = computed(
+      () => store.getters['socialPostData/profilePostListNextPage']
+    )
 
     const sendMessage = async () => {
       try {
@@ -170,6 +185,21 @@ export default {
       store.commit('socialPostData/setCanSendFriendshipRequest', false)
     }
 
+    const handleScroll = async () => {
+      const bottomReached =
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 10
+      if (bottomReached) {
+        if (profilePostListNextPage.value) {
+          state.isPostLoading = true
+          await store.dispatch(
+            'socialPostData/fetchNextPageOfProfilePostList',
+            profilePostListNextPage.value
+          )
+          state.isPostLoading = false
+        }
+      }
+    }
+
     onMounted(async () => {
       window.scrollTo(0, 0)
       await store.dispatch(
@@ -178,6 +208,10 @@ export default {
       )
       state.loading = false
       await store.dispatch('setPageTitle', profile.value.full_name)
+      window.addEventListener('scroll', handleScroll)
+    })
+    onUnmounted(() => {
+      window.removeEventListener('scroll', handleScroll)
     })
 
     watch(

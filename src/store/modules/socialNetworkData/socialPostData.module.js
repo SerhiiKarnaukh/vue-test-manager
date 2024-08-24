@@ -7,10 +7,15 @@ const state = () => ({
   profile: {},
   searchPosts: [],
   searchProfiles: {},
+  searchQuery: null,
   trends: [],
   trendPosts: [],
   postImages: [],
   canSendFriendshipRequest: true,
+  postsNextPage: null,
+  profilePostListNextPage: null,
+  searchNextPage: null,
+  trendNextPage: null,
 })
 
 const mutations = {
@@ -21,8 +26,13 @@ const mutations = {
     state.profile = {}
     state.searchPosts = []
     state.searchProfiles = {}
+    state.searchQuery = null
     state.trends = []
     state.trendPosts = []
+    state.postsNextPage = null
+    state.profilePostListNextPage = null
+    state.searchNextPage = null
+    state.trendNextPage = null
   },
   setPostList(state, postList) {
     state.postList = postList
@@ -41,9 +51,10 @@ const mutations = {
     state.profile = profile
   },
   setSearchData(state, searchData) {
-    const { searchPosts, searchProfiles } = searchData
+    const { searchPosts, searchProfiles, searchQuery } = searchData
     state.searchPosts = searchPosts
     state.searchProfiles = searchProfiles
+    state.searchQuery = searchQuery
   },
   setTrends(state, trends) {
     state.trends = trends
@@ -67,16 +78,37 @@ const mutations = {
     )
     state.postList = state.postList.filter((post) => post.id !== postId)
   },
+  setPostsNextPage(state, value) {
+    state.postsNextPage = value
+  },
+  setProfilePostListNextPage(state, value) {
+    state.profilePostListNextPage = value
+  },
+  setSearchNextPage(state, value) {
+    state.searchNextPage = value
+  },
+  setTrendNextPage(state, value) {
+    state.trendNextPage = value
+  },
 }
 
 const actions = {
   async getFeed({ commit }) {
     try {
       const response = await axios.get('/api/social-posts/')
-      commit('setPostList', response.data.posts)
+      commit('setPostList', response.data.results.posts)
+      commit('setPostsNextPage', response.data.next)
     } catch (error) {
       console.log('error', error)
     }
+  },
+  async fetchNextPageOfPosts({ commit, state }, url) {
+    const URLobj = new URL(url)
+    await axios.get(URLobj.pathname + URLobj.search).then(async (response) => {
+      const posts = [...state.postList, ...response.data.results.posts]
+      commit('setPostList', posts)
+      commit('setPostsNextPage', response.data.next)
+    })
   },
   async submitPostForm({ state, commit }, formData) {
     if (state.postImages) {
@@ -111,15 +143,24 @@ const actions = {
       const response = await axios.get(
         `/api/social-posts/profile/${profileSlug}/`
       )
-      commit('setProfilePostList', response.data.posts)
-      commit('setProfile', response.data.profile)
+      commit('setProfilePostList', response.data.results.posts)
+      commit('setProfile', response.data.results.profile)
       commit(
         'setCanSendFriendshipRequest',
-        response.data.can_send_friendship_request
+        response.data.results.can_send_friendship_request
       )
+      commit('setProfilePostListNextPage', response.data.next)
     } catch (error) {
       console.log('error', error)
     }
+  },
+  async fetchNextPageOfProfilePostList({ commit, state }, url) {
+    const URLobj = new URL(url)
+    await axios.get(URLobj.pathname + URLobj.search).then(async (response) => {
+      const posts = [...state.profilePostList, ...response.data.results.posts]
+      commit('setProfilePostList', posts)
+      commit('setProfilePostListNextPage', response.data.next)
+    })
   },
   async submitPostCommentForm({ state }, payload) {
     const { postId, commentBody } = payload
@@ -138,17 +179,35 @@ const actions = {
   },
   async search({ commit }, query) {
     try {
-      const response = await axios.post('/api/social-posts/search/', {
-        query: query,
-      })
+      const response = await axios.post('/api/social-posts/search/', { query })
       const payload = {
-        searchPosts: response.data.posts,
-        searchProfiles: response.data.profiles,
+        searchPosts: response.data.results.posts,
+        searchProfiles: response.data.results.profiles,
+        searchQuery: query,
       }
       commit('setSearchData', payload)
+      commit('setSearchNextPage', response.data.next)
     } catch (error) {
       console.log('error', error)
     }
+  },
+  async fetchNextPageOfSearch({ commit, state }, url) {
+    const URLobj = new URL(url)
+    const params = new URLSearchParams(URLobj.search)
+    params.set('query', state.searchQuery)
+
+    await axios
+      .get(`${URLobj.pathname}?${params.toString()}`)
+      .then(async (response) => {
+        const posts = [...state.searchPosts, ...response.data.results.posts]
+        const payload = {
+          searchPosts: posts,
+          searchProfiles: response.data.results.profiles,
+          searchQuery: state.searchQuery,
+        }
+        commit('setSearchData', payload)
+        commit('setSearchNextPage', response.data.next)
+      })
   },
   async getTrends({ commit }) {
     try {
@@ -161,10 +220,19 @@ const actions = {
   async getTrendPosts({ commit }, trendId) {
     try {
       const response = await axios.get(`/api/social-posts/?trend=${trendId}`)
-      commit('setTrendPosts', response.data.posts)
+      commit('setTrendPosts', response.data.results.posts)
+      commit('setTrendNextPage', response.data.next)
     } catch (error) {
       console.log('error', error)
     }
+  },
+  async fetchNextPageOfTrend({ commit, state }, url) {
+    const URLobj = new URL(url)
+    await axios.get(URLobj.pathname + URLobj.search).then(async (response) => {
+      const posts = [...state.trendPosts, ...response.data.results.posts]
+      commit('setTrendPosts', posts)
+      commit('setTrendNextPage', response.data.next)
+    })
   },
   async reportPost({ dispatch }, postId) {
     try {
@@ -211,6 +279,10 @@ const getters = {
   trendPosts: (state) => state.trendPosts,
   postImages: (state) => state.postImages,
   canSendFriendshipRequest: (state) => state.canSendFriendshipRequest,
+  postsNextPage: (state) => state.postsNextPage,
+  profilePostListNextPage: (state) => state.profilePostListNextPage,
+  searchNextPage: (state) => state.searchNextPage,
+  trendNextPage: (state) => state.trendNextPage,
 }
 
 export default {

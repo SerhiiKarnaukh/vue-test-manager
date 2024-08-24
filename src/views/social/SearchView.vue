@@ -86,6 +86,16 @@
             :key="post.id"
             v-bind:post="post"
           />
+          <div
+            v-if="state.isPostLoading"
+            class="d-flex justify-center align-center"
+            cols="auto"
+          >
+            <v-progress-circular
+              color="primary"
+              indeterminate
+            ></v-progress-circular>
+          </div>
         </v-col>
 
         <v-col cols="12" md="4" lg="3" class="px-4">
@@ -101,7 +111,7 @@
 import ThePeopleYouMayKnow from '@/components/social/ThePeopleYouMayKnow.vue'
 import TheTrends from '@/components/social/TheTrends.vue'
 import TheSocialPostCard from '@/components/social/TheSocialPostCard.vue'
-import { reactive, onMounted, computed } from 'vue'
+import { reactive, onMounted, onUnmounted, computed } from 'vue'
 import { useStore } from 'vuex'
 
 export default {
@@ -115,6 +125,7 @@ export default {
     const state = reactive({
       query: '',
       defaultAvatar: store.getters['socialProfileData/defaultAvatar'],
+      isPostLoading: false,
     })
 
     const posts = computed(() => {
@@ -125,9 +136,28 @@ export default {
       return store.getters['socialPostData/searchProfiles']
     })
 
+    const searchNextPage = computed(
+      () => store.getters['socialPostData/searchNextPage']
+    )
+
     const submitForm = async () => {
       if (state.query !== '') {
         await store.dispatch('socialPostData/search', state.query)
+      }
+    }
+
+    const handleScroll = async () => {
+      const bottomReached =
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 10
+      if (bottomReached) {
+        if (searchNextPage.value) {
+          state.isPostLoading = true
+          await store.dispatch(
+            'socialPostData/fetchNextPageOfSearch',
+            searchNextPage.value
+          )
+          state.isPostLoading = false
+        }
       }
     }
 
@@ -138,6 +168,10 @@ export default {
       }
       store.commit('socialPostData/setSearchData', payload)
       await store.dispatch('setPageTitle', 'Search')
+      window.addEventListener('scroll', handleScroll)
+    })
+    onUnmounted(() => {
+      window.removeEventListener('scroll', handleScroll)
     })
 
     return {

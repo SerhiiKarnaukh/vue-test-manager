@@ -86,13 +86,11 @@
                 </v-row>
 
                 <v-card-text>
-                  <v-list-item-title>
-                    {{ message.body }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ message.created_at_formatted }} ago
-                  </v-list-item-subtitle>
+                  {{ message.body }}
                 </v-card-text>
+                <v-list-item-subtitle>
+                  {{ message.created_at_formatted }} ago
+                </v-list-item-subtitle>
               </v-list-item>
             </v-list>
           </v-card>

@@ -2,6 +2,8 @@
 
 ### App on Firebase: <https://karnaukh-vue-test.web.app>
 
+![VAM screenshot](https://github.com/SerhiiKarnaukh/vue-test-manager/blob/main/vue_manager.jpg)
+
 ## Node.js version
 
 ```

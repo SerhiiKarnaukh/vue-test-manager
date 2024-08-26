@@ -11,6 +11,7 @@ const CustomLightTheme = {
     secondary: '#5CBBF6',
     manager: '#1f1f2e',
     social: '7E2553',
+    iconColor: '#000000',
   },
 }
 
@@ -28,6 +29,7 @@ export default createVuetify({
           secondary: '#5CBBF6',
           manager: '#535f7c',
           social: '1D2B53',
+          iconColor: '#FFFFFF',
         },
       },
     },

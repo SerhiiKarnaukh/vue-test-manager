@@ -87,14 +87,18 @@
     <v-card-actions>
       <v-row align="center">
         <v-col cols="auto">
-          <v-icon @click="likePost(post.id)" small class="mr-1"
+          <v-icon
+            @click="likePost(post.id)"
+            color="iconColor"
+            small
+            class="mr-1"
             >mdi-thumb-up-outline</v-icon
           >
           <span>{{ likesCount }}</span>
         </v-col>
         <v-col cols="auto">
           <router-link :to="{ name: 'postSocial', params: { id: post.id } }">
-            <v-icon small class="mr-1" color="black"
+            <v-icon small class="mr-1" color="iconColor"
               >mdi-comment-outline</v-icon
             >
           </router-link>
@@ -111,7 +115,6 @@
 
 <script>
 import axios from 'axios'
-import store from '@/store'
 import { reactive, computed, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 export default {

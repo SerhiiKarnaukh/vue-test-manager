@@ -9,3 +9,7 @@
 See [Social Network Components](https://github.com/SerhiiKarnaukh/vue-test-manager/tree/main/src/components/social)
 
 See [Social Network Vuex Store](https://github.com/SerhiiKarnaukh/vue-test-manager/tree/main/src/store/modules/socialNetworkData)
+
+## Backend here
+
+See [Social Network Backend](https://django.karnaukh-webdev.com/category/django/social-network-drf/)

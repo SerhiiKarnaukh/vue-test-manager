@@ -193,6 +193,7 @@ export default {
 <style scoped>
 .active-conversation {
   background-color: #e0e0e0;
+  color: #000000de;
 }
 .sender-message {
   text-align: right;
@@ -202,6 +203,7 @@ export default {
   margin: 8px;
   max-width: 50%;
   margin-left: auto;
+  color: #000000de;
 }
 .receiver-message {
   text-align: left;
@@ -210,5 +212,6 @@ export default {
   padding: 8px;
   margin: 8px;
   max-width: 50%;
+  color: #000000de;
 }
 </style>

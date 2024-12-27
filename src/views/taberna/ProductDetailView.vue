@@ -33,7 +33,7 @@
                     <v-card-actions>
                       <v-col cols="3">
                         <v-text-field
-                          v-model.number="quantity"
+                          v-model.number="state.quantity"
                           type="number"
                           min="1"
                         ></v-text-field>
@@ -45,17 +45,17 @@
                       variant="flat"
                       color="primary"
                       prepend-icon="mdi-basket"
-                      @click="addToCart()"
+                      @click="addToCart"
                       >Add to Cart</v-btn
                     >
                   </v-card-actions>
-                  <v-snackbar v-model="snackbar" color="success">
+                  <v-snackbar v-model="state.snackbar" color="success">
                     The product was added to the cart
                     <template v-slot:actions>
                       <v-btn
                         color="black"
                         variant="text"
-                        @click="snackbar = false"
+                        @click="state.snackbar = false"
                       >
                         Close
                       </v-btn>
@@ -72,45 +72,58 @@
 </template>
 
 <script>
-import axios from 'axios'
+import { useStore } from 'vuex'
+import { useRoute } from 'vue-router'
+import { computed, reactive, onMounted, watch } from 'vue'
 
 export default {
   name: 'ProductDetailView',
-  data() {
-    return {
-      product: {},
+
+  setup() {
+    const store = useStore()
+    const route = useRoute()
+    const state = reactive({
       quantity: 1,
       snackbar: false,
-    }
-  },
-  mounted() {
-    this.getProduct()
-  },
-  methods: {
-    async getProduct() {
-      const category_slug = this.$route.params.category_slug
-      const product_slug = this.$route.params.product_slug
-      await axios
-        .get(`/taberna-store/api/v1/products/${category_slug}/${product_slug}`)
-        .then((response) => {
-          this.product = response.data
-          document.title = this.product.name + ' | Taberna'
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    },
-    addToCart() {
-      if (isNaN(this.quantity) || this.quantity < 1) {
-        this.quantity = 1
+    })
+
+    const categorySlug = route.params.category_slug
+    const productSlug = route.params.product_slug
+
+    const product = computed(
+      () => store.getters['tabernaProductData/productDetail'].product
+    )
+
+    const addToCart = () => {
+      if (isNaN(state.quantity) || state.quantity < 1) {
+        state.quantity = 1
       }
       const item = {
-        product: this.product,
-        quantity: this.quantity,
+        product: state.product,
+        quantity: state.quantity,
       }
-      this.$store.commit('addToCart', item)
-      this.snackbar = true
-    },
+      store.commit('tabernaCartData/addToCart', item)
+      state.snackbar = true
+    }
+
+    onMounted(async () => {
+      await store.dispatch('tabernaProductData/getProductDetail', {
+        categorySlug,
+        productSlug,
+      })
+    })
+
+    watch(product, (newProduct) => {
+      if (newProduct?.name) {
+        store.dispatch('setPageTitle', newProduct.name)
+      }
+    })
+
+    return {
+      state,
+      product,
+      addToCart,
+    }
   },
 }
 </script>

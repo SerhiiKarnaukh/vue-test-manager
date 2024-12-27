@@ -6,6 +6,9 @@ import socialProfileData from './modules/socialNetworkData/socialProfileData.mod
 import socialPostData from './modules/socialNetworkData/socialPostData.module'
 import socialChatData from './modules/socialNetworkData/socialChatData.module'
 import socialNotificationData from './modules/socialNetworkData/socialNotificationData.module'
+import tabernaCartData from './modules/tabernaData/tabernaCartData.module'
+import tabernaProductData from './modules/tabernaData/tabernaProductData.module'
+import tabernaProfileData from './modules/tabernaData/tabernaProfileData.module'
 const plugins = []
 
 if (process.env.NODE_ENV === 'development') {
@@ -25,13 +28,6 @@ export default createStore({
   mutations: {
     setAppName(state, appName) {
       state.appName = appName
-    },
-    initializeStore(state) {
-      if (localStorage.getItem('cart')) {
-        state.cart = JSON.parse(localStorage.getItem('cart'))
-      } else {
-        localStorage.setItem('cart', JSON.stringify(state.cart))
-      }
     },
     addToCart(state, item) {
       const exists = state.cart.items.filter(
@@ -65,6 +61,9 @@ export default createStore({
     socialPostData,
     socialChatData,
     socialNotificationData,
+    tabernaCartData,
+    tabernaProductData,
+    tabernaProfileData,
   },
   getters: {},
 })

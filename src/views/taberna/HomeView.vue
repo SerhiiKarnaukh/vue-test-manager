@@ -28,33 +28,30 @@
 </template>
 
 <script>
-import axios from 'axios'
+import { useStore } from 'vuex'
+import { computed, onMounted } from 'vue'
 import TheProductCard from '@/components/taberna/TheProductCard.vue'
+
 export default {
   name: 'HomeView',
   components: {
     TheProductCard,
   },
-  data() {
+  setup() {
+    const store = useStore()
+
+    const latestProducts = computed(
+      () => store.getters['tabernaProductData/latestProducts']
+    )
+
+    onMounted(async () => {
+      await store.dispatch('tabernaProductData/getLatestProducts')
+      await store.dispatch('setPageTitle', 'Home')
+    })
+
     return {
-      latestProducts: [],
+      latestProducts,
     }
-  },
-  mounted() {
-    this.getLatestProducts()
-    document.title = 'Home | Taberna'
-  },
-  methods: {
-    getLatestProducts() {
-      axios
-        .get('/taberna-store/api/v1/latest-products/')
-        .then((response) => {
-          this.latestProducts = response.data
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    },
   },
 }
 </script>

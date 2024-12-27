@@ -7,10 +7,17 @@
 <script>
 import TheNavbar from '@/components/taberna/TheNavbar.vue'
 import TheFooter from '@/components/taberna/TheFooter.vue'
+import { useStore } from 'vuex'
+import { onBeforeMount } from 'vue'
 export default {
   components: { TheNavbar, TheFooter },
   setup() {
-    return {}
+    const store = useStore()
+
+    onBeforeMount(async () => {
+      store.commit('setAppName', 'Taberna E-com')
+      store.commit('tabernaCartData/initializeStore')
+    })
   },
 }
 </script>

@@ -15,6 +15,7 @@ export default {
     const store = useStore()
 
     onBeforeMount(async () => {
+      await store.dispatch('authJWT/checkActiveApp', 'taberna')
       store.commit('setAppName', 'Taberna E-com')
       store.commit('tabernaCartData/initializeStore')
     })

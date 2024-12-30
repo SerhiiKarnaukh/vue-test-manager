@@ -10,7 +10,7 @@
       >
         Home
       </v-btn>
-      <div v-if="!$store.state.authToken.token">
+      <div v-if="!$store.state.authJWT.accessToken">
         <v-btn
           v-for="link in links"
           :key="`${link.label}-footer-link`"

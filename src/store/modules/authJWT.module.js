@@ -1,8 +1,10 @@
 import axios from 'axios'
 import { error } from '@/utils/error'
+
 const state = {
   accessToken: localStorage.getItem('access') || null,
   refreshToken: localStorage.getItem('refresh') || null,
+  activeApp: localStorage.getItem('active_app') || null,
 }
 
 const mutations = {
@@ -15,6 +17,10 @@ const mutations = {
   },
   updateRefreshToken(state, token) {
     state.refreshToken = token
+  },
+  setActiveApp(state, app) {
+    state.activeApp = app
+    localStorage.setItem('active_app', app)
   },
 }
 
@@ -31,6 +37,7 @@ const actions = {
 
           commit('authSuccess', token)
           commit('updateRefreshToken', refreshToken)
+          commit('setActiveApp', credentials.activeApp || null)
           commit('alert/clearMessage', null, { root: true })
           resolve(response)
         })
@@ -53,6 +60,7 @@ const actions = {
     return new Promise((resolve) => {
       localStorage.removeItem('access')
       localStorage.removeItem('refresh')
+      localStorage.removeItem('active_app')
       commit('authLogout')
       delete axios.defaults.headers.common['Authorization']
       resolve()
@@ -79,6 +87,11 @@ const actions = {
           reject(error)
         })
     })
+  },
+  checkActiveApp({ commit, dispatch }, activeApp) {
+    if (activeApp && state.activeApp != activeApp) {
+      dispatch('logout')
+    }
   },
 }
 

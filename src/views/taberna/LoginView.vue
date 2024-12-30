@@ -71,9 +71,10 @@ export default {
         const formData = {
           email: state.email,
           password: state.password,
+          activeApp: 'taberna',
         }
         try {
-          await store.dispatch('authToken/login', formData)
+          await store.dispatch('authJWT/login', formData)
           router.push('/taberna')
         } catch (e) {
           return

@@ -16,6 +16,7 @@ export default {
     const store = useStore()
 
     onBeforeMount(async () => {
+      await store.dispatch('authJWT/checkActiveApp', 'social')
       store.commit('setAppName', 'Social Network')
       store.commit('socialProfileData/initSocial')
       await store.dispatch(

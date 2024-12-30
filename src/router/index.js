@@ -16,7 +16,7 @@ const routes = [
     name: 'notFound',
     component: () => import('@/views/appsmanager/NotFoundView.vue'),
     meta: {
-      auth: false,
+      authJWT: false,
       layout: 'mainAppsManager',
     },
   },
@@ -34,7 +34,7 @@ const routes = [
     name: 'homeTaberna',
     component: () => import('@/views/taberna/HomeView.vue'),
     meta: {
-      auth: false,
+      authJWT: false,
       layout: 'mainTaberna',
     },
   },
@@ -51,7 +51,7 @@ const routes = [
     name: 'loginTaberna',
     component: () => import('@/views/taberna/LoginView.vue'),
     meta: {
-      auth: false,
+      authJWT: false,
       layout: 'mainTaberna',
     },
   },
@@ -60,7 +60,7 @@ const routes = [
     name: 'dashboardTaberna',
     component: () => import('@/views/taberna/DashboardView.vue'),
     meta: {
-      auth: true,
+      authJWT: true,
       layout: 'mainTaberna',
     },
   },
@@ -69,7 +69,7 @@ const routes = [
     name: 'productTaberna',
     component: () => import('@/views/taberna/ProductDetailView.vue'),
     meta: {
-      auth: false,
+      authJWT: false,
       layout: 'mainTaberna',
     },
   },
@@ -78,7 +78,7 @@ const routes = [
     name: 'categoryTaberna',
     component: () => import('@/views/taberna/CategoryDetailView.vue'),
     meta: {
-      auth: false,
+      authJWT: false,
       layout: 'mainTaberna',
     },
   },
@@ -103,7 +103,7 @@ const routes = [
     name: 'checkoutTaberna',
     component: () => import('@/views/taberna/CheckoutView.vue'),
     meta: {
-      auth: true,
+      authJWT: true,
       layout: 'mainTaberna',
     },
   },
@@ -230,17 +230,11 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
-  const requireAuth = to.meta.auth
-
-  if (requireAuth && store.getters['authToken/isAuthenticated']) {
-    next()
-  } else if (requireAuth && !store.getters['authToken/isAuthenticated']) {
-    next('/taberna/login?message=auth')
-  } else {
-    next()
-  }
-})
+function getLoginRoute(path) {
+  if (path.startsWith('/taberna')) return '/taberna/login?message=auth'
+  if (path.startsWith('/social')) return '/social/login?message=auth'
+  return '/'
+}
 
 router.beforeEach((to, from, next) => {
   const requireAuthJWT = to.meta.authJWT
@@ -248,7 +242,7 @@ router.beforeEach((to, from, next) => {
   if (requireAuthJWT && store.getters['authJWT/isAuthenticated']) {
     next()
   } else if (requireAuthJWT && !store.getters['authJWT/isAuthenticated']) {
-    next('/social/login?message=auth')
+    next(getLoginRoute(to.path))
   } else {
     next()
   }

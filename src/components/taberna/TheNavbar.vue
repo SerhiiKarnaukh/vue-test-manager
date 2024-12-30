@@ -49,7 +49,7 @@
             </v-list-item>
           </v-list>
         </v-menu>
-        <div v-if="!$store.state.authToken.token">
+        <div v-if="!$store.state.authJWT.accessToken">
           <v-btn
             v-for="link in links"
             flat
@@ -63,7 +63,7 @@
           </v-btn>
         </div>
 
-        <div v-if="$store.state.authToken.token">
+        <div v-if="$store.state.authJWT.accessToken">
           <v-btn
             flat
             color="white"
@@ -157,7 +157,7 @@
             </v-list-item>
           </v-list>
         </v-menu>
-        <div v-if="!$store.state.authToken.token">
+        <div v-if="!$store.state.authJWT.accessToken">
           <v-list-item
             v-for="item in links"
             :key="`${item.label}-navbar-drawer-link`"
@@ -167,7 +167,7 @@
             {{ item.label }}
           </v-list-item>
         </div>
-        <div v-if="$store.state.authToken.token">
+        <div v-if="$store.state.authJWT.accessToken">
           <v-list-item
             to="/taberna/dashboard"
             prepend-icon="mdi-view-dashboard-outline"

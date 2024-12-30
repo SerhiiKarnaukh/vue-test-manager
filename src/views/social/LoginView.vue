@@ -74,6 +74,7 @@ export default {
         const formData = {
           email: state.email,
           password: state.password,
+          activeApp: 'social',
         }
         try {
           await store.dispatch('authJWT/login', formData)

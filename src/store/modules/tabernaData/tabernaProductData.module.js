@@ -3,6 +3,7 @@ const state = () => ({
   latestProducts: [],
   productDetail: {
     product: {},
+    variations: {},
   },
 })
 

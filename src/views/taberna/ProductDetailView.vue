@@ -31,12 +31,27 @@
 
                     <v-card-text>{{ product.description }}</v-card-text>
                     <v-card-actions>
-                      <v-col cols="3">
-                        <v-text-field
-                          v-model.number="state.quantity"
-                          type="number"
-                          min="1"
-                        ></v-text-field>
+                      <v-col cols="4">
+                        <v-select
+                          v-model="state.selectedColor"
+                          :items="variations.colors"
+                          item-value="id"
+                          item-title="variation_value"
+                          label="Select Color"
+                          :error="!!state.colorError"
+                          :error-messages="state.colorError"
+                        ></v-select>
+                      </v-col>
+                      <v-col cols="4">
+                        <v-select
+                          v-model="state.selectedSize"
+                          :items="variations.sizes"
+                          item-value="id"
+                          item-title="variation_value"
+                          label="Select Size"
+                          :error="!!state.sizeError"
+                          :error-messages="state.sizeError"
+                        ></v-select>
                       </v-col>
                     </v-card-actions>
                   </div>
@@ -83,8 +98,11 @@ export default {
     const store = useStore()
     const route = useRoute()
     const state = reactive({
-      quantity: 1,
       snackbar: false,
+      selectedColor: null,
+      selectedSize: null,
+      colorError: '',
+      sizeError: '',
     })
 
     const categorySlug = route.params.category_slug
@@ -94,15 +112,31 @@ export default {
       () => store.getters['tabernaProductData/productDetail'].product
     )
 
+    const variations = computed(
+      () => store.getters['tabernaProductData/productDetail'].variations
+    )
+
     const addToCart = () => {
-      if (isNaN(state.quantity) || state.quantity < 1) {
-        state.quantity = 1
+      state.colorError = ''
+      state.sizeError = ''
+
+      if (!state.selectedColor) {
+        state.colorError = 'Please select a color'
       }
-      const item = {
-        product: state.product,
-        quantity: state.quantity,
+      if (!state.selectedSize) {
+        state.sizeError = 'Please select a size'
       }
-      store.commit('tabernaCartData/addToCart', item)
+
+      if (state.colorError || state.sizeError) {
+        return
+      }
+
+      const cartItem = {
+        product: product.value,
+        color: state.selectedColor,
+        size: state.selectedSize,
+      }
+      store.commit('tabernaCartData/addToCart', cartItem)
       state.snackbar = true
     }
 
@@ -122,6 +156,7 @@ export default {
     return {
       state,
       product,
+      variations,
       addToCart,
     }
   },

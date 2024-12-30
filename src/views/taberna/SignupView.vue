@@ -1,6 +1,14 @@
 <template>
   <v-main class="px-4 pb-4">
-    <v-card max-width="700" class="mx-auto">
+    <v-card-title v-if="state.loading">
+      <v-row align="center" class="fill-height ma-0" justify="center">
+        <v-progress-circular
+          color="grey lighten-5"
+          indeterminate
+        ></v-progress-circular>
+      </v-row>
+    </v-card-title>
+    <v-card v-else max-width="700" class="mx-auto">
       <v-card-title class="mb-6">
         <h2 class="text-md-h3 font-weight-medium">Create an account</h2>
       </v-card-title>
@@ -36,24 +44,24 @@
           ></v-text-field>
           <v-text-field
             v-model.trim="state.password"
-            :type="showPassword ? 'text' : 'password'"
+            :type="state.showPassword ? 'text' : 'password'"
             clearable
             label="Password"
             placeholder="Enter your password"
             prepend-icon="mdi-lock"
-            :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-            @click:append-inner="showPassword = !showPassword"
+            :append-inner-icon="state.showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+            @click:append-inner="state.showPassword = !state.showPassword"
             :error-messages="v$.password.$errors.map((e) => e.$message)"
           ></v-text-field>
           <v-text-field
             v-model.trim="state.password2"
-            :type="showPassword ? 'text' : 'password'"
+            :type="state.showPassword ? 'text' : 'password'"
             clearable
             label="Repeat password"
             placeholder="Repeat your password"
             prepend-icon="mdi-lock"
-            :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-            @click:append-inner="showPassword = !showPassword"
+            :append-inner-icon="state.showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+            @click:append-inner="state.showPassword = !state.showPassword"
             :error-messages="v$.password2.$errors.map((e) => e.$message)"
           ></v-text-field>
           <v-divider></v-divider>
@@ -72,7 +80,7 @@
 <script>
 import { reactive } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
-import { required, email, minLength } from '@vuelidate/validators'
+import { required, email, minLength, maxLength } from '@vuelidate/validators'
 import router from '@/router'
 import { useStore } from 'vuex'
 export default {
@@ -85,14 +93,32 @@ export default {
       email: '',
       password: '',
       password2: '',
+      showPassword: false,
+      loading: false,
     })
     const rules = {
-      username: { required, minLength: minLength(3) },
-      first_name: { required, minLength: minLength(3) },
-      last_name: { required, minLength: minLength(3) },
-      email: { required, email },
-      password: { required, minLength: minLength(6) },
-      password2: { required, minLength: minLength(6) },
+      username: { required, minLength: minLength(3), maxLength: maxLength(50) },
+      first_name: {
+        required,
+        minLength: minLength(3),
+        maxLength: maxLength(50),
+      },
+      last_name: {
+        required,
+        minLength: minLength(3),
+        maxLength: maxLength(50),
+      },
+      email: { required, email, maxLength: maxLength(100) },
+      password: {
+        required,
+        minLength: minLength(6),
+        maxLength: maxLength(128),
+      },
+      password2: {
+        required,
+        minLength: minLength(6),
+        maxLength: maxLength(128),
+      },
     }
 
     const v$ = useVuelidate(rules, state)
@@ -112,13 +138,16 @@ export default {
             last_name: state.last_name,
             email: state.email,
             password: state.password,
-            is_active: true,
+            registration_source: 'taberna',
           }
           try {
+            state.loading = true
             await store.dispatch('authToken/register', formData)
             router.push('/taberna/login')
           } catch (e) {
             return
+          } finally {
+            state.loading = false
           }
           return
         }
@@ -127,8 +156,5 @@ export default {
 
     return { state, v$, registerHandler }
   },
-  data: () => ({
-    showPassword: false,
-  }),
 }
 </script>

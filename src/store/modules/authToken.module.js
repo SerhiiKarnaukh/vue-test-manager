@@ -78,10 +78,14 @@ export default {
       try {
         let url = '/api/v1/authusers/'
         const socialProfileUrl = '/api/social-profiles/register/'
+        const tabernaProfileUrl = '/taberna-profiles/api/register/'
 
         switch (payload.registration_source) {
           case 'social_network':
             url = socialProfileUrl
+            break
+          case 'taberna':
+            url = tabernaProfileUrl
             break
           default:
             break

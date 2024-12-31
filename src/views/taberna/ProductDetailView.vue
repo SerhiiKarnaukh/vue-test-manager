@@ -35,7 +35,7 @@
                         <v-select
                           v-model="state.selectedColor"
                           :items="variations.colors"
-                          item-value="id"
+                          item-value="item"
                           item-title="variation_value"
                           label="Select Color"
                           :error="!!state.colorError"
@@ -46,7 +46,7 @@
                         <v-select
                           v-model="state.selectedSize"
                           :items="variations.sizes"
-                          item-value="id"
+                          item-value="item"
                           item-title="variation_value"
                           label="Select Size"
                           :error="!!state.sizeError"
@@ -87,6 +87,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import { computed, reactive, onMounted, watch } from 'vue'
@@ -116,7 +117,7 @@ export default {
       () => store.getters['tabernaProductData/productDetail'].variations
     )
 
-    const addToCart = () => {
+    const addToCart = async () => {
       state.colorError = ''
       state.sizeError = ''
 
@@ -130,13 +131,11 @@ export default {
       if (state.colorError || state.sizeError) {
         return
       }
-
-      const cartItem = {
-        product: product.value,
-        color: state.selectedColor,
-        size: state.selectedSize,
-      }
-      store.commit('tabernaCartData/addToCart', cartItem)
+      await store.dispatch('tabernaCartData/addToCart', {
+        productId: product.value.id,
+        selectedColor: state.selectedColor,
+        selectedSize: state.selectedSize,
+      })
       state.snackbar = true
     }
 

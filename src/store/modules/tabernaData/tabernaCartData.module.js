@@ -47,6 +47,21 @@ const actions = {
         console.log(error)
       })
   },
+  async addToCart({ commit }, payload) {
+    try {
+      const response = await axios.post(
+        `/taberna-cart/api/add-to-cart/${payload.productId}/`,
+        {
+          color: payload.selectedColor,
+          size: payload.selectedSize,
+        }
+      )
+
+      console.log(response.data.message)
+    } catch (error) {
+      console.error('Error adding to cart:', error)
+    }
+  },
 }
 
 const getters = {

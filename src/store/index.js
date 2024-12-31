@@ -20,19 +20,11 @@ export default createStore({
   state() {
     return {
       appName: '',
-      cart: {
-        items: [],
-      },
     }
   },
   mutations: {
     setAppName(state, appName) {
       state.appName = appName
-    },
-    clearCart(state) {
-      state.cart = { items: [] }
-
-      localStorage.setItem('cart', JSON.stringify(state.cart))
     },
   },
   actions: {

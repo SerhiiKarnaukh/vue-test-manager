@@ -60,12 +60,16 @@ export default {
       return item.quantity * item.product.price
     }
 
-    const decrementQuantity = (item) => {
-      //   item.quantity -= 1
-      //   if (item.quantity === 0) {
-      //     emit('removeFromCart', item)
-      //   }
-      //   updateCart()
+    const decrementQuantity = async (item) => {
+      try {
+        await store.dispatch('tabernaCartData/removeFromCart', {
+          productId: item.product.id,
+          cartItemId: item.id,
+        })
+        await store.dispatch('tabernaCartData/getCart')
+      } catch (error) {
+        console.error(error)
+      }
     }
 
     const incrementQuantity = async (item) => {

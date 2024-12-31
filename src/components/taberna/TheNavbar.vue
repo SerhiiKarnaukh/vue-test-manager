@@ -227,7 +227,7 @@ export default {
           ? 'CustomLightTheme'
           : 'dark'),
       logout: () => {
-        store.dispatch('authToken/logout')
+        store.dispatch('authJWT/logout')
         router.push('/taberna/login')
       },
     }
@@ -259,12 +259,12 @@ export default {
     },
   },
   beforeCreate() {
-    const token = this.$store.state.token
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = 'Token ' + token
-    } else {
-      axios.defaults.headers.common['Authorization'] = ''
-    }
+    // const token = this.$store.state.token
+    // if (token) {
+    //   axios.defaults.headers.common['Authorization'] = 'Token ' + token
+    // } else {
+    //   axios.defaults.headers.common['Authorization'] = ''
+    // }
   },
   mounted() {
     this.cart = this.$store.state.cart
@@ -272,11 +272,11 @@ export default {
   },
   computed: {
     cartTotalLength() {
-      let totalLength = 0
-      for (let i = 0; i < this.cart.items.length; i++) {
-        totalLength += this.cart.items[i].quantity
-      }
-      return totalLength
+      //   let totalLength = 0
+      //   for (let i = 0; i < this.cart.items.length; i++) {
+      //     totalLength += this.cart.items[i].quantity
+      //   }
+      //   return totalLength
     },
   },
   methods: {

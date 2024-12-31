@@ -2,11 +2,12 @@
   <v-main>
     <v-container>
       <v-card class="mb-5 mx-auto" max-width="800">
-        <div v-if="cartTotalLength">
+        <div v-if="cart.cart_items && cart.cart_items.length != 0">
           <v-card-title>Cart Summary</v-card-title>
           <v-table fixed-header hover density="comfortable">
             <thead>
               <tr>
+                <th>Image</th>
                 <th>Product</th>
                 <th>Price</th>
                 <th>Quantity</th>
@@ -16,22 +17,25 @@
             </thead>
             <tbody>
               <TheCartItem
-                v-for="item in cart.items"
+                v-for="item in cart.cart_items"
                 v-bind:key="item.product.id"
                 v-bind:initialItem="item"
-                v-on:removeFromCart="removeFromCart"
               />
             </tbody>
           </v-table>
           <v-card-text>
             <v-divider class="my-4"></v-divider>
             <div class="d-flex justify-between align-center">
-              <div class="text-h6">Items:</div>
-              <div class="text-h6">{{ cartTotalLength }}</div>
+              <div class="text-h6">Total Price:</div>
+              <div class="text-h6">&nbsp;$ {{ cart.total }}</div>
             </div>
             <div class="d-flex justify-between align-center">
-              <div class="text-h6">Total price:</div>
-              <div class="text-h6">${{ cartTotalPrice.toFixed(2) }}</div>
+              <div class="text-h6">Tax:</div>
+              <div class="text-h6">&nbsp;$ {{ cart.tax }}</div>
+            </div>
+            <div class="d-flex justify-between align-center">
+              <div class="text-h6">Total:</div>
+              <div class="text-h6">&nbsp;$ {{ cart.grand_total }}</div>
             </div>
           </v-card-text>
           <v-card-actions>
@@ -56,40 +60,26 @@
 </template>
 
 <script>
+import { useStore } from 'vuex'
+import { computed, onMounted } from 'vue'
 import TheCartItem from '@/components/taberna/TheCartItem.vue'
 export default {
   name: 'CartView',
   components: {
     TheCartItem,
   },
-  data() {
+  setup() {
+    const store = useStore()
+
+    const cart = computed(() => store.getters['tabernaCartData/cart'])
+
+    onMounted(async () => {
+      await store.dispatch('tabernaCartData/getCart')
+    })
+
     return {
-      cart: {
-        items: [],
-      },
+      cart,
     }
-  },
-  mounted() {
-    this.cart = this.$store.state.cart
-  },
-  methods: {
-    removeFromCart(item) {
-      this.cart.items = this.cart.items.filter(
-        (i) => i.product.id !== item.product.id
-      )
-    },
-  },
-  computed: {
-    cartTotalLength() {
-      return this.cart.items.reduce((acc, curVal) => {
-        return (acc += curVal.quantity)
-      }, 0)
-    },
-    cartTotalPrice() {
-      return this.cart.items.reduce((acc, curVal) => {
-        return (acc += curVal.product.price * curVal.quantity)
-      }, 0)
-    },
   },
 }
 </script>

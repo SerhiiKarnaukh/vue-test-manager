@@ -1,16 +1,18 @@
+import axios from 'axios'
 const state = () => ({
-  cart: {
-    items: [],
-  },
+  //   cart: {
+  //     items: [],
+  //   },
+  cart: {},
 })
 
 const mutations = {
   initializeStore(state) {
-    if (localStorage.getItem('cart')) {
-      state.cart = JSON.parse(localStorage.getItem('cart'))
-    } else {
-      localStorage.setItem('cart', JSON.stringify(state.cart))
-    }
+    // if (localStorage.getItem('cart')) {
+    //   state.cart = JSON.parse(localStorage.getItem('cart'))
+    // } else {
+    //   localStorage.setItem('cart', JSON.stringify(state.cart))
+    // }
   },
   addToCart(state, cartItem) {
     console.log('cartItem', cartItem)
@@ -26,13 +28,26 @@ const mutations = {
     // localStorage.setItem('cart', JSON.stringify(state.cart))
   },
   clearCart(state) {
-    state.cart = { items: [] }
-
-    localStorage.setItem('cart', JSON.stringify(state.cart))
+    // state.cart = { items: [] }
+    // localStorage.setItem('cart', JSON.stringify(state.cart))
+  },
+  setCart(state, cart) {
+    state.cart = cart
   },
 }
 
-const actions = {}
+const actions = {
+  async getCart({ commit }) {
+    await axios
+      .get('/taberna-cart/api/cart/')
+      .then((response) => {
+        commit('setCart', response.data)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  },
+}
 
 const getters = {
   cart: (state) => state.cart,

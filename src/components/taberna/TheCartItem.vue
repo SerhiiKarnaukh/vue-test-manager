@@ -87,12 +87,16 @@ export default {
       await store.dispatch('tabernaCartData/getCart')
     }
 
-    const updateCart = () => {
-      //   localStorage.setItem('cart', JSON.stringify(store.state.cart))
-    }
-
-    const removeFromCart = (item) => {
-      //   updateCart()
+    const removeFromCart = async (item) => {
+      try {
+        await store.dispatch('tabernaCartData/removeCartItemFully', {
+          productId: item.product.id,
+          cartItemId: item.id,
+        })
+        await store.dispatch('tabernaCartData/getCart')
+      } catch (error) {
+        console.error(error)
+      }
     }
 
     return {

@@ -39,6 +39,10 @@ const actions = {
     const url = `/taberna-cart/api/cart-remove/${productId}/${cartItemId}/`
     await axios.delete(url)
   },
+  async removeCartItemFully(_, { productId, cartItemId }) {
+    const url = `/taberna-cart/api/cart-item-remove/${productId}/${cartItemId}/`
+    await axios.delete(url)
+  },
 }
 
 const getters = {

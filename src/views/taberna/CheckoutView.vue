@@ -5,46 +5,46 @@
         <v-col cols="12" md="8">
           <v-card>
             <v-card-title>Shipping Details</v-card-title>
-            <v-alert v-if="errors.length" type="error"
-              ><p v-for="error in errors" v-bind:key="error">
+            <v-alert v-if="state.errors.length" type="error"
+              ><p v-for="error in state.errors" v-bind:key="error">
                 {{ error }}
               </p></v-alert
             >
             <v-card-text>
               <v-form>
                 <v-text-field
-                  v-model.trim="first_name"
+                  v-model.trim="state.first_name"
                   label="First name*"
                   required
                 ></v-text-field>
                 <v-text-field
-                  v-model.trim="last_name"
+                  v-model.trim="state.last_name"
                   label="Last name*"
                   required
                 ></v-text-field>
                 <v-text-field
-                  v-model.trim="email"
+                  v-model.trim="state.email"
                   type="email"
                   label="E-mail*"
                   required
                 ></v-text-field>
                 <v-text-field
-                  v-model.trim="phone"
+                  v-model.trim="state.phone"
                   label="Phone*"
                   required
                 ></v-text-field>
                 <v-text-field
-                  v-model.trim="address"
+                  v-model.trim="state.address"
                   label="Address*"
                   required
                 ></v-text-field>
                 <v-text-field
-                  v-model.trim="zipcode"
+                  v-model.trim="state.zipcode"
                   label="Zip code*"
                   required
                 ></v-text-field>
                 <v-text-field
-                  v-model.trim="place"
+                  v-model.trim="state.place"
                   label="Place*"
                   required
                 ></v-text-field>
@@ -66,7 +66,10 @@
               </thead>
 
               <tbody>
-                <tr v-for="item in cart.items" v-bind:key="item.product.id">
+                <tr
+                  v-for="item in state.cart.items"
+                  v-bind:key="item.product.id"
+                >
                   <td>{{ item.product.name }}</td>
                   <td>${{ item.product.price }}</td>
                   <td>{{ item.quantity }}</td>
@@ -78,7 +81,7 @@
                 <tr>
                   <td colspan="2">Total</td>
                   <td>{{ cartTotalLength }}</td>
-                  <td>${{ cartTotalPrice.toFixed(2) }}</td>
+                  <td>${{ cartTotalPrice }}</td>
                 </tr>
               </tfoot>
             </v-table>
@@ -96,16 +99,21 @@
 </template>
 
 <script>
+import { reactive, computed, onMounted } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
+
 export default {
   name: 'CheckoutView',
-  data() {
-    return {
-      cart: {
-        items: [],
-      },
-      stripe: {},
-      card: {},
+  setup() {
+    const store = useStore()
+    const router = useRouter()
+
+    const state = reactive({
+      cart: [],
+      stripe: null,
+      card: null,
       first_name: '',
       last_name: '',
       email: '',
@@ -114,103 +122,95 @@ export default {
       zipcode: '',
       place: '',
       errors: [],
-    }
-  },
-  mounted() {
-    document.title = 'Checkout | Taberna'
-    this.cart = this.$store.state.cart
-    // if (this.cartTotalLength > 0) {
-    //   this.stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx')
-    //   const elements = this.stripe.elements()
-    //   this.card = elements.create('card', { hidePostalCode: true })
-    //   this.card.mount('#card-element')
-    // }
-  },
-  methods: {
-    getItemTotal(item) {
+    })
+
+    const cartTotalPrice = computed(() => {
+      //   return state.cart.items.reduce((acc, curVal) => {
+      //     return acc + curVal.product.price * curVal.quantity
+      //   }, 0)
+    })
+
+    const cartTotalLength = computed(() => {
+      //   return state.cart.items.reduce((acc, curVal) => {
+      //     return acc + curVal.quantity
+      //   }, 0)
+    })
+
+    const getItemTotal = (item) => {
       return item.quantity * item.product.price
-    },
-    submitForm() {
-      this.errors = []
-      if (this.first_name === '') {
-        this.errors.push('The first name field is missing!')
-      }
-      if (this.last_name === '') {
-        this.errors.push('The last name field is missing!')
-      }
-      if (this.email === '') {
-        this.errors.push('The email field is missing!')
-      }
-      if (this.phone === '') {
-        this.errors.push('The phone field is missing!')
-      }
-      if (this.address === '') {
-        this.errors.push('The address field is missing!')
-      }
-      if (this.zipcode === '') {
-        this.errors.push('The zip code field is missing!')
-      }
-      if (this.place === '') {
-        this.errors.push('The place field is missing!')
-      }
-      if (!this.errors.length) {
-        this.stripe.createToken(this.card).then((result) => {
+    }
+
+    const submitForm = () => {
+      state.errors = []
+      if (!state.first_name)
+        state.errors.push('The first name field is missing!')
+      if (!state.last_name) state.errors.push('The last name field is missing!')
+      if (!state.email) state.errors.push('The email field is missing!')
+      if (!state.phone) state.errors.push('The phone field is missing!')
+      if (!state.address) state.errors.push('The address field is missing!')
+      if (!state.zipcode) state.errors.push('The zip code field is missing!')
+      if (!state.place) state.errors.push('The place field is missing!')
+
+      if (!state.errors.length) {
+        state.stripe.createToken(state.card).then((result) => {
           if (result.error) {
-            this.errors.push(
+            state.errors.push(
               'Something went wrong with Stripe. Please try again'
             )
-            console.log(result.error.message)
+            console.error(result.error.message)
           } else {
-            this.stripeTokenHandler(result.token)
+            stripeTokenHandler(result.token)
           }
         })
       }
-    },
-    async stripeTokenHandler(token) {
-      const items = []
-      for (let i = 0; i < this.cart.items.length; i++) {
-        const item = this.cart.items[i]
-        const obj = {
-          product: item.product.id,
-          quantity: item.quantity,
-          price: item.product.price * item.quantity,
-        }
-        items.push(obj)
-      }
+    }
+
+    const stripeTokenHandler = async (token) => {
+      const items = state.cart.items.map((item) => ({
+        product: item.product.id,
+        quantity: item.quantity,
+        price: item.product.price * item.quantity,
+      }))
+
       const data = {
-        first_name: this.first_name,
-        last_name: this.last_name,
-        email: this.email,
-        address: this.address,
-        zipcode: this.zipcode,
-        place: this.place,
-        phone: this.phone,
+        first_name: state.first_name,
+        last_name: state.last_name,
+        email: state.email,
+        address: state.address,
+        zipcode: state.zipcode,
+        place: state.place,
+        phone: state.phone,
         items: items,
         stripe_token: token.id,
       }
-      await axios
-        .post('/api/v1/checkout/', data)
-        .then(() => {
-          this.$store.commit('clearCart')
-          this.$router.push('/taberna/cart/success')
-        })
-        .catch((error) => {
-          this.errors.push('Something went wrong. Please try again')
-          console.log(error)
-        })
-    },
-  },
-  computed: {
-    cartTotalPrice() {
-      return this.cart.items.reduce((acc, curVal) => {
-        return (acc += curVal.product.price * curVal.quantity)
-      }, 0)
-    },
-    cartTotalLength() {
-      return this.cart.items.reduce((acc, curVal) => {
-        return (acc += curVal.quantity)
-      }, 0)
-    },
+
+      try {
+        await axios.post('/api/v1/checkout/', data)
+        store.commit('clearCart')
+        router.push('/taberna/cart/success')
+      } catch (error) {
+        state.errors.push('Something went wrong. Please try again')
+        console.error(error)
+      }
+    }
+
+    onMounted(async () => {
+      await store.dispatch('setPageTitle', 'Checkout')
+      if (cartTotalLength.value > 0) {
+        // state.stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx')
+        // const elements = state.stripe.elements()
+        // state.card = elements.create('card', { hidePostalCode: true })
+        // state.card.mount('#card-element')
+      }
+    })
+
+    return {
+      state,
+      cartTotalPrice,
+      cartTotalLength,
+      getItemTotal,
+      submitForm,
+    }
   },
 }
 </script>

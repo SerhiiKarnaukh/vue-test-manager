@@ -87,7 +87,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import { computed, reactive, onMounted, watch } from 'vue'

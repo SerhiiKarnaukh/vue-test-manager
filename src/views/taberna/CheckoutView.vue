@@ -4,7 +4,7 @@
       <v-row>
         <v-col cols="12" md="8">
           <v-card>
-            <v-card-title>Shipping Details</v-card-title>
+            <v-card-title>Billing Details</v-card-title>
             <v-alert v-if="state.errors.length" type="error"
               ><p v-for="error in state.errors" v-bind:key="error">
                 {{ error }}
@@ -16,38 +16,72 @@
                   v-model.trim="state.first_name"
                   label="First name*"
                   required
+                  :error-messages="v$.first_name.$errors.map((e) => e.$message)"
                 ></v-text-field>
+                <br />
                 <v-text-field
                   v-model.trim="state.last_name"
                   label="Last name*"
                   required
+                  :error-messages="v$.last_name.$errors.map((e) => e.$message)"
                 ></v-text-field>
+                <br />
                 <v-text-field
                   v-model.trim="state.email"
                   type="email"
                   label="E-mail*"
                   required
+                  :error-messages="v$.email.$errors.map((e) => e.$message)"
                 ></v-text-field>
+                <br />
                 <v-text-field
                   v-model.trim="state.phone"
                   label="Phone*"
                   required
+                  :error-messages="v$.phone.$errors.map((e) => e.$message)"
                 ></v-text-field>
+                <br />
                 <v-text-field
-                  v-model.trim="state.address"
-                  label="Address*"
+                  v-model.trim="state.address1"
+                  label="Address Line 1*"
                   required
+                  :error-messages="v$.address1.$errors.map((e) => e.$message)"
                 ></v-text-field>
+                <br />
                 <v-text-field
-                  v-model.trim="state.zipcode"
-                  label="Zip code*"
-                  required
+                  v-model.trim="state.address2"
+                  label="Address Line 2"
+                  :error-messages="v$.address2.$errors.map((e) => e.$message)"
                 ></v-text-field>
+                <br />
                 <v-text-field
-                  v-model.trim="state.place"
-                  label="Place*"
+                  v-model.trim="state.city"
+                  label="City*"
                   required
+                  :error-messages="v$.city.$errors.map((e) => e.$message)"
                 ></v-text-field>
+                <br />
+                <v-text-field
+                  v-model.trim="state.state"
+                  label="State*"
+                  required
+                  :error-messages="v$.state.$errors.map((e) => e.$message)"
+                ></v-text-field>
+                <br />
+                <v-text-field
+                  v-model.trim="state.country"
+                  label="Country*"
+                  required
+                  :error-messages="v$.country.$errors.map((e) => e.$message)"
+                ></v-text-field>
+                <br />
+                <v-textarea
+                  v-model.trim="state.order_notes"
+                  label="Order Notes"
+                  outlined
+                  rows="4"
+                  placeholder="Enter any additional details or instructions here."
+                ></v-textarea>
               </v-form>
             </v-card-text>
           </v-card>
@@ -118,6 +152,8 @@
 import { reactive, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import { useVuelidate } from '@vuelidate/core'
+import { required, email, minLength, maxLength } from '@vuelidate/validators'
 import axios from 'axios'
 
 export default {
@@ -134,36 +170,65 @@ export default {
       last_name: '',
       email: '',
       phone: '',
-      address: '',
-      zipcode: '',
-      place: '',
+      address1: '',
+      address2: '',
+      city: '',
+      state: '',
+      country: '',
+      order_notes: '',
       errors: [],
     })
 
+    const rules = {
+      first_name: {
+        required,
+        minLength: minLength(3),
+        maxLength: maxLength(50),
+      },
+      last_name: {
+        required,
+        minLength: minLength(3),
+        maxLength: maxLength(50),
+      },
+      email: { required, email, maxLength: maxLength(100) },
+      phone: { required, minLength: minLength(6), maxLength: maxLength(10) },
+      address1: { required, minLength: minLength(3), maxLength: maxLength(50) },
+      address2: { minLength: minLength(3), maxLength: maxLength(50) },
+      city: { required, minLength: minLength(3), maxLength: maxLength(50) },
+      state: { required, minLength: minLength(3), maxLength: maxLength(50) },
+      country: { required, minLength: minLength(3), maxLength: maxLength(50) },
+    }
+    const v$ = useVuelidate(rules, state)
+
     const cart = computed(() => store.getters['tabernaCartData/cart'])
 
-    const submitForm = () => {
-      state.errors = []
-      if (!state.first_name)
-        state.errors.push('The first name field is missing!')
-      if (!state.last_name) state.errors.push('The last name field is missing!')
-      if (!state.email) state.errors.push('The email field is missing!')
-      if (!state.phone) state.errors.push('The phone field is missing!')
-      if (!state.address) state.errors.push('The address field is missing!')
-      if (!state.zipcode) state.errors.push('The zip code field is missing!')
-      if (!state.place) state.errors.push('The place field is missing!')
+    const submitForm = async () => {
+      const isFormCorrect = await v$._value.$validate()
 
-      if (!state.errors.length) {
-        state.stripe.createToken(state.card).then((result) => {
-          if (result.error) {
-            state.errors.push(
-              'Something went wrong with Stripe. Please try again'
-            )
-            console.error(result.error.message)
-          } else {
-            stripeTokenHandler(result.token)
-          }
-        })
+      if (isFormCorrect) {
+        const data = {
+          first_name: state.first_name,
+          last_name: state.last_name,
+          email: state.email,
+          phone: state.phone,
+          address1: state.address1,
+          address2: state.address2,
+          city: state.city,
+          state: state.state,
+          country: state.country,
+          order_notes: state.order_notes,
+        }
+        console.log('SUbmitForm', data)
+        // state.stripe.createToken(state.card).then((result) => {
+        //   if (result.error) {
+        //     state.errors.push(
+        //       'Something went wrong with Stripe. Please try again'
+        //     )
+        //     console.error(result.error.message)
+        //   } else {
+        //     stripeTokenHandler(result.token)
+        //   }
+        // })
       }
     }
 
@@ -178,12 +243,15 @@ export default {
         first_name: state.first_name,
         last_name: state.last_name,
         email: state.email,
-        address: state.address,
-        zipcode: state.zipcode,
-        place: state.place,
         phone: state.phone,
-        items: items,
-        stripe_token: token.id,
+        address1: state.address1,
+        address2: state.address2,
+        city: state.city,
+        state: state.state,
+        country: state.country,
+        order_notes: state.order_notes,
+        // items: items,
+        // stripe_token: token.id,
       }
 
       try {
@@ -209,6 +277,7 @@ export default {
 
     return {
       state,
+      v$,
       cart,
       submitForm,
     }

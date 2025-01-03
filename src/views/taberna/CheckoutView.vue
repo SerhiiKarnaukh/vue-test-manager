@@ -67,26 +67,42 @@
 
               <tbody>
                 <tr
-                  v-for="item in state.cart.items"
+                  v-for="item in cart.cart_items"
                   v-bind:key="item.product.id"
                 >
-                  <td>{{ item.product.name }}</td>
+                  <td>
+                    {{ item.product.name }}
+                    <div
+                      v-if="item.variations.length"
+                      class="text-grey text-body-2"
+                    >
+                      <p
+                        v-for="variation in item.variations"
+                        :key="variation.id"
+                      >
+                        {{ variation.variation_category }}:
+                        {{ variation.variation_value }}
+                      </p>
+                    </div>
+                  </td>
                   <td>${{ item.product.price }}</td>
                   <td>{{ item.quantity }}</td>
-                  <td>${{ getItemTotal(item).toFixed(2) }}</td>
+                  <td>${{ item.sub_total }}</td>
                 </tr>
               </tbody>
 
               <tfoot>
                 <tr>
                   <td colspan="2">Total</td>
-                  <td>{{ cartTotalLength }}</td>
-                  <td>${{ cartTotalPrice }}</td>
+                  <td>{{ cart.quantity }}</td>
+                  <td>${{ cart.grand_total }}</td>
                 </tr>
               </tfoot>
             </v-table>
             <div id="card-element" class="mb-5"></div>
-            <v-card-actions v-if="cartTotalLength">
+            <v-card-actions
+              v-if="cart.cart_items && cart.cart_items.length != 0"
+            >
               <v-btn variant="flat" color="success" @click="submitForm"
                 >Pay with Stripe</v-btn
               >
@@ -124,21 +140,7 @@ export default {
       errors: [],
     })
 
-    const cartTotalPrice = computed(() => {
-      //   return state.cart.items.reduce((acc, curVal) => {
-      //     return acc + curVal.product.price * curVal.quantity
-      //   }, 0)
-    })
-
-    const cartTotalLength = computed(() => {
-      //   return state.cart.items.reduce((acc, curVal) => {
-      //     return acc + curVal.quantity
-      //   }, 0)
-    })
-
-    const getItemTotal = (item) => {
-      return item.quantity * item.product.price
-    }
+    const cart = computed(() => store.getters['tabernaCartData/cart'])
 
     const submitForm = () => {
       state.errors = []
@@ -196,19 +198,18 @@ export default {
 
     onMounted(async () => {
       await store.dispatch('setPageTitle', 'Checkout')
-      if (cartTotalLength.value > 0) {
-        // state.stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx')
-        // const elements = state.stripe.elements()
-        // state.card = elements.create('card', { hidePostalCode: true })
-        // state.card.mount('#card-element')
-      }
+      await store.dispatch('tabernaCartData/getCart')
+      //   if (cartTotalLength.value > 0) {
+      //     state.stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx')
+      //     const elements = state.stripe.elements()
+      //     state.card = elements.create('card', { hidePostalCode: true })
+      //     state.card.mount('#card-element')
+      //   }
     })
 
     return {
       state,
-      cartTotalPrice,
-      cartTotalLength,
-      getItemTotal,
+      cart,
       submitForm,
     }
   },

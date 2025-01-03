@@ -75,6 +75,7 @@ export default {
         }
         try {
           await store.dispatch('authJWT/login', formData)
+          await store.dispatch('tabernaCartData/getCart')
           router.push('/taberna')
         } catch (e) {
           return

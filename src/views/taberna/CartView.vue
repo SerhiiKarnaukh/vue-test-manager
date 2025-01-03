@@ -61,7 +61,7 @@
 
 <script>
 import { useStore } from 'vuex'
-import { computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import TheCartItem from '@/components/taberna/TheCartItem.vue'
 export default {
   name: 'CartView',
@@ -72,10 +72,6 @@ export default {
     const store = useStore()
 
     const cart = computed(() => store.getters['tabernaCartData/cart'])
-
-    onMounted(async () => {
-      await store.dispatch('tabernaCartData/getCart')
-    })
 
     return {
       cart,

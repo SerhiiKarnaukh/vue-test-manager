@@ -7,6 +7,9 @@ const mutations = {
   setCart(state, cart) {
     state.cart = cart
   },
+  clearCart(state) {
+    state.cart = {}
+  },
 }
 
 const actions = {

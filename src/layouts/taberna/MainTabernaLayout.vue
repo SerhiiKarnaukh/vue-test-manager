@@ -17,6 +17,7 @@ export default {
     onBeforeMount(async () => {
       await store.dispatch('authJWT/checkActiveApp', 'taberna')
       store.commit('setAppName', 'Taberna E-com')
+      await store.dispatch('tabernaCartData/getCart')
     })
   },
 }

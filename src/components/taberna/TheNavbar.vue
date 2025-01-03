@@ -3,7 +3,7 @@
     <v-app-bar color="primary">
       <v-app-bar-nav-icon
         variant="text"
-        @click.stop="drawer = !drawer"
+        @click.stop="state.drawer = !state.drawer"
         class="d-sm-flex d-md-none"
       ></v-app-bar-nav-icon>
       <router-link to="/taberna" style="text-decoration: none">
@@ -24,7 +24,7 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item :href="remoteHost"
+            <v-list-item :href="state.remoteHost"
               ><v-list-item-title>All Apps</v-list-item-title></v-list-item
             >
             <v-list-item to="/"
@@ -41,7 +41,7 @@
 
           <v-list>
             <v-list-item
-              v-for="(item, index) in categories"
+              v-for="(item, index) in state.categories"
               :key="index"
               :to="item.get_absolute_url"
             >
@@ -90,13 +90,13 @@
         </v-btn>
         <v-btn
           density="comfortable"
-          @click="searching = true"
+          @click="state.searching = true"
           icon="mdi-magnify"
         ></v-btn>
-        <v-dialog v-model="searching" max-width="400">
+        <v-dialog v-model="state.searching" max-width="400">
           <v-card>
             <v-toolbar dense>
-              <v-btn icon @click="searching = false"
+              <v-btn icon @click="state.searching = false"
                 ><v-icon>mdi-close</v-icon></v-btn
               >
             </v-toolbar>
@@ -117,7 +117,7 @@
         </v-dialog>
       </div>
     </v-app-bar>
-    <v-navigation-drawer temporary v-model="drawer" location="left">
+    <v-navigation-drawer temporary v-model="state.drawer" location="left">
       <v-list>
         <v-menu>
           <template v-slot:activator="{ props }">
@@ -131,7 +131,7 @@
           </template>
 
           <v-list>
-            <v-list-item :href="remoteHost"
+            <v-list-item :href="state.remoteHost"
               ><v-list-item-title>All Apps</v-list-item-title></v-list-item
             >
             <v-list-item to="/"
@@ -148,7 +148,7 @@
 
           <v-list>
             <v-list-item
-              v-for="(item, index) in categories"
+              v-for="(item, index) in state.categories"
               :key="index"
               hover
               :to="item.get_absolute_url"
@@ -200,7 +200,7 @@
           flat
           color="white"
           prepend-icon="mdi-magnify"
-          @click="searching = true"
+          @click="state.searching = true"
         >
           Search
         </v-list-item>
@@ -210,32 +210,30 @@
 </template>
 
 <script>
+import { reactive, computed, onMounted, watch } from 'vue'
 import { useTheme } from 'vuetify'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import axios from 'axios'
+
 export default {
   setup() {
     const theme = useTheme()
     const router = useRouter()
+    const route = useRoute()
     const store = useStore()
 
-    return {
-      theme,
-      toggleTheme: () =>
-        (theme.global.name.value = theme.global.current.value.dark
-          ? 'CustomLightTheme'
-          : 'dark'),
-      logout: () => {
-        store.dispatch('authJWT/logout')
-        router.push('/taberna/login')
+    const state = reactive({
+      searching: false,
+      remoteHost: import.meta.env.VITE_REMOTE_HOST,
+      categories: [],
+      cart: {
+        items: [],
       },
-    }
-  },
-  data: () => ({
-    drawer: false,
-    searching: false,
-    links: [
+      drawer: false,
+    })
+
+    const links = [
       {
         icon: 'login',
         label: 'Login',
@@ -246,50 +244,55 @@ export default {
         label: 'Signup',
         url: '/taberna/signup',
       },
-    ],
-    remoteHost: import.meta.env.VITE_REMOTE_HOST,
-    categories: [],
-    cart: {
-      items: [],
-    },
-  }),
-  watch: {
-    $route() {
-      this.drawer = false
-    },
-  },
-  beforeCreate() {
-    // const token = this.$store.state.token
-    // if (token) {
-    //   axios.defaults.headers.common['Authorization'] = 'Token ' + token
-    // } else {
-    //   axios.defaults.headers.common['Authorization'] = ''
-    // }
-  },
-  mounted() {
-    this.cart = this.$store.state.cart
-    this.getAllCategories()
-  },
-  computed: {
-    cartTotalLength() {
-      //   let totalLength = 0
-      //   for (let i = 0; i < this.cart.items.length; i++) {
-      //     totalLength += this.cart.items[i].quantity
-      //   }
-      //   return totalLength
-    },
-  },
-  methods: {
-    async getAllCategories() {
-      axios
-        .get(`/taberna-store/api/v1/product-categories/`)
-        .then((response) => {
-          this.categories = response.data
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    },
+    ]
+
+    const toggleTheme = () => {
+      theme.global.name.value = theme.global.current.value.dark
+        ? 'CustomLightTheme'
+        : 'dark'
+    }
+
+    const logout = () => {
+      store.dispatch('authJWT/logout')
+      router.push('/taberna/login')
+      store.commit('tabernaCartData/clearCart')
+    }
+
+    const cartTotalLength = computed(() => {
+      return store.getters['tabernaCartData/cart'].quantity || 0
+    })
+
+    const getAllCategories = async () => {
+      try {
+        const response = await axios.get(
+          '/taberna-store/api/v1/product-categories/'
+        )
+        state.categories = response.data
+      } catch (error) {
+        console.error('Failed to fetch categories:', error)
+      }
+    }
+
+    watch(
+      () => route.path,
+      () => {
+        state.drawer = false
+      }
+    )
+
+    onMounted(() => {
+      getAllCategories()
+    })
+
+    return {
+      state,
+      links,
+      theme,
+      toggleTheme,
+      logout,
+      cartTotalLength,
+      getAllCategories,
+    }
   },
 }
 </script>

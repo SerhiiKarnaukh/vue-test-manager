@@ -266,7 +266,6 @@ export default {
 
     onMounted(async () => {
       await store.dispatch('setPageTitle', 'Checkout')
-      await store.dispatch('tabernaCartData/getCart')
       //   if (cartTotalLength.value > 0) {
       //     state.stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx')
       //     const elements = state.stripe.elements()

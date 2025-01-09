@@ -1,7 +1,15 @@
 <template>
   <v-main>
     <v-container>
-      <v-row>
+      <v-card-title v-if="state.loading">
+        <v-row align="center" class="fill-height ma-0" justify="center">
+          <v-progress-circular
+            color="grey lighten-5"
+            indeterminate
+          ></v-progress-circular>
+        </v-row>
+      </v-card-title>
+      <v-row v-else>
         <v-col cols="12" md="8">
           <v-card>
             <v-card-title>Billing Details</v-card-title>
@@ -177,6 +185,7 @@ export default {
       country: '',
       order_notes: '',
       errors: [],
+      loading: false,
     })
 
     const rules = {
@@ -206,19 +215,7 @@ export default {
       const isFormCorrect = await v$._value.$validate()
 
       if (isFormCorrect) {
-        const data = {
-          first_name: state.first_name,
-          last_name: state.last_name,
-          email: state.email,
-          phone: state.phone,
-          address1: state.address1,
-          address2: state.address2,
-          city: state.city,
-          state: state.state,
-          country: state.country,
-          order_notes: state.order_notes,
-        }
-        console.log('SUbmitForm', data)
+        stripeTokenHandler()
         // state.stripe.createToken(state.card).then((result) => {
         //   if (result.error) {
         //     state.errors.push(
@@ -232,35 +229,38 @@ export default {
       }
     }
 
-    const stripeTokenHandler = async (token) => {
-      const items = state.cart.items.map((item) => ({
-        product: item.product.id,
-        quantity: item.quantity,
-        price: item.product.price * item.quantity,
-      }))
+    const stripeTokenHandler = async (token = null) => {
+      //   const items = state.cart.items.map((item) => ({
+      //     product: item.product.id,
+      //     quantity: item.quantity,
+      //     price: item.product.price * item.quantity,
+      //   }))
 
       const data = {
         first_name: state.first_name,
         last_name: state.last_name,
         email: state.email,
         phone: state.phone,
-        address1: state.address1,
-        address2: state.address2,
+        address_line_1: state.address1,
+        address_line_2: state.address2,
         city: state.city,
         state: state.state,
         country: state.country,
-        order_notes: state.order_notes,
+        order_note: state.order_notes,
         // items: items,
         // stripe_token: token.id,
       }
 
       try {
-        await axios.post('/api/v1/checkout/', data)
-        store.commit('clearCart')
+        state.loading = true
+        await axios.post('/taberna-orders/api/v1/place_order/', data)
+        await store.dispatch('tabernaCartData/getCart')
         router.push('/taberna/cart/success')
       } catch (error) {
         state.errors.push('Something went wrong. Please try again')
         console.error(error)
+      } finally {
+        state.loading = false
       }
     }
 

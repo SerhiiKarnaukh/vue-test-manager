@@ -135,6 +135,7 @@ export default {
         selectedColor: state.selectedColor,
         selectedSize: state.selectedSize,
       })
+      await store.dispatch('tabernaCartData/getCart')
       state.snackbar = true
     }
 

@@ -38,7 +38,7 @@
   </v-main>
 </template>
 <script>
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, minLength } from '@vuelidate/validators'
 import router from '@/router'
@@ -63,6 +63,10 @@ export default {
       password: { required, minLength: minLength(6) },
     }
 
+    const cartId = computed(() => {
+      return store.getters['tabernaCartData/cartId']
+    })
+
     const v$ = useVuelidate(rules, state)
 
     const loginHandler = async () => {
@@ -72,6 +76,8 @@ export default {
           email: state.email,
           password: state.password,
           activeApp: 'taberna',
+          login_source: 'taberna',
+          cart_id: cartId.value,
         }
         try {
           await store.dispatch('authJWT/login', formData)

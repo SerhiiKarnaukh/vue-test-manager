@@ -26,9 +26,19 @@ const mutations = {
 
 const actions = {
   login({ commit, dispatch }, credentials) {
+    let url = '/api/v1/token/'
+    const tabernaProfileUrl = '/taberna-profiles/api/v1/token/'
+
+    switch (credentials.login_source) {
+      case 'taberna':
+        url = tabernaProfileUrl
+        break
+      default:
+        break
+    }
     return new Promise((resolve, reject) => {
       axios
-        .post('/api/v1/token/', { ...credentials })
+        .post(url, { ...credentials })
         .then((response) => {
           const token = response.data.access
           const refreshToken = response.data.refresh

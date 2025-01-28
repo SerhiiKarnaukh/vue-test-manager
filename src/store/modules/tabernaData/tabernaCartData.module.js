@@ -64,6 +64,7 @@ const actions = {
 
 const getters = {
   cart: (state) => state.cart,
+  cartId: (state) => state.cartId,
 }
 
 export default {

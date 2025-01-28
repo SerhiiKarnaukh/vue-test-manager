@@ -1,6 +1,7 @@
 import axios from 'axios'
 const state = () => ({
   cart: {},
+  cartId: localStorage.getItem('cartId') || null,
 })
 
 const mutations = {
@@ -10,12 +11,21 @@ const mutations = {
   clearCart(state) {
     state.cart = {}
   },
+  setCartId(state, cartId) {
+    state.cartId = cartId
+    localStorage.setItem('cartId', cartId)
+  },
+  clearCartId(state) {
+    state.cartId = null
+    localStorage.removeItem('cartId')
+  },
 }
 
 const actions = {
-  async getCart({ commit }) {
+  async getCart({ commit, state }) {
+    const params = state.cartId ? { cart_id: state.cartId } : {}
     await axios
-      .get('/taberna-cart/api/cart/')
+      .get('/taberna-cart/api/cart/', { params })
       .then((response) => {
         commit('setCart', response.data)
       })
@@ -23,28 +33,32 @@ const actions = {
         console.log(error)
       })
   },
-  async addToCart(_, payload) {
+  async addToCart({ commit, state }, payload) {
     try {
       const response = await axios.post(
         `/taberna-cart/api/add-to-cart/${payload.productId}/`,
         {
           color: payload.selectedColor,
           size: payload.selectedSize,
+          cart_id: state.cartId,
         }
       )
-
-      console.log(response.data.message)
+      if (response.data.cart_id) {
+        commit('setCartId', response.data.cart_id)
+      }
     } catch (error) {
       console.error('Error adding to cart:', error)
     }
   },
-  async removeFromCart(_, { productId, cartItemId }) {
+  async removeFromCart({ state }, { productId, cartItemId }) {
     const url = `/taberna-cart/api/cart-remove/${productId}/${cartItemId}/`
-    await axios.delete(url)
+    const params = state.cartId ? { cart_id: state.cartId } : {}
+    await axios.delete(url, { params })
   },
-  async removeCartItemFully(_, { productId, cartItemId }) {
+  async removeCartItemFully({ state }, { productId, cartItemId }) {
     const url = `/taberna-cart/api/cart-item-remove/${productId}/${cartItemId}/`
-    await axios.delete(url)
+    const params = state.cartId ? { cart_id: state.cartId } : {}
+    await axios.delete(url, { params })
   },
 }
 

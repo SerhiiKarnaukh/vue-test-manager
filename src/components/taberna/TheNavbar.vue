@@ -252,10 +252,10 @@ export default {
         : 'dark'
     }
 
-    const logout = () => {
-      store.dispatch('authJWT/logout')
+    const logout = async () => {
+      await store.dispatch('authJWT/logout')
+      await store.dispatch('tabernaCartData/getCart')
       router.push('/taberna/login')
-      store.commit('tabernaCartData/clearCart')
     }
 
     const cartTotalLength = computed(() => {

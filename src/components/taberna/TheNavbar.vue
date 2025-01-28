@@ -254,7 +254,6 @@ export default {
 
     const logout = async () => {
       await store.dispatch('authJWT/logout')
-      store.commit('tabernaCartData/clearCartId')
       await store.dispatch('tabernaCartData/getCart')
 
       router.push('/taberna/login')

@@ -1,6 +1,14 @@
 <template>
   <v-main class="px-4 pb-4">
-    <v-card max-width="400" class="mx-auto">
+    <v-card-title v-if="state.loading">
+      <v-row align="center" class="fill-height ma-0" justify="center">
+        <v-progress-circular
+          color="grey lighten-5"
+          indeterminate
+        ></v-progress-circular>
+      </v-row>
+    </v-card-title>
+    <v-card v-else max-width="400" class="mx-auto">
       <v-card-title class="mb-6">
         <h1>Login</h1>
       </v-card-title>
@@ -57,6 +65,7 @@ export default {
     const state = reactive({
       email: '',
       password: '',
+      loading: false,
     })
     const rules = {
       email: { required, email },
@@ -80,11 +89,16 @@ export default {
           cart_id: cartId.value,
         }
         try {
+          state.loading = true
           await store.dispatch('authJWT/login', formData)
           await store.dispatch('tabernaCartData/getCart')
-          router.push('/taberna')
+          const redirectPath = route.query.redirect || '/taberna/dashboard'
+          router.push(redirectPath)
+          store.commit('tabernaCartData/clearCartId')
         } catch (e) {
           return
+        } finally {
+          state.loading = false
         }
         return
       }

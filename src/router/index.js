@@ -231,8 +231,11 @@ const router = createRouter({
 })
 
 function getLoginRoute(path) {
-  if (path.startsWith('/taberna')) return '/taberna/login?message=auth'
+  if (path.startsWith('/taberna'))
+    return `/taberna/login?redirect=${encodeURIComponent(path)}&message=auth`
+
   if (path.startsWith('/social')) return '/social/login?message=auth'
+
   return '/'
 }
 
@@ -242,7 +245,7 @@ router.beforeEach((to, from, next) => {
   if (requireAuthJWT && store.getters['authJWT/isAuthenticated']) {
     next()
   } else if (requireAuthJWT && !store.getters['authJWT/isAuthenticated']) {
-    next(getLoginRoute(to.path))
+    next(getLoginRoute(to.fullPath))
   } else {
     next()
   }

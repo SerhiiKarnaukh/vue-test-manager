@@ -141,7 +141,7 @@
                 </tr>
               </tfoot>
             </v-table>
-            <div id="card-element" class="mb-5"></div>
+            <div id="card-element" class="pa-5"></div>
             <v-card-actions
               v-if="cart.cart_items && cart.cart_items.length != 0"
             >
@@ -186,6 +186,7 @@ export default {
       order_notes: '',
       errors: [],
       loading: false,
+      stripe: {},
     })
 
     const rules = {
@@ -215,27 +216,20 @@ export default {
       const isFormCorrect = await v$._value.$validate()
 
       if (isFormCorrect) {
-        stripeTokenHandler()
-        // state.stripe.createToken(state.card).then((result) => {
-        //   if (result.error) {
-        //     state.errors.push(
-        //       'Something went wrong with Stripe. Please try again'
-        //     )
-        //     console.error(result.error.message)
-        //   } else {
-        //     stripeTokenHandler(result.token)
-        //   }
-        // })
+        state.stripe.createToken(state.card).then((result) => {
+          if (result.error) {
+            store.dispatch('alert/setMessage', {
+              value: [result.error.message],
+              type: 'error',
+            })
+          } else {
+            stripeTokenHandler(result.token)
+          }
+        })
       }
     }
 
-    const stripeTokenHandler = async (token = null) => {
-      //   const items = state.cart.items.map((item) => ({
-      //     product: item.product.id,
-      //     quantity: item.quantity,
-      //     price: item.product.price * item.quantity,
-      //   }))
-
+    const stripeTokenHandler = async (token) => {
       const data = {
         first_name: state.first_name,
         last_name: state.last_name,
@@ -247,8 +241,7 @@ export default {
         state: state.state,
         country: state.country,
         order_note: state.order_notes,
-        // items: items,
-        // stripe_token: token.id,
+        stripe_token: token.id,
       }
 
       try {
@@ -257,7 +250,10 @@ export default {
         await store.dispatch('tabernaCartData/getCart')
         router.push('/taberna/cart/success')
       } catch (error) {
-        state.errors.push('Something went wrong. Please try again')
+        store.dispatch('alert/setMessage', {
+          value: ['Something went wrong. Please try again'],
+          type: 'error',
+        })
         console.error(error)
       } finally {
         state.loading = false
@@ -266,12 +262,11 @@ export default {
 
     onMounted(async () => {
       await store.dispatch('setPageTitle', 'Checkout')
-      //   if (cartTotalLength.value > 0) {
-      //     state.stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx')
-      //     const elements = state.stripe.elements()
-      //     state.card = elements.create('card', { hidePostalCode: true })
-      //     state.card.mount('#card-element')
-      //   }
+
+      state.stripe = Stripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+      const elements = state.stripe.elements()
+      state.card = elements.create('card', { hidePostalCode: true })
+      state.card.mount('#card-element')
     })
 
     return {

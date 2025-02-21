@@ -223,13 +223,13 @@ export default {
               type: 'error',
             })
           } else {
-            stripeTokenHandler(result.token)
+            stripeTokenHandler(result.token, 'session')
           }
         })
       }
     }
 
-    const stripeTokenHandler = async (token) => {
+    const stripeTokenHandler = async (token, type = 'charge') => {
       const data = {
         first_name: state.first_name,
         last_name: state.last_name,
@@ -246,9 +246,10 @@ export default {
 
       try {
         state.loading = true
-        await axios.post('/taberna-orders/api/v1/place_order/', data)
-        await store.dispatch('tabernaCartData/getCart')
-        router.push('/taberna/cart/success')
+        await store.dispatch('tabernaCartData/placeOrderStripe', {
+          payload: data,
+          type,
+        })
       } catch (error) {
         store.dispatch('alert/setMessage', {
           value: ['Something went wrong. Please try again'],

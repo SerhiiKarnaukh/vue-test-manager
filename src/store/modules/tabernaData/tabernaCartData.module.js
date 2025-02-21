@@ -1,4 +1,6 @@
 import axios from 'axios'
+import router from '@/router'
+
 const state = () => ({
   cart: {},
   cartId: localStorage.getItem('cartId') || null,
@@ -59,6 +61,19 @@ const actions = {
     const url = `/taberna-cart/api/cart-item-remove/${productId}/${cartItemId}/`
     const params = state.cartId ? { cart_id: state.cartId } : {}
     await axios.delete(url, { params })
+  },
+  async placeOrderStripe({ _, dispatch }, { payload, type }) {
+    const url =
+      type === 'session'
+        ? '/taberna-orders/api/v1/place_order_stripe_session/'
+        : '/taberna-orders/api/v1/place_order_stripe_charge/'
+
+    await axios.post(url, payload)
+
+    if (type !== 'session') {
+      await dispatch('getCart')
+      router.push({ name: 'successTaberna' })
+    }
   },
 }
 

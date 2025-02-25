@@ -141,7 +141,11 @@
                 </tr>
               </tfoot>
             </v-table>
-            <div id="card-element" class="pa-5"></div>
+            <div
+              v-if="state.stripeActinonType === 'charge'"
+              id="card-element"
+              class="pa-5"
+            ></div>
             <v-card-actions
               v-if="cart.cart_items && cart.cart_items.length != 0"
             >
@@ -157,22 +161,20 @@
 </template>
 
 <script>
-import { reactive, computed, onMounted } from 'vue'
+import { reactive, computed, onMounted, nextTick } from 'vue'
 import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, minLength, maxLength } from '@vuelidate/validators'
-import axios from 'axios'
 
 export default {
   name: 'CheckoutView',
   setup() {
     const store = useStore()
-    const router = useRouter()
 
     const state = reactive({
       cart: [],
       stripe: null,
+      stripeActinonType: null,
       card: null,
       first_name: '',
       last_name: '',
@@ -215,21 +217,27 @@ export default {
     const submitForm = async () => {
       const isFormCorrect = await v$._value.$validate()
 
-      if (isFormCorrect) {
-        state.stripe.createToken(state.card).then((result) => {
-          if (result.error) {
-            store.dispatch('alert/setMessage', {
-              value: [result.error.message],
-              type: 'error',
-            })
-          } else {
-            stripeTokenHandler(result.token, 'session')
-          }
-        })
+      if (!isFormCorrect) return
+
+      const handleStripeResponse = (result) => {
+        if (result.error) {
+          store.dispatch('alert/setMessage', {
+            value: [result.error.message],
+            type: 'error',
+          })
+        } else {
+          stripeTokenHandler(result.token, state.stripeActinonType)
+        }
+      }
+
+      if (state.stripeActinonType === 'charge') {
+        state.stripe.createToken(state.card).then(handleStripeResponse)
+      } else {
+        stripeTokenHandler(null, state.stripeActinonType)
       }
     }
 
-    const stripeTokenHandler = async (token, type = 'charge') => {
+    const stripeTokenHandler = async (token, type) => {
       const data = {
         first_name: state.first_name,
         last_name: state.last_name,
@@ -241,7 +249,7 @@ export default {
         state: state.state,
         country: state.country,
         order_note: state.order_notes,
-        stripe_token: token.id,
+        stripe_token: token ? token.id : null,
       }
 
       try {
@@ -265,9 +273,13 @@ export default {
       await store.dispatch('setPageTitle', 'Checkout')
 
       state.stripe = Stripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
-      const elements = state.stripe.elements()
-      state.card = elements.create('card', { hidePostalCode: true })
-      state.card.mount('#card-element')
+      state.stripeActinonType = import.meta.env.VITE_STRIPE_ACTION_TYPE
+      if (state.stripeActinonType == 'charge') {
+        const elements = state.stripe.elements()
+        state.card = elements.create('card', { hidePostalCode: true })
+        await nextTick()
+        state.card.mount('#card-element')
+      }
     })
 
     return {

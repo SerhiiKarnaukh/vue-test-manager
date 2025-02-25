@@ -68,9 +68,11 @@ const actions = {
         ? '/taberna-orders/api/v1/place_order_stripe_session/'
         : '/taberna-orders/api/v1/place_order_stripe_charge/'
 
-    await axios.post(url, payload)
+    const response = await axios.post(url, payload)
 
-    if (type !== 'session') {
+    if (type === 'session' && response.data.checkout_url) {
+      window.location.href = response.data.checkout_url
+    } else {
       await dispatch('getCart')
       router.push({ name: 'successTaberna' })
     }

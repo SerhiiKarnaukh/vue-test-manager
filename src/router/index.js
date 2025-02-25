@@ -115,6 +115,14 @@ const routes = [
       layout: 'mainTaberna',
     },
   },
+  {
+    path: '/taberna/cart/failed',
+    name: 'failedTaberna',
+    component: () => import('@/views/taberna/FailedView.vue'),
+    meta: {
+      layout: 'mainTaberna',
+    },
+  },
   //Social
   {
     path: '/social/home',

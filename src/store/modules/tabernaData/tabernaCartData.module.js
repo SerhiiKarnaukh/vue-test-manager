@@ -77,6 +77,15 @@ const actions = {
       router.push({ name: 'successTaberna' })
     }
   },
+
+  async placeOrderStatus({ _, dispatch }, { status, stripeSessionId }) {
+    const url =
+      status === 'success'
+        ? '/taberna-orders/api/v1/order_payment_success/'
+        : '/taberna-orders/api/v1/order_payment_failed/'
+    await axios.post(url, { stripe_session_id: stripeSessionId })
+    await dispatch('getCart')
+  },
 }
 
 const getters = {

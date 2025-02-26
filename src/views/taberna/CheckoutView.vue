@@ -141,6 +141,10 @@
                 </tr>
               </tfoot>
             </v-table>
+            <v-alert class="ma-4" type="error" variant="outlined">
+              <b>Please Note:</b> This is a demo website. Do not try to make
+              real payments.
+            </v-alert>
             <div
               v-if="state.stripeActinonType === 'charge'"
               id="card-element"

@@ -17,12 +17,21 @@
 <script>
 import { onMounted } from 'vue'
 import { useStore } from 'vuex'
+import { useRoute } from 'vue-router'
 export default {
   name: 'SuccessView',
   setup() {
     const store = useStore()
+    const route = useRoute()
     onMounted(async () => {
       await store.dispatch('setPageTitle', 'Success')
+      const sessionId = route.query.session_id
+      if (sessionId) {
+        await store.dispatch('tabernaCartData/placeOrderStatus', {
+          status: 'success',
+          stripeSessionId: sessionId,
+        })
+      }
     })
     return {}
   },

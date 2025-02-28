@@ -89,7 +89,7 @@
 <script>
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
-import { computed, reactive, onMounted, watch } from 'vue'
+import { computed, reactive, onMounted, onUnmounted, watch } from 'vue'
 
 export default {
   name: 'ProductDetailView',
@@ -144,6 +144,9 @@ export default {
         categorySlug,
         productSlug,
       })
+    })
+    onUnmounted(() => {
+      store.commit('tabernaProductData/clearProductDetail')
     })
 
     watch(product, (newProduct) => {

@@ -14,6 +14,12 @@ const mutations = {
   setProductDetail(state, product) {
     state.productDetail = product
   },
+  clearProductDetail(state) {
+    state.productDetail = {
+      product: {},
+      variations: {},
+    }
+  },
 }
 
 const actions = {

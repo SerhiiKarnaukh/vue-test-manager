@@ -12,6 +12,7 @@ import AppMessage from '@/components/ui/AppMessage.vue'
 import MainTabernaLayout from '@/layouts/taberna/MainTabernaLayout.vue'
 import MainAppsManagerLayout from '@/layouts/appsmanager/MainAppsManagerLayout.vue'
 import MainSocialLayout from '@/layouts/social/MainSocialLayout.vue'
+import MainAILabLayout from '@/layouts/ai_lab/MainAILabLayout.vue'
 export default {
   name: 'App',
   computed: {
@@ -24,6 +25,7 @@ export default {
     MainTabernaLayout,
     MainAppsManagerLayout,
     MainSocialLayout,
+    MainAILabLayout,
   },
 }
 </script>

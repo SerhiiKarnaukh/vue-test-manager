@@ -231,6 +231,15 @@ const routes = [
       layout: 'mainSocial',
     },
   },
+  //AI Lab
+  {
+    path: '/ai-lab',
+    name: 'homeAILab',
+    component: () => import('@/views/ai_lab/HomeView.vue'),
+    meta: {
+      layout: 'mainAILab',
+    },
+  },
 ]
 
 const router = createRouter({

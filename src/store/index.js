@@ -9,6 +9,7 @@ import socialNotificationData from './modules/socialNetworkData/socialNotificati
 import tabernaCartData from './modules/tabernaData/tabernaCartData.module'
 import tabernaProductData from './modules/tabernaData/tabernaProductData.module'
 import tabernaProfileData from './modules/tabernaData/tabernaProfileData.module'
+import aiLabChatData from './modules/aiLabData/aiLabChatData.module'
 const plugins = []
 
 if (process.env.NODE_ENV === 'development') {
@@ -43,6 +44,7 @@ export default createStore({
     tabernaCartData,
     tabernaProductData,
     tabernaProfileData,
+    aiLabChatData,
   },
   getters: {},
 })

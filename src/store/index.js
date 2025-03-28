@@ -21,11 +21,15 @@ export default createStore({
   state() {
     return {
       appName: '',
+      isLoading: false,
     }
   },
   mutations: {
     setAppName(state, appName) {
       state.appName = appName
+    },
+    setIsLoading(state, value) {
+      state.isLoading = value
     },
   },
   actions: {
@@ -46,5 +50,7 @@ export default createStore({
     tabernaProfileData,
     aiLabChatData,
   },
-  getters: {},
+  getters: {
+    isLoading: (state) => state.isLoading,
+  },
 })

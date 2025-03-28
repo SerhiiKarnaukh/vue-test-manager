@@ -10,9 +10,9 @@ const mutations = {
 }
 
 const actions = {
-  async getChatMessage({ commit }) {
+  async getChatMessage({ commit }, question) {
     await axios
-      .get('/ai-lab/')
+      .post('/ai-lab/', { question })
       .then((response) => {
         commit('setChatMessage', response.data.message)
       })

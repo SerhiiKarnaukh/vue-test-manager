@@ -9,7 +9,6 @@
       <h2 class="text-center">AI Lab</h2>
       <v-row class="py-5" justify="center">
         <v-col cols="12" md="12" lg="10" xl="8">
-          <ThePromptForm />
           <div
             v-if="isLoading"
             class="d-flex justify-center align-center"
@@ -25,6 +24,7 @@
               message
             }}</v-card-text>
           </v-card>
+          <ThePromptForm />
         </v-col>
       </v-row>
     </v-main>

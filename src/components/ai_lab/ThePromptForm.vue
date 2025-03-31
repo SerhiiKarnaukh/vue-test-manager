@@ -1,5 +1,5 @@
 <template>
-  <v-card class="rounded-lg mb-6" color="white" elevation="2">
+  <v-card class="rounded-lg mt-6" color="white" elevation="2">
     <v-form @submit.prevent="submitForm" method="post">
       <v-card-text class="p-4">
         <v-textarea

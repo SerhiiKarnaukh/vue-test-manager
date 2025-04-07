@@ -240,6 +240,22 @@ const routes = [
       layout: 'mainAILab',
     },
   },
+  {
+    path: '/ai-lab/image-generator',
+    name: 'imageGenerator',
+    component: () => import('@/views/ai_lab/ImageGeneratorView.vue'),
+    meta: {
+      layout: 'mainAILab',
+    },
+  },
+  {
+    path: '/ai-lab/voice-generator',
+    name: 'voiceGenerator',
+    component: () => import('@/views/ai_lab/VoiceGeneratorView.vue'),
+    meta: {
+      layout: 'mainAILab',
+    },
+  },
 ]
 
 const router = createRouter({

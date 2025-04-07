@@ -1,28 +1,18 @@
 <template>
-  <v-parallax src="/ai_lab.jpg">
+  <v-parallax src="/v_gen_3.png">
     <div
       class="d-flex flex-column fill-height justify-center align-center text-white bg-transparent-gray"
     ></div>
   </v-parallax>
   <v-container>
     <v-main class="pt-4 pt-md-16">
-      <h2 class="text-center">Funny Chat</h2>
+      <h2 class="text-center">Voice Generator</h2>
       <v-row class="py-5" justify="center">
         <v-col cols="12" md="12" lg="10" xl="8">
-          <v-card v-if="isLoading || message" class="pa-4">
-            <div
-              v-if="isLoading"
-              class="d-flex justify-center align-center"
-              cols="auto"
+          <v-card class="pa-4">
+            <v-card-text class="text-h6 text-md-h6 text-lg-subtitle-1"
+              >Work In Progress</v-card-text
             >
-              <v-progress-circular
-                color="primary"
-                indeterminate
-              ></v-progress-circular>
-            </div>
-            <v-card-text v-else class="text-lg-subtitle-1">{{
-              message
-            }}</v-card-text>
           </v-card>
           <ThePromptForm />
         </v-col>
@@ -51,7 +41,7 @@ export default {
     })
 
     onMounted(async () => {
-      document.title = 'Home | AI Lab'
+      document.title = 'Home | Voice Generator'
     })
 
     return {

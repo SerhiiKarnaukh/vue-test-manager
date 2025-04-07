@@ -16,6 +16,30 @@
       <div class="d-md-flex d-sm-none d-none mr-3">
         <v-menu open-on-hover>
           <template v-slot:activator="{ props }">
+            <v-btn color="white" v-bind="props" prepend-icon="mdi-cogs">
+              AI Services
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item append-icon="mdi-message-text" to="/ai-lab">
+              <v-list-item-title>Funny Chat</v-list-item-title>
+            </v-list-item>
+            <v-list-item
+              append-icon="mdi-image-frame"
+              to="/ai-lab/image-generator"
+            >
+              <v-list-item-title>Image Generator</v-list-item-title>
+            </v-list-item>
+            <v-list-item
+              append-icon="mdi-account-voice"
+              to="/ai-lab/voice-generator"
+            >
+              <v-list-item-title>Voice Generator</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <v-menu open-on-hover>
+          <template v-slot:activator="{ props }">
             <v-btn
               color="white"
               v-bind="props"
@@ -45,6 +69,30 @@
     </v-app-bar>
     <v-navigation-drawer temporary v-model="drawer" location="left">
       <v-list>
+        <v-menu>
+          <template v-slot:activator="{ props }">
+            <v-list-item color="white" v-bind="props" prepend-icon="mdi-cogs">
+              AI Services
+            </v-list-item>
+          </template>
+          <v-list>
+            <v-list-item append-icon="mdi-message-text" to="/ai-lab">
+              <v-list-item-title>Funny Chat</v-list-item-title>
+            </v-list-item>
+            <v-list-item
+              append-icon="mdi-image-frame"
+              to="/ai-lab/image-generator"
+            >
+              <v-list-item-title>Image Generator</v-list-item-title>
+            </v-list-item>
+            <v-list-item
+              append-icon="mdi-account-voice"
+              to="/ai-lab/voice-generator"
+            >
+              <v-list-item-title>Voice Generator</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
         <v-menu>
           <template v-slot:activator="{ props }">
             <v-list-item

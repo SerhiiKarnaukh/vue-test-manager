@@ -23,12 +23,17 @@
           flat
           @change="handleFileChange"
         ></v-file-input>
-        <v-btn @click="chooseFiles()" color="grey darken-2" variant="flat">
-          Attach image
+        <v-btn
+          v-if="!isGeneratorRoute"
+          to="/ai-lab/image-generator"
+          color="grey darken-2"
+          variant="flat"
+        >
+          Image Generator
         </v-btn>
 
         <v-btn color="ai_lab darken-2" variant="flat" type="submit">
-          Ask Me
+          {{ isGeneratorRoute ? 'Generate' : 'Ask Me' }}
         </v-btn>
       </v-card-actions>
     </v-form>
@@ -36,15 +41,22 @@
 </template>
 
 <script>
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
 import { useStore } from 'vuex'
+import { useRoute } from 'vue-router'
 
 export default {
   setup() {
     const store = useStore()
+    const route = useRoute()
     const state = reactive({
       body: '',
     })
+
+    const generatorRoutes = ['imageGenerator', 'voiceGenerator']
+    const isGeneratorRoute = computed(() =>
+      generatorRoutes.includes(route.name)
+    )
 
     const chooseFiles = () => {
       //   document.getElementById('fileUpload').click()
@@ -61,7 +73,15 @@ export default {
     const submitForm = async () => {
       if (state.body !== '') {
         store.commit('setIsLoading', true)
-        await store.dispatch('aiLabChatData/getChatMessage', state.body)
+        if (route.name === 'imageGenerator') {
+          console.log(state.body)
+          //   await store.dispatch('aiLabChatData/generateImageFromText', state.body)
+        } else if (route.name === 'voiceGenerator') {
+          console.log(state.body)
+          //   await store.dispatch('aiLabChatData/generateVoiceFromText', state.body)
+        } else {
+          await store.dispatch('aiLabChatData/getChatMessage', state.body)
+        }
         store.commit('setIsLoading', false)
       }
     }
@@ -71,6 +91,7 @@ export default {
       chooseFiles,
       handleFileChange,
       submitForm,
+      isGeneratorRoute,
     }
   },
 }

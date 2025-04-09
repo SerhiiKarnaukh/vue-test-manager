@@ -60,10 +60,6 @@ export default {
 
     const chooseFiles = () => {
       //   document.getElementById('fileUpload').click()
-      store.commit(
-        'aiLabChatData/setChatMessage',
-        'Working with files in progress!'
-      )
     }
 
     const handleFileChange = (event) => {

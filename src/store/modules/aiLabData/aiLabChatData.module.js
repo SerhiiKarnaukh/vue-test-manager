@@ -4,8 +4,11 @@ const state = () => ({
 })
 
 const mutations = {
-  setChatMessage(state, message) {
+  setMessage(state, message) {
     state.message = message
+  },
+  clearMessage(state) {
+    state.message = null
   },
 }
 
@@ -14,7 +17,7 @@ const actions = {
     await axios
       .post('/ai-lab/', { question })
       .then((response) => {
-        commit('setChatMessage', response.data.message)
+        commit('setMessage', response.data.message)
       })
       .catch((error) => {
         console.log(error)
@@ -24,7 +27,7 @@ const actions = {
     await axios
       .post('/ai-lab/image-generator/', { question })
       .then((response) => {
-        commit('setChatMessage', response.data.message)
+        commit('setMessage', response.data.message)
       })
       .catch((error) => {
         console.log(error)

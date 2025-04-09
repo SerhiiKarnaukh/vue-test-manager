@@ -20,6 +20,16 @@ const actions = {
         console.log(error)
       })
   },
+  async getImageMessage({ commit }, question) {
+    await axios
+      .post('/ai-lab/image-generator/', { question })
+      .then((response) => {
+        commit('setChatMessage', response.data.message)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  },
 }
 
 const getters = {

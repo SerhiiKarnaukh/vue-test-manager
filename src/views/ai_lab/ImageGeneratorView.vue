@@ -9,10 +9,30 @@
       <h2 class="text-center">Image Generator</h2>
       <v-row class="py-5" justify="center">
         <v-col cols="12" md="12" lg="10" xl="8">
-          <v-card class="pa-4">
-            <v-card-text class="text-h6 text-md-h6 text-lg-subtitle-1"
-              >Work In Progress</v-card-text
+          <v-card v-if="isLoading || message" class="pa-4">
+            <div
+              v-if="isLoading"
+              class="d-flex justify-center align-center"
+              cols="auto"
             >
+              <v-progress-circular
+                color="primary"
+                indeterminate
+              ></v-progress-circular>
+            </div>
+            <v-card-text v-else class="py-4">
+              <v-img class="responsive-img" :src="message" rounded> </v-img>
+              <div class="d-flex justify-center mt-4">
+                <v-btn
+                  @click="downloadImage"
+                  color="primary"
+                  variant="outlined"
+                >
+                  <v-icon start>mdi-download</v-icon>
+                  Download Image
+                </v-btn>
+              </div>
+            </v-card-text>
           </v-card>
           <ThePromptForm />
         </v-col>
@@ -40,6 +60,23 @@ export default {
       return store.getters['isLoading']
     })
 
+    const downloadImage = async () => {
+      try {
+        const response = await fetch(message.value)
+        const blob = await response.blob()
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = 'generated-image.png'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+      } catch (error) {
+        console.error('Error downloading image:', error)
+      }
+    }
+
     onMounted(async () => {
       document.title = 'Home | Image Generator'
     })
@@ -47,6 +84,7 @@ export default {
     return {
       message,
       isLoading,
+      downloadImage,
     }
   },
 }
@@ -57,5 +95,12 @@ export default {
     rgba(9, 30, 62, 0.7),
     rgba(9, 30, 62, 0.7)
   ); /* Use rgba() to set the alpha channel */
+}
+.responsive-img {
+  max-width: 100%;
+  max-height: 600px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
 }
 </style>

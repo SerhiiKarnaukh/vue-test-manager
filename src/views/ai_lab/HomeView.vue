@@ -9,7 +9,7 @@
       <h2 class="text-center">Funny Chat</h2>
       <v-row class="py-5" justify="center">
         <v-col cols="12" md="12" lg="10" xl="8">
-          <v-card v-if="isLoading || message" class="pa-4">
+          <v-card v-if="isLoading || displayMessage" class="pa-4">
             <div
               v-if="isLoading"
               class="d-flex justify-center align-center"
@@ -21,7 +21,7 @@
               ></v-progress-circular>
             </div>
             <v-card-text v-else class="text-lg-subtitle-1">{{
-              message
+              displayMessage
             }}</v-card-text>
           </v-card>
           <ThePromptForm />
@@ -46,17 +46,26 @@ export default {
       return store.getters['aiLabChatData/message']
     })
 
+    const errorMessage = computed(() => {
+      return store.getters['aiLabChatData/errorMessage']
+    })
+
     const isLoading = computed(() => {
       return store.getters['isLoading']
     })
 
+    const displayMessage = computed(() => {
+      return errorMessage.value || message.value
+    })
+
     onMounted(async () => {
+      store.commit('aiLabChatData/clearErrorMessage')
       document.title = 'Home | AI Lab'
     })
 
     return {
-      message,
       isLoading,
+      displayMessage,
     }
   },
 }

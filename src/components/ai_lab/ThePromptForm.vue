@@ -7,6 +7,8 @@
           class="p-4 w-full rounded-lg"
           placeholder="How can I help?"
           color="grey lighten-3"
+          :counter="500"
+          maxlength="500"
           required
         ></v-textarea>
       </v-card-text>

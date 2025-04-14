@@ -9,7 +9,7 @@
       <h2 class="text-center">Image Generator</h2>
       <v-row class="py-5" justify="center">
         <v-col cols="12" md="12" lg="10" xl="8">
-          <v-card v-if="isLoading || imageURL" class="pa-4">
+          <v-card v-if="isLoading || imageURL || errorMessage" class="pa-4">
             <div
               v-if="isLoading"
               class="d-flex justify-center align-center"
@@ -20,19 +20,24 @@
                 indeterminate
               ></v-progress-circular>
             </div>
-            <v-card-text v-else class="py-4">
-              <v-img class="responsive-img" :src="imageURL" rounded> </v-img>
-              <div class="d-flex justify-center mt-4">
-                <v-btn
-                  @click="downloadImage"
-                  color="primary"
-                  variant="outlined"
-                >
-                  <v-icon start>mdi-download</v-icon>
-                  Download Image
-                </v-btn>
-              </div>
-            </v-card-text>
+            <div v-else>
+              <v-card-text v-if="errorMessage" class="text-lg-subtitle-1">{{
+                errorMessage
+              }}</v-card-text>
+              <v-card-text v-else class="py-4">
+                <v-img class="responsive-img" :src="imageURL" rounded> </v-img>
+                <div class="d-flex justify-center mt-4">
+                  <v-btn
+                    @click="downloadImage"
+                    color="primary"
+                    variant="outlined"
+                  >
+                    <v-icon start>mdi-download</v-icon>
+                    Download Image
+                  </v-btn>
+                </div>
+              </v-card-text>
+            </div>
           </v-card>
           <ThePromptForm />
         </v-col>
@@ -60,16 +65,22 @@ export default {
       return store.getters['isLoading']
     })
 
+    const errorMessage = computed(() => {
+      return store.getters['aiLabChatData/errorMessage']
+    })
+
     const downloadImage = async () => {
       await store.dispatch('aiLabChatData/downloadImage', imageURL.value)
     }
 
     onMounted(async () => {
+      store.commit('aiLabChatData/clearErrorMessage')
       document.title = 'Home | Image Generator'
     })
 
     return {
       imageURL,
+      errorMessage,
       isLoading,
       downloadImage,
     }

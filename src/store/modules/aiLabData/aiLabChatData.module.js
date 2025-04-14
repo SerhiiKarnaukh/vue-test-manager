@@ -2,6 +2,7 @@ import axios from 'axios'
 const state = () => ({
   message: null,
   imageURL: null,
+  errorMessage: null,
 })
 
 const mutations = {
@@ -10,6 +11,15 @@ const mutations = {
   },
   setImageURL(state, message) {
     state.imageURL = message
+  },
+  setErrorMessage(state, error) {
+    const errorMessage = error.response?.data?.message
+    if (errorMessage) {
+      state.errorMessage = `${errorMessage} Please contact the site administrator if the issue persists.`
+    }
+  },
+  clearErrorMessage(state) {
+    state.errorMessage = null
   },
 }
 
@@ -22,7 +32,7 @@ const actions = {
       })
       .catch((error) => {
         console.log(error)
-        commit('setChatMessage', error.response.data.message)
+        commit('setErrorMessage', error)
       })
   },
   async getImageMessage({ commit }, question) {
@@ -33,6 +43,7 @@ const actions = {
       })
       .catch((error) => {
         console.log(error)
+        commit('setErrorMessage', error)
       })
   },
   async downloadImage({}, imageUrl) {
@@ -65,6 +76,7 @@ const actions = {
 const getters = {
   message: (state) => state.message,
   imageURL: (state) => state.imageURL,
+  errorMessage: (state) => state.errorMessage,
 }
 
 export default {

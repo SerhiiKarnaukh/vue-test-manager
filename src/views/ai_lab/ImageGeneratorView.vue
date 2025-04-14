@@ -9,7 +9,7 @@
       <h2 class="text-center">Image Generator</h2>
       <v-row class="py-5" justify="center">
         <v-col cols="12" md="12" lg="10" xl="8">
-          <v-card v-if="isLoading || message" class="pa-4">
+          <v-card v-if="isLoading || imageURL" class="pa-4">
             <div
               v-if="isLoading"
               class="d-flex justify-center align-center"
@@ -21,7 +21,7 @@
               ></v-progress-circular>
             </div>
             <v-card-text v-else class="py-4">
-              <v-img class="responsive-img" :src="message" rounded> </v-img>
+              <v-img class="responsive-img" :src="imageURL" rounded> </v-img>
               <div class="d-flex justify-center mt-4">
                 <v-btn
                   @click="downloadImage"
@@ -52,8 +52,8 @@ export default {
   setup() {
     const store = useStore()
 
-    const message = computed(() => {
-      return store.getters['aiLabChatData/message']
+    const imageURL = computed(() => {
+      return store.getters['aiLabChatData/imageURL']
     })
 
     const isLoading = computed(() => {
@@ -61,20 +61,7 @@ export default {
     })
 
     const downloadImage = async () => {
-      try {
-        const response = await fetch(message.value)
-        const blob = await response.blob()
-        const url = URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.download = 'generated-image.png'
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        URL.revokeObjectURL(url)
-      } catch (error) {
-        console.error('Error downloading image:', error)
-      }
+      await store.dispatch('aiLabChatData/downloadImage', imageURL.value)
     }
 
     onMounted(async () => {
@@ -82,7 +69,7 @@ export default {
     })
 
     return {
-      message,
+      imageURL,
       isLoading,
       downloadImage,
     }

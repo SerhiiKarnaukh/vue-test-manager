@@ -275,14 +275,6 @@ function getLoginRoute(path) {
 router.beforeEach((to, from, next) => {
   const requireAuthJWT = to.meta.authJWT
 
-  // === AI Lab: reset message when moving inside ai-lab ===
-  const isToAiLab = to.path.startsWith('/ai-lab')
-  const isFromAiLab = from.path.startsWith('/ai-lab')
-
-  if (isFromAiLab && isToAiLab) {
-    store.commit('aiLabChatData/clearMessage')
-  }
-
   // === Authorization check ===
   if (requireAuthJWT && store.getters['authJWT/isAuthenticated']) {
     next()

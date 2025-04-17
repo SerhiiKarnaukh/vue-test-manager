@@ -9,10 +9,26 @@
       <h2 class="text-center">Voice Generator</h2>
       <v-row class="py-5" justify="center">
         <v-col cols="12" md="12" lg="10" xl="8">
-          <v-card class="pa-4">
-            <v-card-text class="text-h6 text-md-h6 text-lg-subtitle-1"
-              >Work In Progress</v-card-text
+          <v-card v-if="isLoading || voiceMessage || errorMessage" class="pa-4">
+            <div
+              v-if="isLoading"
+              class="d-flex justify-center align-center"
+              cols="auto"
             >
+              <v-progress-circular
+                color="primary"
+                indeterminate
+              ></v-progress-circular>
+            </div>
+            <div v-else>
+              <v-card-text v-if="errorMessage" class="text-lg-subtitle-1">{{
+                errorMessage
+              }}</v-card-text>
+
+              <div v-else class="d-flex justify-center">
+                <audio :src="voiceMessage" controls style="width: 100%"></audio>
+              </div>
+            </div>
           </v-card>
           <ThePromptForm />
         </v-col>
@@ -40,6 +56,14 @@ export default {
       return store.getters['isLoading']
     })
 
+    const voiceMessage = computed(() => {
+      return store.getters['aiLabChatData/voiceMessage']
+    })
+
+    const errorMessage = computed(() => {
+      return store.getters['aiLabChatData/errorMessage']
+    })
+
     onMounted(async () => {
       document.title = 'Home | Voice Generator'
     })
@@ -47,6 +71,8 @@ export default {
     return {
       message,
       isLoading,
+      voiceMessage,
+      errorMessage,
     }
   },
 }

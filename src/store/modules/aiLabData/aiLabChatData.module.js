@@ -2,6 +2,7 @@ import axios from 'axios'
 const state = () => ({
   message: null,
   imageURL: null,
+  voiceMessage: null,
   errorMessage: null,
 })
 
@@ -11,6 +12,9 @@ const mutations = {
   },
   setImageURL(state, message) {
     state.imageURL = message
+  },
+  setVoiceMessage(state, message) {
+    state.voiceMessage = message
   },
   setErrorMessage(state, error) {
     const errorMessage = error.response?.data?.message
@@ -71,11 +75,23 @@ const actions = {
       console.error('Error while downloading the image:', error)
     }
   },
+  async getVoiceMessage({ commit }, question) {
+    await axios
+      .post('/ai-lab/voice-generator/', { question })
+      .then((response) => {
+        commit('setVoiceMessage', response.data.message)
+      })
+      .catch((error) => {
+        console.log(error)
+        commit('setErrorMessage', error)
+      })
+  },
 }
 
 const getters = {
   message: (state) => state.message,
   imageURL: (state) => state.imageURL,
+  voiceMessage: (state) => state.voiceMessage,
   errorMessage: (state) => state.errorMessage,
 }
 

@@ -74,8 +74,7 @@ export default {
         if (route.name === 'imageGenerator') {
           await store.dispatch('aiLabChatData/getImageMessage', state.body)
         } else if (route.name === 'voiceGenerator') {
-          console.log(state.body)
-          //   await store.dispatch('aiLabChatData/generateVoiceFromText', state.body)
+          await store.dispatch('aiLabChatData/getVoiceMessage', state.body)
         } else {
           await store.dispatch('aiLabChatData/getChatMessage', state.body)
         }

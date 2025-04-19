@@ -4,6 +4,7 @@ const state = () => ({
   imageURL: null,
   voiceMessage: null,
   errorMessage: null,
+  promptImages: [],
 })
 
 const mutations = {
@@ -15,6 +16,11 @@ const mutations = {
   },
   setVoiceMessage(state, message) {
     state.voiceMessage = message
+  },
+  uploadSelectedPromptImages(state, images) {
+    if (images.length != 0) {
+      state.promptImages.push(...images)
+    }
   },
   setErrorMessage(state, error) {
     const errorMessage = error.response?.data?.message
@@ -86,6 +92,9 @@ const actions = {
         commit('setErrorMessage', error)
       })
   },
+  async uploadPromptImages({ commit }, images) {
+    commit('uploadSelectedPromptImages', images)
+  },
 }
 
 const getters = {
@@ -93,6 +102,7 @@ const getters = {
   imageURL: (state) => state.imageURL,
   voiceMessage: (state) => state.voiceMessage,
   errorMessage: (state) => state.errorMessage,
+  promptImages: (state) => state.promptImages,
 }
 
 export default {

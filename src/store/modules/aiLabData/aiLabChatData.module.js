@@ -17,10 +17,9 @@ const mutations = {
   setVoiceMessage(state, message) {
     state.voiceMessage = message
   },
-  uploadSelectedPromptImages(state, images) {
-    if (images.length != 0) {
-      state.promptImages.push(...images)
-    }
+  setPromptImages(state, images) {
+    state.promptImages = [...state.promptImages, ...images]
+    console.log('222222222222222222222222', state.promptImages)
   },
   setErrorMessage(state, error) {
     const errorMessage = error.response?.data?.message
@@ -34,9 +33,9 @@ const mutations = {
 }
 
 const actions = {
-  async getChatMessage({ commit }, question) {
+  async getChatMessage({ commit, state }, question) {
     await axios
-      .post('/ai-lab/', { question })
+      .post('/ai-lab/', { question, prompt_images: state.promptImages })
       .then((response) => {
         commit('setChatMessage', response.data.message)
       })
@@ -93,7 +92,30 @@ const actions = {
       })
   },
   async uploadPromptImages({ commit }, images) {
-    commit('uploadSelectedPromptImages', images)
+    let formData = new FormData()
+    if (images.length != 0) {
+      images.forEach((object, index) => {
+        formData.append(`images[]`, object.file)
+      })
+    }
+
+    try {
+      const response = await axios.post(
+        '/ai-lab/upload-vision-images/',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+
+      const uploadedImages = response.data.uploaded_images
+      commit('setPromptImages', uploadedImages)
+    } catch (error) {
+      console.error('Error while uploading images:', error)
+      commit('setErrorMessage', error)
+    }
   },
 }
 

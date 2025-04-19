@@ -12,18 +12,27 @@
           required
         ></v-textarea>
       </v-card-text>
-
+      <div
+        v-if="state.isLoading"
+        class="d-flex justify-center align-center mb-4"
+        cols="auto"
+      >
+        <v-progress-circular
+          color="primary"
+          indeterminate
+        ></v-progress-circular>
+      </div>
       <v-row
-        v-if="promptImages.length != 0 && !isGeneratorRoute"
+        v-else-if="promptImages.length != 0 && !isGeneratorRoute"
         class="border-t"
       >
         <v-col
           v-for="image in promptImages"
           cols="2"
           class="text-left mb-4"
-          :key="`${image.file.name}-navbar-link`"
+          :key="`${image}-navbar-link`"
         >
-          <v-img :src="image.url" style="max-height: 100px" rounded> </v-img>
+          <v-img :src="image" style="max-height: 100px" rounded> </v-img>
         </v-col>
       </v-row>
 
@@ -64,6 +73,7 @@ export default {
     const route = useRoute()
     const state = reactive({
       body: '',
+      isLoading: false,
     })
 
     const generatorRoutes = ['imageGenerator', 'voiceGenerator']
@@ -107,10 +117,12 @@ export default {
       }))
 
       if (newPromptImages.length > 0) {
+        state.isLoading = true
         await store.dispatch(
           'aiLabChatData/uploadPromptImages',
           newPromptImages
         )
+        state.isLoading = false
       }
     }
 

@@ -80,6 +80,7 @@
             >({{ unreadCount }})</v-btn
           >
           <router-link
+            v-if="userSlug"
             :to="{
               name: 'profileSocial',
               params: { slug: userSlug },

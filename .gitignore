@@ -1,7 +1,6 @@
 .DS_Store
 .firebase
 .firebaserc
-firebase.json
 
 node_modules
 /dist

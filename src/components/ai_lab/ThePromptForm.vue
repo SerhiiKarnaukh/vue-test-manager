@@ -154,6 +154,10 @@ export default {
       if (route.name !== 'realtimeChat') {
         store.commit('setIsLoading', false)
       }
+
+      if (route.name == 'realtimeChat') {
+        state.body = ''
+      }
     }
 
     return {

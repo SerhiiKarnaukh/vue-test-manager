@@ -6,10 +6,7 @@ const state = () => ({
   errorMessage: null,
   promptImages: [],
   realtimeChatWebSocket: null,
-  realtimeChatMessages: [
-    { sender: 'chat', message: 'Hello!' },
-    { sender: 'me', message: 'How are you?' },
-  ],
+  realtimeChatMessages: [],
 })
 
 const mutations = {
@@ -195,6 +192,7 @@ const getters = {
   voiceMessage: (state) => state.voiceMessage,
   errorMessage: (state) => state.errorMessage,
   promptImages: (state) => state.promptImages,
+  realtimeChatMessages: (state) => state.realtimeChatMessages,
 }
 
 export default {

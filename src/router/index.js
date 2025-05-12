@@ -256,6 +256,14 @@ const routes = [
       layout: 'mainAILab',
     },
   },
+  {
+    path: '/ai-lab/realtime-chat',
+    name: 'realtimeChat',
+    component: () => import('@/views/ai_lab/RealtimeChatView.vue'),
+    meta: {
+      layout: 'mainAILab',
+    },
+  },
 ]
 
 const router = createRouter({

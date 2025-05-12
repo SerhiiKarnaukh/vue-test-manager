@@ -37,7 +37,7 @@
       </v-row>
 
       <v-card-actions class="p-4 border-t">
-        <div v-if="!isGeneratorRoute">
+        <div v-if="shouldShowAddImages">
           <v-file-input
             id="fileUpload"
             style="display: none"
@@ -81,6 +81,12 @@ export default {
     const isGeneratorRoute = computed(() =>
       generatorRoutes.includes(route.name)
     )
+
+    const shouldShowAddImages = computed(() => {
+      return !['imageGenerator', 'voiceGenerator', 'realtimeChat'].includes(
+        route.name
+      )
+    })
 
     const promptImages = computed(() => {
       return store.getters['aiLabChatData/promptImages']
@@ -127,15 +133,25 @@ export default {
     }
 
     const submitForm = async () => {
-      if (state.body !== '') {
+      if (!state.body) return
+
+      const actionMap = {
+        imageGenerator: 'aiLabChatData/getImageMessage',
+        voiceGenerator: 'aiLabChatData/getVoiceMessage',
+        homeAILab: 'aiLabChatData/getChatMessage',
+        realtimeChat: 'aiLabChatData/getRealtimeChatMessage',
+      }
+
+      const action = actionMap[route.name]
+      if (!action) return
+
+      if (route.name !== 'realtimeChat') {
         store.commit('setIsLoading', true)
-        if (route.name === 'imageGenerator') {
-          await store.dispatch('aiLabChatData/getImageMessage', state.body)
-        } else if (route.name === 'voiceGenerator') {
-          await store.dispatch('aiLabChatData/getVoiceMessage', state.body)
-        } else {
-          await store.dispatch('aiLabChatData/getChatMessage', state.body)
-        }
+      }
+
+      await store.dispatch(action, state.body)
+
+      if (route.name !== 'realtimeChat') {
         store.commit('setIsLoading', false)
       }
     }
@@ -147,6 +163,7 @@ export default {
       handleFileChange,
       submitForm,
       isGeneratorRoute,
+      shouldShowAddImages,
     }
   },
 }

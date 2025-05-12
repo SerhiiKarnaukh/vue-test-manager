@@ -1,15 +1,15 @@
 <template>
-  <v-parallax src="/v_gen_3.png">
+  <v-parallax src="/realtime_chat.png">
     <div
       class="d-flex flex-column fill-height justify-center align-center text-white bg-transparent-gray"
     ></div>
   </v-parallax>
   <v-container>
     <v-main class="pt-4 pt-md-16">
-      <h2 class="text-center">Voice Generator</h2>
+      <h2 class="text-center">Realtime Chat</h2>
       <v-row class="py-5" justify="center">
         <v-col cols="12" md="12" lg="10" xl="8">
-          <v-card v-if="isLoading || voiceMessage || errorMessage" class="pa-4">
+          <v-card v-if="isLoading || displayMessage" class="pa-4">
             <div
               v-if="isLoading"
               class="d-flex justify-center align-center"
@@ -20,15 +20,9 @@
                 indeterminate
               ></v-progress-circular>
             </div>
-            <div v-else>
-              <v-card-text v-if="errorMessage" class="text-lg-subtitle-1">{{
-                errorMessage
-              }}</v-card-text>
-
-              <div v-else class="d-flex justify-center">
-                <audio :src="voiceMessage" controls style="width: 100%"></audio>
-              </div>
-            </div>
+            <v-card-text v-else class="text-lg-subtitle-1">{{
+              displayMessage
+            }}</v-card-text>
           </v-card>
           <ThePromptForm />
         </v-col>
@@ -52,27 +46,27 @@ export default {
       return store.getters['aiLabChatData/message']
     })
 
-    const isLoading = computed(() => {
-      return store.getters['isLoading']
-    })
-
-    const voiceMessage = computed(() => {
-      return store.getters['aiLabChatData/voiceMessage']
-    })
-
     const errorMessage = computed(() => {
       return store.getters['aiLabChatData/errorMessage']
     })
 
+    const isLoading = computed(() => {
+      return store.getters['isLoading']
+    })
+
+    const displayMessage = computed(() => {
+      return errorMessage.value || message.value
+    })
+
     onMounted(async () => {
-      document.title = 'Voice Generator | AI Lab'
+      store.commit('aiLabChatData/clearErrorMessage')
+      store.dispatch('aiLabChatData/connectRealtimeChatSocket')
+      document.title = 'Realtime Chat | AI Lab'
     })
 
     return {
-      message,
       isLoading,
-      voiceMessage,
-      errorMessage,
+      displayMessage,
     }
   },
 }

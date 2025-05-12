@@ -21,20 +21,13 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item append-icon="mdi-message-text" to="/ai-lab">
-              <v-list-item-title>Funny Chat</v-list-item-title>
-            </v-list-item>
             <v-list-item
-              append-icon="mdi-image-frame"
-              to="/ai-lab/image-generator"
+              v-for="item in aiServicesMenuItems"
+              :key="item.to"
+              :to="item.to"
+              :append-icon="item.icon"
             >
-              <v-list-item-title>Image Generator</v-list-item-title>
-            </v-list-item>
-            <v-list-item
-              append-icon="mdi-account-voice"
-              to="/ai-lab/voice-generator"
-            >
-              <v-list-item-title>Voice Generator</v-list-item-title>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -76,20 +69,13 @@
             </v-list-item>
           </template>
           <v-list>
-            <v-list-item append-icon="mdi-message-text" to="/ai-lab">
-              <v-list-item-title>Funny Chat</v-list-item-title>
-            </v-list-item>
             <v-list-item
-              append-icon="mdi-image-frame"
-              to="/ai-lab/image-generator"
+              v-for="item in aiServicesMenuItems"
+              :key="item.to"
+              :to="item.to"
+              :append-icon="item.icon"
             >
-              <v-list-item-title>Image Generator</v-list-item-title>
-            </v-list-item>
-            <v-list-item
-              append-icon="mdi-account-voice"
-              to="/ai-lab/voice-generator"
-            >
-              <v-list-item-title>Voice Generator</v-list-item-title>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -126,29 +112,48 @@
   </v-container>
 </template>
 
-<script>
+<script setup>
 import { useTheme } from 'vuetify'
-export default {
-  setup() {
-    const theme = useTheme()
-    return {
-      theme,
-      toggleTheme: () =>
-        (theme.global.name.value = theme.global.current.value.dark
-          ? 'CustomLightTheme'
-          : 'dark'),
-    }
-  },
-  data: () => ({
-    drawer: false,
-    remoteHost: import.meta.env.VITE_REMOTE_HOST,
-  }),
-  watch: {
-    $route() {
-      this.drawer = false
-    },
-  },
+import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+
+const drawer = ref(false)
+const remoteHost = import.meta.env.VITE_REMOTE_HOST
+
+const theme = useTheme()
+const toggleTheme = () => {
+  theme.global.name.value = theme.global.current.value.dark
+    ? 'CustomLightTheme'
+    : 'dark'
 }
+
+const aiServicesMenuItems = [
+  {
+    title: 'Funny Chat',
+    icon: 'mdi-message-text',
+    to: '/ai-lab',
+  },
+  {
+    title: 'Image Generator',
+    icon: 'mdi-image-frame',
+    to: '/ai-lab/image-generator',
+  },
+  {
+    title: 'Voice Generator',
+    icon: 'mdi-account-voice',
+    to: '/ai-lab/voice-generator',
+  },
+  {
+    title: 'Realtime Chat',
+    icon: 'mdi-chat-processing-outline',
+    to: '/ai-lab/realtime-chat',
+  },
+]
+
+const route = useRoute()
+watch(route, () => {
+  drawer.value = false
+})
 </script>
 
 <style scoped lang="scss">

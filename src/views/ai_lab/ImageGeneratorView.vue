@@ -75,7 +75,7 @@ export default {
 
     onMounted(async () => {
       store.commit('aiLabChatData/clearErrorMessage')
-      document.title = 'Home | Image Generator'
+      document.title = 'Image Generator | AI Lab'
     })
 
     return {

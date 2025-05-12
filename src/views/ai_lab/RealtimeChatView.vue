@@ -60,7 +60,6 @@ export default {
 
     onMounted(async () => {
       store.commit('aiLabChatData/clearErrorMessage')
-      store.dispatch('aiLabChatData/connectRealtimeChatSocket')
       document.title = 'Realtime Chat | AI Lab'
     })
 

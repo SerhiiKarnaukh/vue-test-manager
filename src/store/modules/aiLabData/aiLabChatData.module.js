@@ -6,6 +6,10 @@ const state = () => ({
   errorMessage: null,
   promptImages: [],
   realtimeChatWebSocket: null,
+  realtimeChatMessages: [
+    { sender: 'chat', message: 'Hello!' },
+    { sender: 'me', message: 'How are you?' },
+  ],
 })
 
 const mutations = {
@@ -29,6 +33,10 @@ const mutations = {
   },
   clearErrorMessage(state) {
     state.errorMessage = null
+  },
+  setRealtimeChatMessages(state, payload) {
+    const { sender, message } = payload
+    state.realtimeChatMessages.push({ sender, message })
   },
 }
 
@@ -71,7 +79,10 @@ const actions = {
         const data = JSON.parse(event.data)
         if (data.type === 'response.done') {
           const transcript = data.response.output?.[0]?.content?.[0]?.transcript
-          commit('setChatMessage', transcript)
+          commit('setRealtimeChatMessages', {
+            sender: 'chat',
+            message: transcript,
+          })
           commit('setIsLoading', false, { root: true })
         }
       }
@@ -85,6 +96,8 @@ const actions = {
       console.warn('WebSocket is not ready')
       return
     }
+
+    commit('setRealtimeChatMessages', { sender: 'me', message: question })
 
     commit('setIsLoading', true, { root: true })
 

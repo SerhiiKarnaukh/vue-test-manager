@@ -2,7 +2,7 @@
 
 ### App on Firebase: <https://karnaukh-vue-test.web.app/ai-lab>
 
-![AI Lab screenshot](https://github.com/SerhiiKarnaukh/vue-test-manager/blob/main/src/views/ai_lab/sai_lab_main.jpg)
+![AI Lab screenshot](https://github.com/SerhiiKarnaukh/vue-test-manager/blob/main/src/views/ai_lab/ai_lab_main.jpg)
 
 ## Related folders
 

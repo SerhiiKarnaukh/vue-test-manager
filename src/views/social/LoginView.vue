@@ -1,6 +1,14 @@
 <template>
   <v-main class="px-4 pb-4">
-    <v-card max-width="400" class="mx-auto">
+    <v-card-title v-if="state.loading">
+      <v-row align="center" class="fill-height ma-0" justify="center">
+        <v-progress-circular
+          color="grey lighten-5"
+          indeterminate
+        ></v-progress-circular>
+      </v-row>
+    </v-card-title>
+    <v-card v-else max-width="400" class="mx-auto">
       <v-card-title class="mb-6">
         <h1>Login</h1>
       </v-card-title>
@@ -52,6 +60,7 @@ export default {
       email: '',
       password: '',
       showPassword: false,
+      loading: false,
     })
 
     const rules = {
@@ -77,6 +86,7 @@ export default {
           activeApp: 'social',
         }
         try {
+          state.loading = true
           await store.dispatch('authJWT/login', formData)
           await store.dispatch('socialProfileData/getUserData')
           await store.dispatch('socialNotificationData/getNotifications')
@@ -86,6 +96,8 @@ export default {
           router.push('/social/home')
         } catch (e) {
           return
+        } finally {
+          state.loading = false
         }
         return
       }

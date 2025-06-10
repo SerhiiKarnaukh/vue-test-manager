@@ -12,6 +12,7 @@ const CustomLightTheme = {
     manager: '#1f1f2e',
     social: '7E2553',
     ai_lab: '27445D',
+    hyper3d: '#37474F',
     iconColor: '#000000',
   },
 }
@@ -31,6 +32,7 @@ export default createVuetify({
           manager: '#535f7c',
           social: '1D2B53',
           ai_lab: '497D74',
+          hyper3d: '#00C2A8',
           iconColor: '#FFFFFF',
         },
       },

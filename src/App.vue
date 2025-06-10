@@ -13,6 +13,7 @@ import MainTabernaLayout from '@/layouts/taberna/MainTabernaLayout.vue'
 import MainAppsManagerLayout from '@/layouts/appsmanager/MainAppsManagerLayout.vue'
 import MainSocialLayout from '@/layouts/social/MainSocialLayout.vue'
 import MainAILabLayout from '@/layouts/ai_lab/MainAILabLayout.vue'
+import MainHyper3dLayout from '@/layouts/hyper3d/MainHyper3dLayout.vue'
 export default {
   name: 'App',
   computed: {
@@ -26,6 +27,7 @@ export default {
     MainAppsManagerLayout,
     MainSocialLayout,
     MainAILabLayout,
+    MainHyper3dLayout,
   },
 }
 </script>

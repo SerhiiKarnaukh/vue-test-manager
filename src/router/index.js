@@ -264,6 +264,15 @@ const routes = [
       layout: 'mainAILab',
     },
   },
+  //Hyper 3D
+  {
+    path: '/hyper3d',
+    name: 'homeHyper3d',
+    component: () => import('@/views/hyper3d/HomeView.vue'),
+    meta: {
+      layout: 'mainHyper3d',
+    },
+  },
 ]
 
 const router = createRouter({

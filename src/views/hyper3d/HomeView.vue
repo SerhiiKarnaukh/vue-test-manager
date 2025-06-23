@@ -13,6 +13,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 const container = ref(null)
 let scene, camera, renderer
 
@@ -23,12 +24,12 @@ function renderObject() {
 
   // Light
 
-  //   const ambientLight = new THREE.AmbientLight('white', 1)
-  //   scene.add(ambientLight)
+  const ambientLight = new THREE.AmbientLight('white', 1)
+  scene.add(ambientLight)
 
-  //   const dirLight = new THREE.DirectionalLight('white', 1)
-  //   dirLight.position.set(5, 5, 5)
-  //   scene.add(dirLight)
+  const dirLight = new THREE.DirectionalLight('white', 1)
+  dirLight.position.set(5, 5, 5)
+  scene.add(dirLight)
 
   //   const pointLight = new THREE.PointLight('white', 10, 100)
   //   pointLight.position.set(-1, 1, 1)
@@ -36,9 +37,9 @@ function renderObject() {
   //   const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.5)
   //   scene.add(pointLightHelper)
 
-  const spotLight = new THREE.SpotLight('white', 6)
-  spotLight.position.set(1, 1, 1)
-  scene.add(spotLight)
+  //   const spotLight = new THREE.SpotLight('white', 6)
+  //   spotLight.position.set(1, 1, 1)
+  //   scene.add(spotLight)
 
   // Camera
   camera = new THREE.PerspectiveCamera(
@@ -54,6 +55,14 @@ function renderObject() {
   renderer.setSize(window.innerWidth, window.innerHeight)
   container.value.appendChild(renderer.domElement)
 
+  // OrbitControls
+  const controls = new OrbitControls(camera, renderer.domElement)
+  controls.enableDamping = true
+  controls.dampingFactor = 0.05
+  controls.screenSpacePanning = false
+  controls.minDistance = 2
+  controls.maxDistance = 10
+
   // Cube
   const geometry = new THREE.BoxGeometry()
   const material = new THREE.MeshStandardMaterial({ color: 'green' })
@@ -62,11 +71,9 @@ function renderObject() {
   scene.add(cube)
 
   // Sphere
-  const sphereGeometry = new THREE.SphereGeometry(0.5, 6, 6)
-  const sphereMaterial = new THREE.MeshPhongMaterial({
+  const sphereGeometry = new THREE.SphereGeometry()
+  const sphereMaterial = new THREE.MeshStandardMaterial({
     color: 'orange',
-    emissive: '#fff',
-    shininess: 100,
   })
   const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial)
   sphere.position.set(3, 0, 0)
@@ -80,6 +87,25 @@ function renderObject() {
   torus.position.set(2, 2, 1)
   scene.add(torus)
 
+  // Interacting with objects
+  const raycaster = new THREE.Raycaster()
+  const mouse = new THREE.Vector2()
+
+  const onMouseClick = (event) => {
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
+
+    raycaster.setFromCamera(mouse, camera)
+    const intersects = raycaster.intersectObjects(scene.children)
+
+    if (intersects.length > 0) {
+      intersects[0].object.material.color.set('red')
+      alert('Clicked on Item')
+    }
+  }
+
+  window.addEventListener('click', onMouseClick)
+
   const animate = () => {
     requestAnimationFrame(animate)
     cube.rotation.x += 0.01
@@ -88,6 +114,8 @@ function renderObject() {
     sphere.rotation.y += 0.01
     torus.rotation.x += 0.01
     torus.rotation.y += 0.01
+
+    controls.update()
     renderer.render(scene, camera)
   }
   animate()

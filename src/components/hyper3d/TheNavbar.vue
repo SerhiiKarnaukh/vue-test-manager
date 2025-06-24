@@ -137,6 +137,11 @@ const hyper3dMenuItems = [
     icon: 'mdi-cube-outline',
     to: '/hyper3d',
   },
+  {
+    title: 'Animate',
+    icon: 'mdi-animation',
+    to: '/hyper3d/animate',
+  },
 ]
 
 const route = useRoute()

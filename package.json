@@ -15,6 +15,7 @@
     "axios": "^1.9.0",
     "core-js": "^3.42.0",
     "crypto-js": "^4.2.0",
+    "gsap": "^3.13.0",
     "pinia": "^3.0.2",
     "roboto-fontface": "*",
     "three": "^0.177.0",

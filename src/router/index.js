@@ -273,6 +273,14 @@ const routes = [
       layout: 'mainHyper3d',
     },
   },
+  {
+    path: '/hyper3d/animate',
+    name: 'animateHyper3d',
+    component: () => import('@/views/hyper3d/AnimateView.vue'),
+    meta: {
+      layout: 'mainHyper3d',
+    },
+  },
 ]
 
 const router = createRouter({

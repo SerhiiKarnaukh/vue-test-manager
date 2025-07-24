@@ -281,6 +281,14 @@ const routes = [
       layout: 'mainHyper3d',
     },
   },
+  {
+    path: '/hyper3d/local-model',
+    name: 'localModelHyper3d',
+    component: () => import('@/views/hyper3d/LocalModelView.vue'),
+    meta: {
+      layout: 'mainHyper3d',
+    },
+  },
 ]
 
 const router = createRouter({

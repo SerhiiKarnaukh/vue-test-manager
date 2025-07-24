@@ -142,6 +142,11 @@ const hyper3dMenuItems = [
     icon: 'mdi-animation',
     to: '/hyper3d/animate',
   },
+  {
+    title: 'Local Model',
+    icon: 'mdi-car-sports',
+    to: '/hyper3d/local-model',
+  },
 ]
 
 const route = useRoute()

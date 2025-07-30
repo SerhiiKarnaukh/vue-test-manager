@@ -100,7 +100,6 @@ function renderObject() {
 
     if (intersects.length > 0) {
       intersects[0].object.material.color.set('red')
-      alert('Clicked on Item')
     }
   }
 

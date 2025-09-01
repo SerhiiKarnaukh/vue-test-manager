@@ -7,7 +7,7 @@
 ## Node.js version
 
 ```
-v22.11.0
+v22.19.0
 ```
 
 ## Project setup

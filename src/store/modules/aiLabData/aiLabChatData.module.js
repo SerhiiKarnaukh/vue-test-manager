@@ -50,41 +50,55 @@ const actions = {
       })
   },
   async connectRealtimeChatSocket({ state, commit }) {
-    return new Promise((resolve, reject) => {
-      const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY
-      const ws = new WebSocket(
-        'wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17',
-        [
-          'realtime',
-          'openai-insecure-api-key.' + OPENAI_API_KEY,
-          'openai-beta.realtime-v1',
-        ]
-      )
+    return new Promise(async (resolve, reject) => {
+      try {
+        const cleanAxios = axios.create()
 
-      ws.onopen = () => {
-        console.log('✅ WebSocket connection established')
-        state.realtimeChatWebSocket = ws
-        resolve()
-      }
+        const response = await cleanAxios.post(
+          'http://127.0.0.1:8000/ai-lab/realtime-token/',
+        )
 
-      ws.onerror = (e) => {
-        console.error('WebSocket error:', e)
-        reject(e)
-      }
+        const ephemeralKey = response.data.client_secret.value
 
-      ws.onmessage = (event) => {
-        const data = JSON.parse(event.data)
-        if (data.type === 'response.done') {
-          const transcript = data.response.output?.[0]?.content?.[0]?.transcript
-          commit('setRealtimeChatMessages', {
-            sender: 'chat',
-            message: transcript,
-          })
-          commit('setIsLoading', false, { root: true })
+        const ws = new WebSocket(
+          'wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17',
+          [
+            'realtime',
+            'openai-insecure-api-key.' + ephemeralKey,
+            'openai-beta.realtime-v1',
+          ],
+        )
+
+        ws.onopen = () => {
+          console.log('✅ WebSocket connected')
+          state.realtimeChatWebSocket = ws
+          resolve()
         }
-      }
 
-      ws.onclose = () => console.warn('WebSocket closed')
+        ws.onerror = (e) => {
+          console.error('❌ WebSocket error:', e)
+          reject(e)
+        }
+
+        ws.onmessage = (event) => {
+          const data = JSON.parse(event.data)
+
+          if (data.type === 'response.done') {
+            const transcript =
+              data.response.output?.[0]?.content?.[0]?.transcript
+            commit('setRealtimeChatMessages', {
+              sender: 'chat',
+              message: transcript,
+            })
+            commit('setIsLoading', false, { root: true })
+          }
+        }
+
+        ws.onclose = () => console.warn('⚠️ WebSocket closed')
+      } catch (error) {
+        console.error('❌ Connection failed:', error)
+        reject(error)
+      }
     })
   },
   getRealtimeChatMessage({ state, commit }, question) {
@@ -132,7 +146,7 @@ const actions = {
         { filename },
         {
           responseType: 'blob',
-        }
+        },
       )
 
       const url = window.URL.createObjectURL(new Blob([response.data]))
@@ -174,7 +188,7 @@ const actions = {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
-        }
+        },
       )
 
       const uploadedImages = response.data.uploaded_images

@@ -1,25 +1,24 @@
 name: Deploy to Firebase Hosting on merge
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches:
+            - main
 jobs:
-  build_and_deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: npm ci
-      - run: npm run build
-        env:
-          VITE_REMOTE_HOST: ${{ secrets.VITE_REMOTE_HOST }}
-          VITE_ENCRIPTION_KEY: ${{ secrets.VITE_ENCRIPTION_KEY }}
-          VITE_STRIPE_PUBLIC_KEY: ${{ secrets.VITE_STRIPE_PUBLIC_KEY }}
-          VITE_OPENAI_API_KEY: ${{ secrets.VITE_OPENAI_API_KEY }}
-          VITE_STRIPE_ACTION_TYPE: ${{ vars.VITE_STRIPE_ACTION_TYPE }}
+    build_and_deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - run: npm ci
+            - run: npm run build
+              env:
+                  VITE_REMOTE_HOST: ${{ secrets.VITE_REMOTE_HOST }}
+                  VITE_ENCRIPTION_KEY: ${{ secrets.VITE_ENCRIPTION_KEY }}
+                  VITE_STRIPE_PUBLIC_KEY: ${{ secrets.VITE_STRIPE_PUBLIC_KEY }}
+                  VITE_STRIPE_ACTION_TYPE: ${{ vars.VITE_STRIPE_ACTION_TYPE }}
 
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KARNAUKH_VUE_TEST }}
-          channelId: live
-          projectId: karnaukh-vue-test
+            - uses: FirebaseExtended/action-hosting-deploy@v0
+              with:
+                  repoToken: ${{ secrets.GITHUB_TOKEN }}
+                  firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KARNAUKH_VUE_TEST }}
+                  channelId: live
+                  projectId: karnaukh-vue-test

@@ -52,11 +52,7 @@ const actions = {
   async connectRealtimeChatSocket({ state, commit }) {
     return new Promise(async (resolve, reject) => {
       try {
-        const cleanAxios = axios.create()
-
-        const response = await cleanAxios.post(
-          'http://127.0.0.1:8000/ai-lab/realtime-token/',
-        )
+        const response = await axios.post('/ai-lab/realtime-token/')
 
         const ephemeralKey = response.data.client_secret.value
 

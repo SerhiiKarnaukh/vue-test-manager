@@ -108,7 +108,7 @@ export default {
     })
 
     const removeImage = (index) => {
-      store.commit('aiLabChatData/removePromptImage', index)
+      store.dispatch('aiLabChatData/deletePromptImage', index)
     }
 
     const chooseFiles = () => {

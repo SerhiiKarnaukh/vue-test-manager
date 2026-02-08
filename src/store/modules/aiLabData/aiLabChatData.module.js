@@ -171,6 +171,19 @@ const actions = {
         commit('setErrorMessage', error)
       })
   },
+  async deletePromptImage({ commit, state }, index) {
+    const imageUrl = state.promptImages[index]
+    const filename = imageUrl.split('/').pop()
+
+    try {
+      await axios.delete('/ai-lab/delete-vision-image/', {
+        data: { filename },
+      })
+      commit('removePromptImage', index)
+    } catch (error) {
+      console.error('Error while deleting image:', error)
+    }
+  },
   async uploadPromptImages({ commit }, images) {
     let formData = new FormData()
     if (images.length != 0) {

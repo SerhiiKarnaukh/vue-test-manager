@@ -1,55 +1,72 @@
 <template>
-  <v-card v-if="messages.length != 0" class="pa-4 rounded-lg">
-    <v-list>
-      <v-list-item
+  <v-card class="rounded-lg chat-card" elevation="2">
+    <div
+      v-if="messages.length === 0"
+      class="d-flex flex-column align-center justify-center py-12 text-medium-emphasis"
+    >
+      <v-icon size="56" class="mb-3">mdi-chat-processing-outline</v-icon>
+      <p class="text-body-1">Start a conversation</p>
+    </div>
+
+    <div v-else ref="chatArea" class="chat-area pa-4">
+      <div
         v-for="(msg, index) in messages"
         :key="index"
-        :class="getMessageClass(msg)"
+        class="d-flex mb-3"
+        :class="isSender(msg) ? 'justify-end' : 'justify-start'"
       >
-        <v-row align="center">
-          <v-col
-            :class="{
-              'order-2': getMessageClass(msg) === 'sender-message',
-              'order-1': getMessageClass(msg) === 'receiver-message',
-            }"
-            cols="5"
-          >
-          </v-col>
-          <v-col
-            :class="{
-              'order-1': getMessageClass(msg) === 'sender-message',
-              'order-2': getMessageClass(msg) === 'receiver-message',
-            }"
-            cols="7"
-          >
-            <strong>{{ msg.sender }}</strong>
-          </v-col>
-        </v-row>
-
-        <v-card-text>
-          {{ msg.message }}
-        </v-card-text>
-      </v-list-item>
-      <div class="d-flex justify-center align-center" cols="auto">
-        <div
-          v-if="isLoading"
-          class="d-flex justify-center align-center mt-5"
-          cols="auto"
+        <v-avatar
+          v-if="!isSender(msg)"
+          size="32"
+          color="ai_lab"
+          class="mr-2 flex-shrink-0 align-self-end"
         >
-          <v-progress-circular color="primary" indeterminate>
-          </v-progress-circular>
+          <v-icon size="18" color="white">mdi-robot-outline</v-icon>
+        </v-avatar>
+
+        <div
+          class="message-bubble pa-3"
+          :class="isSender(msg) ? 'sender-bubble' : 'receiver-bubble'"
+        >
+          <div class="text-body-2 message-text">{{ msg.message }}</div>
+        </div>
+
+        <v-avatar
+          v-if="isSender(msg)"
+          size="32"
+          color="primary"
+          class="ml-2 flex-shrink-0 align-self-end"
+        >
+          <v-icon size="18" color="white">mdi-account</v-icon>
+        </v-avatar>
+      </div>
+
+      <div v-if="isLoading" class="d-flex justify-start mb-3">
+        <v-avatar
+          size="32"
+          color="ai_lab"
+          class="mr-2 flex-shrink-0 align-self-end"
+        >
+          <v-icon size="18" color="white">mdi-robot-outline</v-icon>
+        </v-avatar>
+        <div class="typing-indicator receiver-bubble pa-3">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
         </div>
       </div>
-    </v-list>
+    </div>
   </v-card>
 </template>
+
 <script>
-import { computed } from 'vue'
+import { computed, ref, watch, nextTick } from 'vue'
 import { useStore } from 'vuex'
 
 export default {
   setup() {
     const store = useStore()
+    const chatArea = ref(null)
 
     const messages = computed(() => {
       return store.getters['aiLabChatData/realtimeChatMessages']
@@ -59,36 +76,93 @@ export default {
       return store.getters['isLoading']
     })
 
-    const getMessageClass = (message) => {
-      return message.sender === 'me' ? 'sender-message' : 'receiver-message'
+    const isSender = (message) => message.sender === 'me'
+
+    const scrollToBottom = () => {
+      nextTick(() => {
+        if (chatArea.value) {
+          chatArea.value.scrollTop = chatArea.value.scrollHeight
+        }
+      })
     }
+
+    watch(messages, scrollToBottom, { deep: true })
 
     return {
       messages,
       isLoading,
-      getMessageClass,
+      isSender,
+      chatArea,
     }
   },
 }
 </script>
+
 <style scoped>
-.sender-message {
-  text-align: right;
-  background-color: #e0e0e0;
-  border-radius: 8px;
-  padding: 8px;
-  margin: 8px;
-  max-width: 50%;
-  margin-left: auto;
-  color: #000000de;
+.chat-card {
+  min-height: 200px;
 }
-.receiver-message {
-  text-align: left;
-  background-color: #f5f5f5;
-  border-radius: 8px;
-  padding: 8px;
-  margin: 8px;
-  max-width: 50%;
-  color: #000000de;
+
+.chat-area {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.message-bubble {
+  max-width: 70%;
+  word-wrap: break-word;
+  line-height: 1.5;
+}
+
+.sender-bubble {
+  background-color: #1a6fc4;
+  color: #ffffff;
+  border-radius: 16px 16px 4px 16px;
+}
+
+.receiver-bubble {
+  background-color: #f0f0f0;
+  color: #1a1a1a;
+  border-radius: 16px 16px 16px 4px;
+}
+
+.message-text {
+  white-space: pre-wrap;
+}
+
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px !important;
+}
+
+.typing-indicator .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #999;
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-indicator .dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator .dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%,
+  60%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 </style>

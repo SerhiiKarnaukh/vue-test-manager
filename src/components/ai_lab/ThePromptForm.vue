@@ -10,6 +10,7 @@
           :counter="500"
           maxlength="500"
           required
+          @keydown="handleKeydown"
         ></v-textarea>
       </v-card-text>
       <div
@@ -132,6 +133,14 @@ export default {
       }
     }
 
+    const handleKeydown = (event) => {
+      if (route.name !== 'realtimeChat') return
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault()
+        submitForm()
+      }
+    }
+
     const submitForm = async () => {
       if (!state.body) return
 
@@ -166,6 +175,7 @@ export default {
       chooseFiles,
       handleFileChange,
       submitForm,
+      handleKeydown,
       isGeneratorRoute,
       shouldShowAddImages,
     }

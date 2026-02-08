@@ -149,6 +149,8 @@ export default {
         )
         state.isLoading = false
       }
+
+      event.target.value = ''
     }
 
     const enterToSendRoutes = [

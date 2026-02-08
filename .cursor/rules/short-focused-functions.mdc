@@ -1,0 +1,53 @@
+---
+description: Keep functions short and focused for readability and maintainability
+alwaysApply: true
+---
+
+# Short, Focused Functions
+
+Every function should do **one thing** and do it well. Aim for functions that are easy to read, test, and maintain.
+
+## Guidelines
+
+- **Max ~20 lines** per function body. If it's longer, extract helper functions.
+- **Single responsibility**: A function should have one clear purpose described by its name.
+- **One level of abstraction**: Don't mix high-level orchestration with low-level details in the same function.
+- **Minimal parameters**: Prefer 3 or fewer parameters. Use an options/config object if more are needed.
+- **Early returns**: Use guard clauses to reduce nesting instead of deep if/else chains.
+
+## Examples
+
+```typescript
+// BAD — too many concerns in one function
+function processOrder(order: Order) {
+  // validate
+  if (!order.items.length) throw new Error('Empty order');
+  if (!order.customer) throw new Error('No customer');
+  // calculate total
+  let total = 0;
+  for (const item of order.items) {
+    total += item.price * item.quantity;
+  }
+  // apply discount
+  if (order.coupon) {
+    total *= 1 - order.coupon.discount;
+  }
+  // save
+  db.orders.insert({ ...order, total });
+  emailService.send(order.customer.email, 'Order confirmed');
+}
+
+// GOOD — each step is its own focused function
+function processOrder(order: Order) {
+  validateOrder(order);
+  const total = calculateTotal(order.items, order.coupon);
+  saveOrder(order, total);
+  notifyCustomer(order.customer);
+}
+```
+
+## When Refactoring
+
+- Extract a block of code into a named function when it serves a distinct purpose.
+- Name the new function after **what** it does, not **how** it does it.
+- Prefer pure functions (no side effects) where possible.

@@ -28,11 +28,20 @@
         class="px-4 pb-4"
       >
         <v-col
-          v-for="image in promptImages"
+          v-for="(image, index) in promptImages"
           cols="2"
           :key="`${image}-navbar-link`"
         >
           <div class="prompt-image-wrapper">
+            <v-btn
+              icon
+              size="x-small"
+              color="error"
+              class="remove-btn"
+              @click="removeImage(index)"
+            >
+              <v-icon size="14">mdi-close</v-icon>
+            </v-btn>
             <v-img
               :src="image"
               class="rounded-lg"
@@ -97,6 +106,10 @@ export default {
     const promptImages = computed(() => {
       return store.getters['aiLabChatData/promptImages']
     })
+
+    const removeImage = (index) => {
+      store.commit('aiLabChatData/removePromptImage', index)
+    }
 
     const chooseFiles = () => {
       document.getElementById('fileUpload').click()
@@ -183,6 +196,7 @@ export default {
     return {
       state,
       promptImages,
+      removeImage,
       chooseFiles,
       handleFileChange,
       submitForm,
@@ -195,12 +209,26 @@ export default {
 </script>
 <style scoped>
 .prompt-image-wrapper {
+  position: relative;
   border: 2px solid #e0e0e0;
   border-radius: 12px;
   padding: 4px;
   background-color: #fafafa;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   transition: box-shadow 0.2s ease;
+}
+
+.remove-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.prompt-image-wrapper:hover .remove-btn {
+  opacity: 1;
 }
 
 .prompt-image-wrapper:hover {

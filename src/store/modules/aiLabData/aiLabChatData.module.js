@@ -22,6 +22,9 @@ const mutations = {
   setPromptImages(state, images) {
     state.promptImages = [...state.promptImages, ...images]
   },
+  removePromptImage(state, index) {
+    state.promptImages.splice(index, 1)
+  },
   setErrorMessage(state, error) {
     const errorMessage = error.response?.data?.message
     if (errorMessage) {

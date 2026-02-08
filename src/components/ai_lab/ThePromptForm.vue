@@ -133,7 +133,12 @@ export default {
       }
     }
 
-    const enterToSendRoutes = ['realtimeChat', 'homeAILab']
+    const enterToSendRoutes = [
+      'realtimeChat',
+      'homeAILab',
+      'imageGenerator',
+      'voiceGenerator',
+    ]
 
     const handleKeydown = (event) => {
       if (!enterToSendRoutes.includes(route.name)) return

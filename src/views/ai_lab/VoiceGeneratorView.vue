@@ -9,24 +9,55 @@
       <h2 class="text-center">Voice Generator</h2>
       <v-row class="py-5" justify="center">
         <v-col cols="12" md="12" lg="10" xl="8">
-          <v-card v-if="isLoading || voiceMessage || errorMessage" class="pa-4">
-            <div
-              v-if="isLoading"
-              class="d-flex justify-center align-center"
-              cols="auto"
-            >
-              <v-progress-circular
-                color="primary"
-                indeterminate
-              ></v-progress-circular>
+          <v-card
+            v-if="isLoading || voiceMessage || errorMessage"
+            class="rounded-lg chat-card"
+            elevation="2"
+          >
+            <div v-if="isLoading" class="d-flex pa-4">
+              <v-avatar
+                size="32"
+                color="ai_lab"
+                class="mr-3 flex-shrink-0 align-self-end"
+              >
+                <v-icon size="18" color="white">mdi-robot-outline</v-icon>
+              </v-avatar>
+              <div class="typing-indicator response-bubble pa-3">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </div>
             </div>
-            <div v-else>
-              <v-card-text v-if="errorMessage" class="text-lg-subtitle-1">{{
-                errorMessage
-              }}</v-card-text>
 
-              <div v-else class="d-flex justify-center">
-                <audio :src="voiceMessage" controls style="width: 100%"></audio>
+            <div v-else-if="errorMessage" class="d-flex pa-4">
+              <v-avatar
+                size="32"
+                color="ai_lab"
+                class="mr-3 flex-shrink-0 mt-1"
+              >
+                <v-icon size="18" color="white">mdi-robot-outline</v-icon>
+              </v-avatar>
+              <div class="response-bubble pa-3">
+                <div class="text-body-1 response-text">
+                  {{ errorMessage }}
+                </div>
+              </div>
+            </div>
+
+            <div v-else class="d-flex pa-4">
+              <v-avatar
+                size="32"
+                color="ai_lab"
+                class="mr-3 flex-shrink-0 mt-1"
+              >
+                <v-icon size="18" color="white">mdi-robot-outline</v-icon>
+              </v-avatar>
+              <div class="response-bubble pa-3 audio-bubble">
+                <audio
+                  :src="voiceMessage"
+                  controls
+                  class="audio-player"
+                ></audio>
               </div>
             </div>
           </v-card>
@@ -48,10 +79,6 @@ export default {
   setup() {
     const store = useStore()
 
-    const message = computed(() => {
-      return store.getters['aiLabChatData/message']
-    })
-
     const isLoading = computed(() => {
       return store.getters['isLoading']
     })
@@ -69,7 +96,6 @@ export default {
     })
 
     return {
-      message,
       isLoading,
       voiceMessage,
       errorMessage,
@@ -79,9 +105,68 @@ export default {
 </script>
 <style scoped>
 .bg-transparent-gray {
-  background: linear-gradient(
-    rgba(9, 30, 62, 0.7),
-    rgba(9, 30, 62, 0.7)
-  ); /* Use rgba() to set the alpha channel */
+  background: linear-gradient(rgba(9, 30, 62, 0.7), rgba(9, 30, 62, 0.7));
+}
+
+.chat-card {
+  min-height: 80px;
+}
+
+.response-bubble {
+  background-color: #f0f0f0;
+  color: #1a1a1a;
+  border-radius: 16px 16px 16px 4px;
+  max-width: 85%;
+  line-height: 1.6;
+}
+
+.audio-bubble {
+  width: 50%;
+}
+
+.audio-player {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.response-text {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px !important;
+}
+
+.typing-indicator .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #999;
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-indicator .dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator .dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%,
+  60%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 </style>

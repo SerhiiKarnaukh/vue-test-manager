@@ -133,8 +133,10 @@ export default {
       }
     }
 
+    const enterToSendRoutes = ['realtimeChat', 'homeAILab']
+
     const handleKeydown = (event) => {
-      if (route.name !== 'realtimeChat') return
+      if (!enterToSendRoutes.includes(route.name)) return
       if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault()
         submitForm()
@@ -154,18 +156,17 @@ export default {
       const action = actionMap[route.name]
       if (!action) return
 
+      const message = state.body
+      state.body = ''
+
       if (route.name !== 'realtimeChat') {
         store.commit('setIsLoading', true)
       }
 
-      await store.dispatch(action, state.body)
+      await store.dispatch(action, message)
 
       if (route.name !== 'realtimeChat') {
         store.commit('setIsLoading', false)
-      }
-
-      if (route.name == 'realtimeChat') {
-        state.body = ''
       }
     }
 

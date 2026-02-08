@@ -24,7 +24,7 @@
         ></v-progress-circular>
       </div>
       <v-row
-        v-else-if="promptImages.length != 0 && !isGeneratorRoute"
+        v-else-if="promptImages.length != 0 && shouldShowAddImages"
         class="border-t"
       >
         <v-col

@@ -25,15 +25,20 @@
       </div>
       <v-row
         v-else-if="promptImages.length != 0 && shouldShowAddImages"
-        class="border-t"
+        class="px-4 pb-4"
       >
         <v-col
           v-for="image in promptImages"
           cols="2"
-          class="text-left mb-4"
           :key="`${image}-navbar-link`"
         >
-          <v-img :src="image" style="max-height: 100px" rounded> </v-img>
+          <div class="prompt-image-wrapper">
+            <v-img
+              :src="image"
+              class="rounded-lg"
+              style="max-height: 100px"
+            ></v-img>
+          </div>
         </v-col>
       </v-row>
 
@@ -80,12 +85,12 @@ export default {
     const generatorRoutes = ['imageGenerator', 'voiceGenerator']
 
     const isGeneratorRoute = computed(() =>
-      generatorRoutes.includes(route.name)
+      generatorRoutes.includes(route.name),
     )
 
     const shouldShowAddImages = computed(() => {
       return !['imageGenerator', 'voiceGenerator', 'realtimeChat'].includes(
-        route.name
+        route.name,
       )
     })
 
@@ -127,7 +132,7 @@ export default {
         state.isLoading = true
         await store.dispatch(
           'aiLabChatData/uploadPromptImages',
-          newPromptImages
+          newPromptImages,
         )
         state.isLoading = false
       }
@@ -188,4 +193,17 @@ export default {
   },
 }
 </script>
-<style scoped></style>
+<style scoped>
+.prompt-image-wrapper {
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 4px;
+  background-color: #fafafa;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s ease;
+}
+
+.prompt-image-wrapper:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+</style>

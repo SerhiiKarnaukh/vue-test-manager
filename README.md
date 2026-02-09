@@ -69,7 +69,7 @@ A full-featured e-commerce application with product catalog, shopping cart, and 
 - **Layout:** `MainTabernaLayout`
 - **Features:** Product browsing, category filtering, cart, checkout, JWT authentication, user dashboard
 - **Store Modules:** `tabernaCartData`, `tabernaProductData`, `tabernaProfileData`
-- **Backend:** [Taberna Backend](https://django.karnaukh-webdev.com/category/django/taberna-drf-ecommerce/)
+- **Backend:** [Taberna Backend](https://karnaukh-webdev.com/category/django/taberna-drf-ecommerce/)
 
 ![Taberna eCommerce screenshot](https://github.com/SerhiiKarnaukh/vue-test-manager/blob/main/src/views/taberna/taberna_vue.jpg)
 
@@ -82,7 +82,7 @@ A social networking platform with posts, profiles, real-time chat, friend manage
 - **Layout:** `MainSocialLayout`
 - **Features:** Posts feed, user profiles, friends, chat, notifications, trends, search, JWT authentication
 - **Store Modules:** `socialPostData`, `socialProfileData`, `socialChatData`, `socialNotificationData`
-- **Backend:** [Social Network Backend](https://django.karnaukh-webdev.com/category/django/social-network-drf/)
+- **Backend:** [Social Network Backend](https://karnaukh-webdev.com/category/django/social-network-drf/)
 
 ![Social Network screenshot](https://github.com/SerhiiKarnaukh/vue-test-manager/blob/main/src/views/social/social_network_main.jpg)
 
@@ -95,7 +95,7 @@ An AI-powered laboratory with image generation, voice generation, and real-time 
 - **Layout:** `MainAILabLayout`
 - **Features:** Image generator, voice generator, real-time chat
 - **Store Modules:** `aiLabChatData`
-- **Backend:** [AI Lab Backend](https://django.karnaukh-webdev.com/category/django/ai-lab-back-end/)
+- **Backend:** [AI Lab Backend](https://karnaukh-webdev.com/category/django/ai-lab-back-end/)
 
 ![AI Lab screenshot](https://github.com/SerhiiKarnaukh/vue-test-manager/blob/main/src/views/ai_lab/ai_lab_main.jpg)
 
@@ -245,9 +245,9 @@ The workflow configuration is located at `.github/workflows/firebase-hosting-mer
 
 The Django REST Framework backend is hosted on AWS and provides the API for all sub-applications.
 
-- **Taberna Backend:** [django.karnaukh-webdev.com/category/django/taberna-drf-ecommerce/](https://django.karnaukh-webdev.com/category/django/taberna-drf-ecommerce/)
-- **Social Network Backend:** [django.karnaukh-webdev.com/category/django/social-network-drf/](https://django.karnaukh-webdev.com/category/django/social-network-drf/)
-- **AI Lab Backend:** [django.karnaukh-webdev.com/category/django/ai-lab-back-end/](https://django.karnaukh-webdev.com/category/django/ai-lab-back-end/)
+- **Taberna Backend:** [karnaukh-webdev.com/category/django/taberna-drf-ecommerce/](https://karnaukh-webdev.com/category/django/taberna-drf-ecommerce/)
+- **Social Network Backend:** [karnaukh-webdev.com/category/django/social-network-drf/](https://karnaukh-webdev.com/category/django/social-network-drf/)
+- **AI Lab Backend:** [karnaukh-webdev.com/category/django/ai-lab-back-end/](https://karnaukh-webdev.com/category/django/ai-lab-back-end/)
 
 ### Customize Configuration
 

@@ -276,4 +276,4 @@ The platform uses **JWT (JSON Web Token)** authentication via the shared `authJW
 
 The Django REST Framework backend powering the Social Network is hosted on AWS.
 
-See [Social Network Backend](https://django.karnaukh-webdev.com/category/django/social-network-drf/)
+See [Social Network Backend](https://karnaukh-webdev.com/category/django/social-network-drf/)

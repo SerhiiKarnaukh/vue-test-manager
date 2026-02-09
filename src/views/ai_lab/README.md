@@ -156,4 +156,4 @@ The real-time chat feature connects directly to **OpenAI's GPT-4o Realtime Previ
 
 The Django REST Framework backend powering AI Lab is hosted on AWS.
 
-See [AI Lab Backend](https://django.karnaukh-webdev.com/category/django/ai-lab-back-end/)
+See [AI Lab Backend](https://karnaukh-webdev.com/category/django/ai-lab-back-end/)

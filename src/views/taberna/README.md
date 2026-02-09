@@ -241,4 +241,4 @@ The platform uses **JWT (JSON Web Token)** authentication via the shared `authJW
 
 The Django REST Framework backend powering Taberna is hosted on AWS.
 
-See [Taberna Backend](https://django.karnaukh-webdev.com/category/django/taberna-drf-ecommerce/)
+See [Taberna Backend](https://karnaukh-webdev.com/category/django/taberna-drf-ecommerce/)

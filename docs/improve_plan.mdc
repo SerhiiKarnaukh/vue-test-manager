@@ -1,0 +1,576 @@
+# Vue Applications Manager — Improvement Plan
+
+> **Created:** 2026-02-10
+> **Total items:** 87
+> **Estimated phases:** 6
+
+---
+
+## Priority Table
+
+| Priority | Phase | Category | Items | Risk if Ignored |
+|----------|-------|----------|-------|-----------------|
+| P0 — Critical | 1 | Bugs & Runtime Crashes | 8 | App crashes in production |
+| P0 — Critical | 1 | Security | 5 | Data leaks, key exposure |
+| P1 — High | 2 | Vuex Direct State Mutations | 8 | Silent data corruption, broken reactivity |
+| P1 — High | 2 | Error Handling | 5 | Users see blank screens on failure |
+| P2 — Medium | 3 | Dead Code & Unused Deps | 10 | Confusion, larger bundle, maintenance cost |
+| P2 — Medium | 3 | Memory Leaks (Hyper3D) | 5 | GPU memory leaks, zombie event listeners |
+| P3 — Normal | 4 | Code Duplication | 10 | Hard to maintain, inconsistent behavior |
+| P3 — Normal | 4 | Inconsistent Patterns | 12 | Harder onboarding, review friction |
+| P4 — Low | 5 | Component Design | 10 | Poor separation of concerns |
+| P4 — Low | 5 | Router & Config Issues | 14 | Minor issues, tech debt |
+| P5 — Backlog | 6 | Missing Features & Best Practices | 10 | Long-term quality ceiling |
+
+---
+
+## Phase 1 — Critical Bugs & Security (Do First)
+
+### 1.1 Runtime Bugs
+
+Each item here can cause a crash or wrong behavior in production.
+
+#### 1.1.1 `reject(error)` passes imported function instead of caught exception
+- **File:** `src/store/modules/authJWT.module.js` — line 65
+- **Problem:** `reject(error)` references the imported `error` utility, not the caught exception `e`.
+- **Fix:** Change `reject(error)` to `reject(e)`.
+
+#### 1.1.2 Catch parameter shadows imported `error` function
+- **File:** `src/store/modules/authToken.module.js` — line 55
+- **Problem:** The catch parameter `(error)` shadows the imported `error()` utility. Calling `error(error.response.data)` tries to invoke an Error object as a function.
+- **Fix:** Rename the catch parameter to `err` (or `e`) in every catch block that also uses the imported `error()` utility.
+
+#### 1.1.3 Duplicate reactive property `stripe`
+- **File:** `src/views/taberna/CheckoutView.vue` — lines 183, 195
+- **Problem:** `stripe: null` and `stripe: {}` both declared in the same `reactive({})`. The second silently overrides the first.
+- **Fix:** Remove the duplicate. Keep `stripe: null`.
+
+#### 1.1.4 Missing `#` prefix on hex color values
+- **File:** `src/plugins/vuetify.js` — lines 13-14 (light theme), lines 33-34 (dark theme)
+- **Problem:** `social: '7E2553'` and `ai_lab: '27445D'` lack the `#` prefix. Same in dark theme.
+- **Fix:** Add `#` prefix: `social: '#7E2553'`, `ai_lab: '#27445D'`, etc.
+
+#### 1.1.5 `icons` config nested under `theme` instead of root
+- **File:** `src/plugins/vuetify.js` — line 23-25
+- **Problem:** `icons: { iconfont: 'md' || 'fa' || 'md' }` is inside `theme`. Also, the `||` expression always evaluates to `'md'`.
+- **Fix:** Move `icons` to the root Vuetify config object. Use `defaultSet: 'mdi'`.
+
+#### 1.1.6 Mixed `setup()` + `data()` in Taberna LoginView
+- **File:** `src/views/taberna/LoginView.vue` — lines 55-112
+- **Problem:** `showPassword` is defined in `data()` (Options API) while everything else is in `setup()` (Composition API). This mixes paradigms.
+- **Fix:** Move `showPassword` into the `state` reactive object inside `setup()`.
+
+#### 1.1.7 `checkActiveApp` accesses module-level `state` closure
+- **File:** `src/store/modules/authJWT.module.js` — line 99-103
+- **Problem:** The action destructures `{ commit, dispatch }` but reads `state.activeApp` from the module-level closure instead of the context parameter.
+- **Fix:** Add `state` to the destructured context: `checkActiveApp({ state, commit, dispatch }, activeApp)`.
+
+#### 1.1.8 Unsafe property access on undefined variations
+- **File:** `src/components/taberna/TheCartItem.vue` — lines 76-85
+- **Problem:** `item.variations.find(...)` can return `undefined`. Accessing `.variation_value` on `undefined` throws.
+- **Fix:** Add optional chaining: `selectedColor?.variation_value` and `selectedSize?.variation_value`. Also handle the case where variations don't exist.
+
+---
+
+### 1.2 Security
+
+#### 1.2.1 Remove `.env` from version control
+- **Problem:** `.env` contains real Stripe test keys and encryption keys. Even though `.gitignore` lists `.env`, it may already be tracked.
+- **Fix:** Run `git rm --cached .env` and ensure it's not in the repo history. Add a note to README about `.env.example`.
+
+#### 1.2.2 Client-side encryption key provides zero security
+- **Problem:** `VITE_ENCRIPTION_KEY` is bundled into the client JS. Anyone can see it in DevTools.
+- **Fix:** Move encryption to the backend. If client-side encryption is truly needed, document why it's acceptable (e.g., obfuscation only, not security).
+
+#### 1.2.3 `localStorage.clear()` wipes all data on logout
+- **File:** `src/store/modules/authJWT.module.js` — line 71
+- **Problem:** Destroys `cartId`, all `user.*` profile data, and any third-party localStorage.
+- **Fix:** Replace with targeted removals:
+  ```javascript
+  localStorage.removeItem('access')
+  localStorage.removeItem('refresh')
+  localStorage.removeItem('active_app')
+  ```
+
+#### 1.2.4 Stripe.js loaded globally on every page
+- **File:** `index.html` — line 7
+- **Problem:** `<script src="https://js.stripe.com/v3">` loads on every page, even those that don't use Stripe.
+- **Fix:** Load Stripe dynamically only in `CheckoutView.vue` using `@stripe/stripe-js` or a dynamic script loader.
+
+#### 1.2.5 Environment variable typo
+- **Files:** `.env`, `.env.example`, `src/utils/cryptoUtils.js`
+- **Problem:** `VITE_ENCRIPTION_KEY` — misspelled (`ENCRIPTION` → `ENCRYPTION`).
+- **Fix:** Rename to `VITE_ENCRYPTION_KEY` everywhere.
+
+---
+
+## Phase 2 — Data Integrity & Error Handling
+
+### 2.1 Fix All Direct State Mutations in Vuex Actions
+
+Vuex requires all state changes to go through mutations. These 8 locations mutate state directly inside actions.
+
+| # | File | Line | Direct Mutation | Fix |
+|---|------|------|-----------------|-----|
+| 1 | `socialPostData.module.js` | 126 | `state.profile.posts_count += 1` | Create `incrementProfilePostsCount` mutation |
+| 2 | `socialPostData.module.js` | 174 | `state.post.comments.push(response.data)` | Create `addComment` mutation |
+| 3 | `socialPostData.module.js` | 175 | `state.post.comments_count += 1` | Create `incrementCommentsCount` mutation |
+| 4 | `socialPostData.module.js` | 255 | `state.profile.posts_count -= 1` | Create `decrementProfilePostsCount` mutation |
+| 5 | `socialChatData.module.js` | 30 | `state.chatWebSocket = new WebSocket(...)` | Create `setChatWebSocket` mutation |
+| 6 | `socialChatData.module.js` | 40 | `state.activeConversation.messages.push(message)` | Create `addMessageToActiveConversation` mutation |
+| 7 | `socialNotificationData.module.js` | 71 | `state.notificationWebSocket = new WebSocket(...)` | Create `setNotificationWebSocket` mutation |
+| 8 | `aiLabChatData.module.js` | 74 | `state.realtimeChatWebSocket = ws` | Create `setRealtimeChatWebSocket` mutation |
+
+**Implementation approach:** For each item, create a new mutation and replace the direct assignment with a `commit()` call.
+
+---
+
+### 2.2 Improve Error Handling
+
+#### 2.2.1 Rename `error` utility to avoid shadowing
+- **File:** `src/utils/error.js`
+- **Action:** Rename the exported function from `error` to `parseApiErrors`.
+- **Then:** Update all imports across the codebase (~5 files).
+
+#### 2.2.2 Add null-safety to API error parsing
+- **Files:** `authJWT.module.js`, `authToken.module.js`
+- **Problem:** `error(e.response.data)` crashes if `e.response` is undefined (network error).
+- **Fix:** Guard with: `const messages = e.response?.data ? parseApiErrors(e.response.data) : ['Network error. Please try again.']`
+
+#### 2.2.3 Replace `console.log(error)` with user-facing feedback
+- **Files:** All store modules (~25 catch blocks)
+- **Action:** For each catch block, dispatch an alert message to the user:
+  ```javascript
+  dispatch('alert/setMessage', {
+    value: ['Something went wrong. Please try again.'],
+    type: 'error',
+  }, { root: true })
+  ```
+- **Scope:** Prioritize user-facing actions (cart, posts, login) over background fetches (trends, suggestions).
+
+#### 2.2.4 Add error handling to cart and product API calls
+- **Files:** `tabernaCartData.module.js`, `tabernaProductData.module.js`
+- **Action:** Replace `console.log(error)` in `getCart`, `getLatestProducts`, `getProductDetail` with user-visible error dispatches.
+
+#### 2.2.5 Add error handling to social profile actions
+- **Files:** `socialProfileData.module.js`
+- **Action:** Add user feedback for `getCurrentProfileFriendsData`, `handleFriendshipRequest`, `editPassword`, `getFriendSuggestions` failures.
+
+---
+
+## Phase 3 — Cleanup & Memory Leaks
+
+### 3.1 Remove Dead Code & Unused Dependencies
+
+| # | What to Remove/Fix | Type |
+|---|--------------------|------|
+| 1 | `src/store/modules/tabernaData/tabernaProfileData.module.js` | Empty module — delete file, remove from `store/index.js` |
+| 2 | `authToken.module.js` — evaluate usage | Merge `register` action into `authJWT`, then remove `authToken` module |
+| 3 | `pinia` from `package.json` | Remove dependency, remove `createPinia()` from `main.js` |
+| 4 | `@vue/cli-plugin-babel`, `@vue/cli-plugin-eslint`, `@vue/cli-plugin-router`, `@vue/cli-plugin-vuex`, `@vue/cli-service`, `vue-cli-plugin-vuetify` from devDependencies | Remove all 6 packages |
+| 5 | `babel.config.js` | Delete file (Vite doesn't use it) |
+| 6 | `TheCommentItem.vue` — unnecessary `RouterLink` import | Remove `import { RouterLink }` and `components: { RouterLink }` |
+| 7 | `hyper3d/HomeView.vue` — commented-out Three.js code (lines 34-38) | Delete commented block |
+| 8 | `TheCommentItem.vue` — commented-out card actions (lines 32-36) | Delete commented block |
+| 9 | `aiLabChatData.module.js` — emoji console logs | Remove or replace with proper logging |
+| 10 | `socialProfileData.module.js:150` — debug `console.log('data', ...)` | Remove |
+
+**Implementation approach:** Do these as a single cleanup commit. Run `npm install` after removing packages to verify nothing breaks.
+
+---
+
+### 3.2 Fix Memory Leaks in Hyper3D Module
+
+All three views need the same fixes: `HomeView.vue`, `AnimateView.vue`, `LocalModelView.vue`.
+
+#### 3.2.1 Add `onUnmounted` cleanup
+```javascript
+// Store references at module level
+let animationFrameId = null
+
+// In renderObject():
+const animate = () => {
+  animationFrameId = requestAnimationFrame(animate)
+  // ...
+}
+
+// Add cleanup:
+onUnmounted(() => {
+  cancelAnimationFrame(animationFrameId)
+  renderer.dispose()
+  window.removeEventListener('click', onMouseClick) // or 'mousemove'
+})
+```
+
+#### 3.2.2 Dispose Three.js resources
+- Call `geometry.dispose()` and `material.dispose()` for every mesh.
+- Call `renderer.dispose()` and remove the canvas from the DOM.
+
+#### 3.2.3 Add window resize handler
+```javascript
+const onResize = () => {
+  camera.aspect = window.innerWidth / window.innerHeight
+  camera.updateProjectionMatrix()
+  renderer.setSize(window.innerWidth, window.innerHeight)
+}
+window.addEventListener('resize', onResize)
+// Clean up in onUnmounted
+```
+
+#### 3.2.4 Extract `renderObject()` into smaller functions
+Break the 80-120 line function into:
+- `createScene()` — scene + lights
+- `createCamera()` — camera setup
+- `createRenderer()` — renderer + controls
+- `createObjects()` — meshes and geometries
+- `setupInteraction()` — raycaster + mouse events
+- `startAnimationLoop()` — requestAnimationFrame
+
+#### 3.2.5 Clean up commented-out code
+Remove the commented-out pointLight and spotLight blocks in `HomeView.vue`.
+
+---
+
+## Phase 4 — Code Duplication & Consistency
+
+### 4.1 Extract Shared Composables
+
+#### 4.1.1 `useThemeToggle` composable
+- **Eliminates duplication in:** 4 navbar components
+- **File:** `src/composables/useThemeToggle.js`
+```javascript
+import { useTheme } from 'vuetify'
+export function useThemeToggle() {
+  const theme = useTheme()
+  const toggleTheme = () => {
+    theme.global.name.value = theme.global.current.value.dark
+      ? 'CustomLightTheme'
+      : 'dark'
+  }
+  return { toggleTheme }
+}
+```
+
+#### 4.1.2 `useInfiniteScroll` composable
+- **Eliminates duplication in:** `social/HomeView`, `ProfileView`, `SearchView`, `TrendView`
+- **File:** `src/composables/useInfiniteScroll.js`
+- **Interface:** `useInfiniteScroll(callback, options?)` — attaches/detaches scroll listener, handles loading state.
+
+#### 4.1.3 `useDefaultAvatar` composable
+- **Eliminates duplication in:** 8 components that fetch `socialProfileData/defaultAvatar`
+- **File:** `src/composables/useDefaultAvatar.js`
+- **Returns:** `{ defaultAvatar }` computed ref.
+
+### 4.2 Extract Shared Components
+
+#### 4.2.1 `BaseFooter` component
+- **Replaces:** 5 nearly-identical footer components
+- **Props:** `appName`, `links[]`, `homeRoute`
+- **File:** `src/components/ui/BaseFooter.vue`
+
+#### 4.2.2 `AppsManagerDropdown` component
+- **Replaces:** Identical "Apps Manager" dropdown in all 5 navbars
+- **File:** `src/components/ui/AppsManagerDropdown.vue`
+
+#### 4.2.3 `LoadingSpinner` component
+- **Replaces:** ~10 identical `v-progress-circular` blocks
+- **File:** `src/components/ui/LoadingSpinner.vue`
+
+#### 4.2.4 `SignupForm` component
+- **Replaces:** Near-identical signup forms in `social/SignupView` and `taberna/SignupView`
+- **Props:** `registrationSource`, `redirectRoute`
+- **File:** `src/components/ui/SignupForm.vue`
+
+### 4.3 Migrate to Consistent Component Style
+
+**Target:** `<script setup>` for all components.
+
+**Approach:** Migrate in batches by sub-app:
+1. Hyper3D (already using `<script setup>` in some files) — 5 files
+2. AI Lab — 6 files
+3. Apps Manager — 5 files
+4. Taberna — 16 files
+5. Social — 20 files
+6. Shared (layouts, ui) — 7 files
+
+### 4.4 Standardize Async Patterns
+
+- **Target:** `async/await` + `try/catch` everywhere.
+- **Remove:** All `.then().catch()` chains in store modules.
+- **Remove:** All `new Promise()` wrappers around already-async axios calls (in `authJWT/login`, `authJWT/logout`, `authJWT/refreshToken`).
+
+### 4.5 Standardize Page Title Setting
+
+- **Target:** Use `store.dispatch('setPageTitle', title)` everywhere.
+- **Fix:** Replace all `document.title = '...'` calls in:
+  - `appsmanager/HomeView.vue`
+  - `appsmanager/SearchView.vue`
+  - `social/HomeView.vue`
+  - All AI Lab views (`HomeView`, `ImageGeneratorView`, `VoiceGeneratorView`, `RealtimeChatView`)
+
+### 4.6 Replace Direct `$store.state` Access with Computed Getters
+
+- **Files:** ~15 template locations across navbar, footer, and view components.
+- **Fix:** In each component's `setup()`, create computed properties like `isAuthenticated` and `currentUserId`, then use those in templates instead of `$store.state.authJWT.accessToken`.
+
+### 4.7 Extract Shared AI Lab CSS
+
+- Move the duplicated `.typing-indicator`, `.response-bubble`, `.response-text`, `.bg-transparent-gray`, and `@keyframes typing` into `src/assets/scss/ai-lab.scss` and import where needed.
+
+---
+
+## Phase 5 — Component Design & Config Fixes
+
+### 5.1 Component Design Improvements
+
+#### 5.1.1 Move axios calls from components to store/composables
+- **Files:**
+  - `TheSocialPostCard.vue` → move `likePost` to `socialPostData` store
+  - `EditProfileView.vue` → move profile update to `socialProfileData` store
+  - `DashboardView.vue` → move orders fetch to a new `tabernaProfileData` action (replace the empty module)
+  - `taberna/TheNavbar.vue` → move categories fetch to `tabernaProductData` store
+  - `appsmanager/HomeView.vue` → create an `appsManagerData` store module
+  - `CategoryDetailView.vue` → move category detail to store
+
+#### 5.1.2 Add proper prop validation
+- **Files:** `TheAppCard`, `TheProductCard`, `TheOrderSummary`, `TheCartItem`, `TheSocialPostCard`, `TheCommentItem`
+- **Fix:** Replace `props: { item: Object }` with detailed shape:
+  ```javascript
+  props: {
+    product: {
+      type: Object,
+      required: true,
+      validator: (v) => 'id' in v && 'name' in v && 'price' in v
+    }
+  }
+  ```
+  Or better: migrate to TypeScript and use interfaces.
+
+#### 5.1.3 Use template refs instead of `document.getElementById`
+- **Files:** `TheCreatePostForm.vue`, `ThePromptForm.vue`
+- **Fix:** Replace `document.getElementById('fileUpload').click()` with:
+  ```javascript
+  const fileUploadRef = ref(null)
+  // template: ref="fileUploadRef"
+  const chooseFiles = () => fileUploadRef.value?.click()
+  ```
+
+#### 5.1.4 Fix `v$._value.$validate()` across all forms
+- **Files:** `CheckoutView`, `social/LoginView`, `taberna/LoginView`, `social/SignupView`, `taberna/SignupView`, `EditProfileView`, `EditPasswordView`
+- **Fix:** Replace `v$._value.$validate()` with `v$.value.$validate()`.
+
+#### 5.1.5 Use Vuelidate `sameAs` validator for password confirmation
+- **Files:** `social/SignupView.vue`, `taberna/SignupView.vue`
+- **Fix:** Replace manual `if (state.password !== state.password2)` with:
+  ```javascript
+  import { sameAs } from '@vuelidate/validators'
+  password2: { required, sameAs: sameAs(computed(() => state.password)) }
+  ```
+
+#### 5.1.6 Fix `NotFoundView.vue`
+- **File:** `src/views/appsmanager/NotFoundView.vue`
+- **Fix:** Add `<script setup>` or a proper component definition. Consider adding a "Go Home" button.
+
+#### 5.1.7 Revoke Object URLs to prevent memory leaks
+- **Files:** `TheCreatePostForm.vue`, `ThePromptForm.vue`
+- **Fix:** Call `URL.revokeObjectURL(image.url)` when images are removed or the component is unmounted.
+
+### 5.2 Router Fixes
+
+#### 5.2.1 Fix `process.env.BASE_URL`
+- **File:** `src/router/index.js` — line 295
+- **Fix:** Replace `process.env.BASE_URL` with `import.meta.env.BASE_URL`.
+
+#### 5.2.2 Simplify auth guard
+- **File:** `src/router/index.js` — lines 308-318
+- **Fix:**
+  ```javascript
+  router.beforeEach((to, from, next) => {
+    if (to.meta.authJWT && !store.getters['authJWT/isAuthenticated']) {
+      return next(getLoginRoute(to.fullPath))
+    }
+    next()
+  })
+  ```
+
+#### 5.2.3 Add lazy-import error handling
+- **File:** `src/router/index.js`
+- **Fix:** Add `router.onError()` handler to catch chunk load failures and show a reload prompt.
+
+#### 5.2.4 Replace native form submissions with router navigation
+- **Files:** `appsmanager/TheNavbar.vue` (line 82), `taberna/TheNavbar.vue` (line 104)
+- **Fix:** Use `@submit.prevent` + `router.push({ name: '...', query: { query } })`.
+
+#### 5.2.5 Use `useRoute().query` instead of `window.location.search`
+- **Files:** `appsmanager/SearchView.vue`, `taberna/SearchView.vue`
+- **Fix:** Replace `new URLSearchParams(window.location.search)` with `route.query.query`.
+
+### 5.3 DevOps & Config Fixes
+
+#### 5.3.1 Update Dockerfile to Node 22
+- **File:** `Dockerfile`
+- **Fix:** `FROM node:22-alpine` (or `node:22.17.0`).
+
+#### 5.3.2 Remove deprecated `version` key from docker-compose
+- **File:** `docker-compose.yml`
+- **Fix:** Remove `version: "3.9"` line.
+
+#### 5.3.3 Fix package.json name
+- **File:** `package.json`
+- **Fix:** Change `"name": "vue3-forms-firebase"` to `"name": "vue-applications-manager"`.
+
+#### 5.3.4 Fix .firebaserc typo
+- **File:** `.firebaserc`
+- **Fix:** Change `"satging"` to `"staging"`.
+
+#### 5.3.5 Fix `VITE_ENCRIPTION_KEY` typo
+- **Files:** `.env`, `.env.example`, `src/utils/cryptoUtils.js`
+- **Fix:** Rename to `VITE_ENCRYPTION_KEY`.
+
+#### 5.3.6 Add Prettier config
+- **File:** `.prettierrc` (new)
+- **Config:**
+  ```json
+  {
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "printWidth": 80,
+    "tabWidth": 2
+  }
+  ```
+
+#### 5.3.7 Upgrade ESLint config
+- **File:** `package.json` (eslintConfig section) or new `eslint.config.js`
+- **Fix:** Upgrade from `vue3-essential` to `vue3-recommended`. Add custom rules.
+
+#### 5.3.8 Fix lint script
+- **File:** `package.json` — scripts
+- **Fix:** Change `"lint": "vue-cli-service lint"` to `"lint": "eslint src/"`.
+
+#### 5.3.9 Pin `roboto-fontface` version
+- **File:** `package.json`
+- **Fix:** Replace `"roboto-fontface": "*"` with a specific version like `"roboto-fontface": "^0.10.0"`.
+
+---
+
+## Phase 6 — Long-Term Quality (Backlog)
+
+These items don't block current functionality but raise the quality ceiling.
+
+### 6.1 Add TypeScript
+- Rename `.js` → `.ts`, `jsconfig.json` → `tsconfig.json`.
+- Add interfaces for all API response types, store state shapes, and component props.
+- **Effort:** Large. Best done incrementally, one sub-app at a time.
+
+### 6.2 Add Unit & Component Tests
+- Add `vitest` and `@vue/test-utils` to devDependencies.
+- Start with store module tests (pure logic, easiest to test).
+- Then add component tests for forms (validation logic).
+- **Target:** At least 60% coverage on store modules.
+
+### 6.3 Create API Service Layer
+- Create `src/api/` directory with service modules:
+  - `src/api/social.js` — all social network endpoints
+  - `src/api/taberna.js` — all taberna endpoints
+  - `src/api/aiLab.js` — all AI lab endpoints
+  - `src/api/auth.js` — authentication endpoints
+- Each module exports functions that return axios promises.
+- Store modules import from `api/` instead of calling axios directly.
+
+### 6.4 Add Global Error Boundary
+- Create an `ErrorBoundary` component using Vue's `onErrorCaptured` hook.
+- Wrap each sub-app layout with it.
+- Show a user-friendly error page instead of a blank screen.
+
+### 6.5 Add Accessibility
+- Add `alt` attributes to all `<img>` tags (currently missing in ~20 locations).
+- Add `aria-label` to icon-only buttons.
+- Ensure proper heading hierarchy.
+
+### 6.6 WebSocket Reconnection Logic
+- **Files:** `socialChatData.module.js`, `socialNotificationData.module.js`, `aiLabChatData.module.js`
+- Add exponential backoff reconnection when WebSocket closes unexpectedly.
+
+### 6.7 Migrate from Vuex to Pinia
+- Since Pinia is already installed, consider a gradual migration.
+- Benefits: better TypeScript support, simpler API, no mutations needed.
+- **Approach:** Migrate one module at a time, starting with the simplest (`alert`).
+
+### 6.8 Add `async/await` constructor anti-pattern fix
+- **File:** `aiLabChatData.module.js` — `connectRealtimeChatSocket`
+- **Problem:** `new Promise(async (resolve, reject) => { ... })` — the async executor anti-pattern.
+- **Fix:** Make the action itself async and remove the Promise wrapper.
+
+### 6.9 Lazy-load Stripe.js
+- Replace the global `<script>` tag in `index.html` with dynamic loading in `CheckoutView.vue`:
+  ```javascript
+  import { loadStripe } from '@stripe/stripe-js'
+  const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+  ```
+
+### 6.10 Revoke Object URLs on cleanup
+- **Files:** `TheCreatePostForm.vue`, `ThePromptForm.vue`
+- Add `URL.revokeObjectURL()` calls when images are removed or component unmounts.
+
+---
+
+## Implementation Schedule
+
+| Phase | Scope | Est. Effort | Approach |
+|-------|-------|-------------|----------|
+| **Phase 1** | Critical bugs + security | 1-2 days | Single focused PR. All 13 items. |
+| **Phase 2** | State mutations + error handling | 2-3 days | One PR for mutations, one PR for error handling. |
+| **Phase 3** | Dead code + memory leaks | 1-2 days | One cleanup PR. |
+| **Phase 4** | Composables + consistency | 3-5 days | One PR per composable/shared component. One PR for style migration per sub-app. |
+| **Phase 5** | Component design + config | 2-3 days | One PR for component fixes, one PR for router, one PR for devops. |
+| **Phase 6** | TypeScript, tests, API layer | Ongoing | Incremental PRs over weeks/months. |
+
+---
+
+## File Index
+
+Quick reference of all files that need changes, sorted by number of issues.
+
+| File | Issues | Phases |
+|------|--------|--------|
+| `src/store/modules/authJWT.module.js` | 4 | 1, 2 |
+| `src/store/modules/socialNetworkData/socialPostData.module.js` | 5 | 2, 3 |
+| `src/store/modules/socialNetworkData/socialChatData.module.js` | 3 | 2, 3 |
+| `src/store/modules/socialNetworkData/socialNotificationData.module.js` | 2 | 2, 3 |
+| `src/store/modules/authToken.module.js` | 3 | 1, 2, 3 |
+| `src/store/modules/aiLabData/aiLabChatData.module.js` | 4 | 2, 3, 6 |
+| `src/store/modules/tabernaData/tabernaCartData.module.js` | 1 | 2 |
+| `src/store/modules/tabernaData/tabernaProductData.module.js` | 1 | 2 |
+| `src/store/modules/tabernaData/tabernaProfileData.module.js` | 1 | 3 (delete) |
+| `src/plugins/vuetify.js` | 2 | 1 |
+| `src/router/index.js` | 4 | 5 |
+| `src/utils/error.js` | 1 | 2 |
+| `src/views/taberna/CheckoutView.vue` | 3 | 1, 5 |
+| `src/views/taberna/LoginView.vue` | 2 | 1, 5 |
+| `src/views/taberna/SignupView.vue` | 2 | 5 |
+| `src/views/social/LoginView.vue` | 1 | 5 |
+| `src/views/social/SignupView.vue` | 2 | 5 |
+| `src/views/social/EditProfileView.vue` | 2 | 5 |
+| `src/views/social/EditPasswordView.vue` | 1 | 5 |
+| `src/views/social/ProfileView.vue` | 1 | 4 |
+| `src/views/social/HomeView.vue` | 2 | 4 |
+| `src/views/hyper3d/HomeView.vue` | 5 | 3 |
+| `src/views/hyper3d/AnimateView.vue` | 4 | 3 |
+| `src/views/hyper3d/LocalModelView.vue` | 4 | 3 |
+| `src/views/appsmanager/NotFoundView.vue` | 1 | 5 |
+| `src/views/appsmanager/SearchView.vue` | 2 | 4, 5 |
+| `src/components/taberna/TheCartItem.vue` | 1 | 1 |
+| `src/components/taberna/TheNavbar.vue` | 2 | 4, 5 |
+| `src/components/taberna/TheFooter.vue` | 1 | 4 |
+| `src/components/social/TheSocialPostCard.vue` | 2 | 4, 5 |
+| `src/components/social/TheCommentItem.vue` | 2 | 3, 4 |
+| `src/components/social/TheCreatePostForm.vue` | 2 | 5 |
+| `src/components/ai_lab/ThePromptForm.vue` | 2 | 5 |
+| `package.json` | 5 | 3, 5 |
+| `Dockerfile` | 1 | 5 |
+| `docker-compose.yml` | 1 | 5 |
+| `.firebaserc` | 1 | 5 |
+| `.env` / `.env.example` | 2 | 1, 5 |
+| `index.html` | 1 | 1 |
+| `babel.config.js` | 1 | 3 (delete) |

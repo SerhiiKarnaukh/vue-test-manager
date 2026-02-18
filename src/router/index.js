@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import store from '@/store'
+import f1Routes from './f1Routes'
 
 const routes = [
   //Vue Applications Manager
@@ -289,6 +290,8 @@ const routes = [
       layout: 'mainHyper3d',
     },
   },
+  // F1 Pit Wall
+  ...f1Routes,
 ]
 
 const router = createRouter({
@@ -301,6 +304,8 @@ function getLoginRoute(path) {
     return `/taberna/login?redirect=${encodeURIComponent(path)}&message=auth`
 
   if (path.startsWith('/social')) return '/social/login?message=auth'
+
+  if (path.startsWith('/f1')) return '/social/login?message=auth'
 
   return '/'
 }

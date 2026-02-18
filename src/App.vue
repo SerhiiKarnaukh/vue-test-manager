@@ -14,6 +14,7 @@ import MainAppsManagerLayout from '@/layouts/appsmanager/MainAppsManagerLayout.v
 import MainSocialLayout from '@/layouts/social/MainSocialLayout.vue'
 import MainAILabLayout from '@/layouts/ai_lab/MainAILabLayout.vue'
 import MainHyper3dLayout from '@/layouts/hyper3d/MainHyper3dLayout.vue'
+import MainF1Layout from '@/layouts/f1/MainF1Layout.vue'
 export default {
   name: 'App',
   computed: {
@@ -28,6 +29,7 @@ export default {
     MainSocialLayout,
     MainAILabLayout,
     MainHyper3dLayout,
+    MainF1Layout,
   },
 }
 </script>

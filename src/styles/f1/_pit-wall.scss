@@ -1,0 +1,39 @@
+// Dashboard grid and panel styles
+
+.f1-dashboard-grid {
+  display: grid;
+  gap: $f1-spacing-lg;
+
+  @media (min-width: 1440px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (min-width: 1024px) and (max-width: 1439px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 1023px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.f1-panel {
+  background-color: $f1-bg-secondary;
+  border: 1px solid $f1-border;
+  border-radius: $f1-radius-md;
+  padding: $f1-spacing-lg;
+  overflow: hidden;
+
+  &__title {
+    font-size: 12px;
+    font-weight: 500;
+    color: $f1-text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: $f1-spacing-md;
+  }
+
+  &--full-width {
+    grid-column: 1 / -1;
+  }
+}

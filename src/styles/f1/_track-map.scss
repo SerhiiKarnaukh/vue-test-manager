@@ -1,0 +1,34 @@
+// SVG track map styles
+
+.track-map {
+  background-color: $f1-bg-secondary;
+  border: 1px solid $f1-border;
+  border-radius: $f1-radius-md;
+  padding: $f1-spacing-md;
+
+  svg {
+    width: 100%;
+    height: auto;
+  }
+
+  &__circuit-path {
+    fill: none;
+    stroke: $f1-border;
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  &__circuit-center {
+    fill: none;
+    stroke: $f1-bg-primary;
+    stroke-width: 4;
+  }
+}
+
+.car-marker {
+  r: 5;
+  stroke: $f1-bg-primary;
+  stroke-width: 1.5;
+  transition: cx 0.3s ease, cy 0.3s ease;
+}

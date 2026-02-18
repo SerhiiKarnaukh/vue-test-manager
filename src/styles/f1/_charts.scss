@@ -1,0 +1,22 @@
+// Chart container and tooltip styles
+
+.f1-chart-container {
+  position: relative;
+  background-color: $f1-bg-secondary;
+  border: 1px solid $f1-border;
+  border-radius: $f1-radius-md;
+  padding: $f1-spacing-md;
+
+  canvas {
+    width: 100% !important;
+  }
+}
+
+.f1-chart-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: $f1-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: $f1-spacing-sm;
+}

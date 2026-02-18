@@ -1,0 +1,67 @@
+// F1 Layout Shell Styles
+
+.f1-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: $f1-bg-primary;
+  color: $f1-text-primary;
+  font-family: $f1-font-body;
+
+  &__body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    margin-top: $f1-header-height;
+    margin-bottom: $f1-statusbar-height;
+  }
+
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: $f1-spacing-lg;
+  }
+}
+
+.f1-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: $f1-header-height;
+  display: flex;
+  align-items: center;
+  background-color: $f1-bg-secondary;
+  border-bottom: 1px solid $f1-border;
+  padding: 0 $f1-spacing-lg;
+}
+
+.f1-sidebar {
+  width: $f1-sidebar-width-expanded;
+  background-color: $f1-bg-secondary;
+  border-right: 1px solid $f1-border;
+  transition: width 0.2s ease;
+  overflow: hidden;
+
+  .f1-layout--sidebar-collapsed & {
+    width: $f1-sidebar-width-collapsed;
+  }
+}
+
+.f1-statusbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: $f1-statusbar-height;
+  display: flex;
+  align-items: center;
+  background-color: $f1-bg-secondary;
+  border-top: 1px solid $f1-border;
+  padding: 0 $f1-spacing-lg;
+  font-size: 11px;
+  color: $f1-text-secondary;
+  font-family: $f1-font-mono;
+}

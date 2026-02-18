@@ -1,0 +1,46 @@
+// F1 Pit Wall — Dark Theme Design Tokens
+
+// Background
+$f1-bg-primary: #0D1117;
+$f1-bg-secondary: #161B22;
+$f1-bg-tertiary: #21262D;
+$f1-border: #30363D;
+
+// Text
+$f1-text-primary: #E6EDF3;
+$f1-text-secondary: #8B949E;
+
+// Accent & Status
+$f1-accent: #58A6FF;
+$f1-success: #3FB950;
+$f1-warning: #D29922;
+$f1-danger: #F85149;
+
+// Layout dimensions
+$f1-sidebar-width-collapsed: 56px;
+$f1-sidebar-width-expanded: 200px;
+$f1-header-height: 48px;
+$f1-statusbar-height: 28px;
+
+// Tire compound colors (Pirelli)
+$f1-soft: #FF1801;
+$f1-medium: #FFC906;
+$f1-hard: #FFFFFF;
+$f1-intermediate: #39B54A;
+$f1-wet: #00AEEF;
+
+// Typography
+$f1-font-mono: 'Roboto Mono', 'JetBrains Mono', monospace;
+$f1-font-body: 'Roboto', sans-serif;
+
+// Spacing
+$f1-spacing-xs: 4px;
+$f1-spacing-sm: 8px;
+$f1-spacing-md: 12px;
+$f1-spacing-lg: 16px;
+$f1-spacing-xl: 24px;
+
+// Border radius
+$f1-radius-sm: 4px;
+$f1-radius-md: 6px;
+$f1-radius-lg: 8px;

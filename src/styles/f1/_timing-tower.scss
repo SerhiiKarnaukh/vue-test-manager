@@ -1,0 +1,37 @@
+// Timing tower table styles
+
+.timing-tower {
+  background-color: $f1-bg-secondary;
+  border: 1px solid $f1-border;
+  border-radius: $f1-radius-md;
+  overflow: hidden;
+  font-family: $f1-font-mono;
+  font-size: 12px;
+
+  &__header {
+    display: grid;
+    padding: $f1-spacing-sm $f1-spacing-md;
+    background-color: $f1-bg-tertiary;
+    color: $f1-text-secondary;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__row {
+    display: grid;
+    padding: $f1-spacing-xs $f1-spacing-md;
+    border-bottom: 1px solid $f1-border;
+    align-items: center;
+    transition: background-color 0.15s ease;
+    cursor: pointer;
+
+    &:hover {
+      background-color: $f1-bg-tertiary;
+    }
+
+    &--selected {
+      background-color: rgba($f1-accent, 0.1);
+    }
+  }
+}

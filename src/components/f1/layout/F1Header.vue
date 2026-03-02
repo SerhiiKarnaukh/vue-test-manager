@@ -17,6 +17,23 @@
 
     <template #append>
       <div class="f1-header__controls">
+        <v-menu open-on-hover>
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              variant="text"
+              size="small"
+              prepend-icon="mdi-remote-desktop"
+            >
+              Apps Manager
+            </v-btn>
+          </template>
+          <v-list density="compact">
+            <v-list-item :href="remoteHost" title="All Apps" />
+            <v-list-item to="/" title="Vue Apps" />
+          </v-list>
+        </v-menu>
+
         <v-select
           v-model="selectedYear"
           :items="availableYears"
@@ -68,6 +85,16 @@
         </v-chip>
 
         <span class="f1-header__clock">{{ utcClock }}</span>
+
+        <v-btn
+          v-if="isAuthenticated"
+          variant="text"
+          size="small"
+          prepend-icon="mdi-logout"
+          @click="logout"
+        >
+          Logout
+        </v-btn>
       </div>
     </template>
   </v-app-bar>
@@ -75,11 +102,14 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
 defineEmits(['toggle-sidebar'])
 
 const store = useStore()
+const router = useRouter()
+const remoteHost = import.meta.env.VITE_REMOTE_HOST
 
 const selectedYear = ref(new Date().getFullYear())
 const selectedType = ref(null)
@@ -101,6 +131,7 @@ const sessionTypeOptions = [
 const sessions = computed(() => store.state.f1Data.sessions.sessions)
 const activeSession = computed(() => store.state.f1Data.sessions.activeSession)
 const isLiveSession = computed(() => store.getters['f1Data/sessions/isLiveSession'])
+const isAuthenticated = computed(() => store.getters['authJWT/isAuthenticated'])
 
 const activeSessionKey = computed({
   get: () => activeSession.value?.session_key ?? null,
@@ -133,6 +164,18 @@ function onSessionSelect(sessionKey) {
 
 function updateClock() {
   utcClock.value = new Date().toISOString().slice(11, 19) + ' UTC'
+}
+
+async function logout() {
+  await store.dispatch('f1Data/websocket/disconnectTelemetry')
+  await store.dispatch('f1Data/websocket/disconnectRaceControl')
+  await store.dispatch('authJWT/logout')
+
+  store.commit('f1Data/sessions/SET_CURRENT_USER', null)
+  store.commit('f1Data/sessions/SET_USER_IS_ADMIN', false)
+  store.commit('f1Data/sessions/SET_ACTIVE_SESSION', null)
+
+  router.push('/f1/login')
 }
 
 onMounted(() => {

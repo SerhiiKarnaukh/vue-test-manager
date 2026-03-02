@@ -55,6 +55,7 @@ const { mobile } = useDisplay()
 const rail = ref(false)
 
 const isAuthenticated = computed(() => store.getters['authJWT/isAuthenticated'])
+const isAdmin = computed(() => store.getters['f1Data/sessions/isAdmin'])
 
 const navItems = [
   { label: 'Dashboard', route: '/f1/dashboard', icon: 'mdi-view-dashboard', admin: false },
@@ -69,8 +70,7 @@ const navItems = [
 
 const visibleItems = computed(() => {
   if (!isAuthenticated.value) return []
-  // TODO: filter admin items when isAdmin getter is available
-  return navItems
+  return navItems.filter((item) => !item.admin || isAdmin.value)
 })
 
 function isActive(path) {

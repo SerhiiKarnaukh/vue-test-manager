@@ -18,16 +18,24 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import F1Header from '@/components/f1/layout/F1Header.vue'
 import F1Sidebar from '@/components/f1/layout/F1Sidebar.vue'
 import F1StatusBar from '@/components/f1/layout/F1StatusBar.vue'
 
 const store = useStore()
+const router = useRouter()
 const sidebarOpen = ref(true)
 
-onMounted(() => {
+onMounted(async () => {
   store.commit('setAppName', 'F1 Pit Wall')
+  await store.dispatch('authJWT/checkActiveApp', 'f1_pitwall')
+  const me = await store.dispatch('f1Data/sessions/fetchCurrentUser')
+  if (!me) {
+    router.push('/f1/login?message=auth')
+    return
+  }
   store.dispatch('f1Data/sessions/fetchSessions')
   store.dispatch('f1Data/sessions/detectLiveSession')
 })

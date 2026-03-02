@@ -49,3 +49,8 @@ export const security = {
 export const health = {
   check: () => axios.get(`${BASE}/health/`)
 }
+
+export const auth = {
+  register: (payload) => axios.post(`${BASE}/register/`, payload),
+  getMe: () => axios.get(`${BASE}/me/`)
+}

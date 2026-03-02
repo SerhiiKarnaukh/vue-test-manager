@@ -1,3 +1,5 @@
+const F1LoginView = () => import('@/views/f1/F1LoginView.vue')
+const F1SignupView = () => import('@/views/f1/F1SignupView.vue')
 const F1DashboardView = () => import('@/views/f1/F1DashboardView.vue')
 const F1TelemetryView = () => import('@/views/f1/F1TelemetryView.vue')
 const F1TimingView = () => import('@/views/f1/F1TimingView.vue')
@@ -11,6 +13,18 @@ const f1Routes = [
   {
     path: '/f1',
     redirect: '/f1/dashboard'
+  },
+  {
+    path: '/f1/login',
+    name: 'F1Login',
+    component: F1LoginView,
+    meta: { layout: 'f1Auth', authJWT: false }
+  },
+  {
+    path: '/f1/signup',
+    name: 'F1Signup',
+    component: F1SignupView,
+    meta: { layout: 'f1Auth', authJWT: false }
   },
   {
     path: '/f1/dashboard',

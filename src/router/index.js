@@ -305,22 +305,31 @@ function getLoginRoute(path) {
 
   if (path.startsWith('/social')) return '/social/login?message=auth'
 
-  if (path.startsWith('/f1')) return '/social/login?message=auth'
+  if (path.startsWith('/f1'))
+    return `/f1/login?redirect=${encodeURIComponent(path)}&message=auth`
 
   return '/'
 }
 
 router.beforeEach((to, from, next) => {
   const requireAuthJWT = to.meta.authJWT
+  const requireAdmin = to.meta.admin
+  const isAuthenticated = store.getters['authJWT/isAuthenticated']
 
-  // === Authorization check ===
-  if (requireAuthJWT && store.getters['authJWT/isAuthenticated']) {
-    next()
-  } else if (requireAuthJWT && !store.getters['authJWT/isAuthenticated']) {
-    next(getLoginRoute(to.fullPath))
-  } else {
-    next()
+  if (requireAuthJWT && !isAuthenticated) {
+    return next(getLoginRoute(to.fullPath))
   }
+
+  // Redirect authenticated users away from F1 login/signup
+  if (isAuthenticated && (to.name === 'F1Login' || to.name === 'F1Signup')) {
+    return next('/f1/dashboard')
+  }
+
+  if (requireAdmin && isAuthenticated && !store.getters['f1Data/sessions/isAdmin']) {
+    return next('/f1/dashboard')
+  }
+
+  next()
 })
 
 export default router

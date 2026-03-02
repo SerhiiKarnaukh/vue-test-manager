@@ -28,21 +28,6 @@
 
               <v-card-text class="pt-4">
                 <v-form autocomplete="off" @submit.prevent="registerHandler">
-                  <input
-                    class="f1-auth__autofill-trap"
-                    type="text"
-                    name="username"
-                    autocomplete="username"
-                    tabindex="-1"
-                  >
-                  <input
-                    class="f1-auth__autofill-trap"
-                    type="password"
-                    name="password"
-                    autocomplete="current-password"
-                    tabindex="-1"
-                  >
-
                   <v-row>
                     <v-col cols="12" sm="6">
                       <v-text-field
@@ -286,16 +271,6 @@ async function registerHandler() {
   &__card {
     border-color: #30363d !important;
     background-color: #161b22 !important;
-  }
-
-  &__autofill-trap {
-    position: absolute;
-    left: -9999px;
-    top: 0;
-    width: 1px;
-    height: 1px;
-    opacity: 0;
-    pointer-events: none;
   }
 }
 </style>

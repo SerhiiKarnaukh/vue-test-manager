@@ -27,31 +27,52 @@
               </v-card-title>
 
               <v-card-text class="pt-4">
-                <v-form @submit.prevent="loginHandler">
+                <v-form autocomplete="off" @submit.prevent="loginHandler">
+                  <input
+                    class="f1-auth__autofill-trap"
+                    type="text"
+                    name="username"
+                    autocomplete="username"
+                    tabindex="-1"
+                  >
+                  <input
+                    class="f1-auth__autofill-trap"
+                    type="password"
+                    name="password"
+                    autocomplete="current-password"
+                    tabindex="-1"
+                  >
+
                   <v-text-field
                     v-model.trim="state.email"
                     label="Email"
                     type="email"
+                    name="f1_login_email"
+                    autocomplete="off"
                     prepend-inner-icon="mdi-email-outline"
-                    placeholder="engineer@f1pitwall.com"
                     variant="outlined"
                     density="comfortable"
-                    class="mb-2"
+                    :readonly="state.lockAutofill"
+                    class="mb-3"
                     :error-messages="v$.email.$errors.map((e) => e.$message)"
+                    @focus="unlockAutofill"
                   />
 
                   <v-text-field
                     v-model.trim="state.password"
                     :type="state.showPassword ? 'text' : 'password'"
                     label="Password"
+                    name="f1_login_password"
+                    autocomplete="off"
                     prepend-inner-icon="mdi-lock-outline"
                     :append-inner-icon="state.showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                    placeholder="Enter your password"
                     variant="outlined"
                     density="comfortable"
-                    class="mb-2"
+                    :readonly="state.lockAutofill"
+                    class="mb-3"
                     :error-messages="v$.password.$errors.map((e) => e.$message)"
                     @click:append-inner="state.showPassword = !state.showPassword"
+                    @focus="unlockAutofill"
                   />
 
                   <v-btn
@@ -105,6 +126,7 @@ const state = reactive({
   email: '',
   password: '',
   showPassword: false,
+  lockAutofill: true,
   loading: false
 })
 
@@ -114,6 +136,12 @@ const rules = {
 }
 
 const v$ = useVuelidate(rules, state)
+
+function unlockAutofill() {
+  if (state.lockAutofill) {
+    state.lockAutofill = false
+  }
+}
 
 if (route.query.message) {
   store.dispatch('alert/setMessage', {
@@ -146,6 +174,7 @@ async function loginHandler() {
     state.loading = false
   }
 }
+
 </script>
 
 <style lang="scss" scoped>
@@ -180,6 +209,16 @@ async function loginHandler() {
   &__card {
     border-color: #30363d !important;
     background-color: #161b22 !important;
+  }
+
+  &__autofill-trap {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
   }
 }
 </style>

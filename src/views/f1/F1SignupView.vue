@@ -27,28 +27,51 @@
               </v-card-title>
 
               <v-card-text class="pt-4">
-                <v-form @submit.prevent="registerHandler">
-                  <v-row dense>
+                <v-form autocomplete="off" @submit.prevent="registerHandler">
+                  <input
+                    class="f1-auth__autofill-trap"
+                    type="text"
+                    name="username"
+                    autocomplete="username"
+                    tabindex="-1"
+                  >
+                  <input
+                    class="f1-auth__autofill-trap"
+                    type="password"
+                    name="password"
+                    autocomplete="current-password"
+                    tabindex="-1"
+                  >
+
+                  <v-row>
                     <v-col cols="12" sm="6">
                       <v-text-field
                         v-model.trim="state.first_name"
                         label="First Name"
+                        name="f1_signup_first_name"
+                        autocomplete="off"
                         prepend-inner-icon="mdi-account-outline"
-                        placeholder="Lewis"
                         variant="outlined"
                         density="comfortable"
+                        :readonly="state.lockAutofill"
+                        class="mb-3"
                         :error-messages="v$.first_name.$errors.map((e) => e.$message)"
+                        @focus="unlockAutofill"
                       />
                     </v-col>
                     <v-col cols="12" sm="6">
                       <v-text-field
                         v-model.trim="state.last_name"
                         label="Last Name"
+                        name="f1_signup_last_name"
+                        autocomplete="off"
                         prepend-inner-icon="mdi-account-outline"
-                        placeholder="Hamilton"
                         variant="outlined"
                         density="comfortable"
+                        :readonly="state.lockAutofill"
+                        class="mb-3"
                         :error-messages="v$.last_name.$errors.map((e) => e.$message)"
+                        @focus="unlockAutofill"
                       />
                     </v-col>
                   </v-row>
@@ -56,52 +79,64 @@
                   <v-text-field
                     v-model.trim="state.username"
                     label="Username"
+                    name="f1_signup_username"
+                    autocomplete="off"
                     prepend-inner-icon="mdi-at"
-                    placeholder="Choose a username"
                     variant="outlined"
                     density="comfortable"
-                    class="mb-1"
+                    :readonly="state.lockAutofill"
+                    class="mb-3"
                     :error-messages="v$.username.$errors.map((e) => e.$message)"
+                    @focus="unlockAutofill"
                   />
 
                   <v-text-field
                     v-model.trim="state.email"
                     label="Email"
                     type="email"
+                    name="f1_signup_email"
+                    autocomplete="off"
                     prepend-inner-icon="mdi-email-outline"
-                    placeholder="engineer@f1pitwall.com"
                     variant="outlined"
                     density="comfortable"
-                    class="mb-1"
+                    :readonly="state.lockAutofill"
+                    class="mb-3"
                     :error-messages="v$.email.$errors.map((e) => e.$message)"
+                    @focus="unlockAutofill"
                   />
 
                   <v-text-field
                     v-model.trim="state.password"
                     :type="state.showPassword ? 'text' : 'password'"
                     label="Password"
+                    name="f1_signup_password"
+                    autocomplete="off"
                     prepend-inner-icon="mdi-lock-outline"
                     :append-inner-icon="state.showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                    placeholder="Min 6 characters"
                     variant="outlined"
                     density="comfortable"
-                    class="mb-1"
+                    :readonly="state.lockAutofill"
+                    class="mb-3"
                     :error-messages="v$.password.$errors.map((e) => e.$message)"
                     @click:append-inner="state.showPassword = !state.showPassword"
+                    @focus="unlockAutofill"
                   />
 
                   <v-text-field
                     v-model.trim="state.password2"
                     :type="state.showPassword ? 'text' : 'password'"
                     label="Confirm Password"
+                    name="f1_signup_password2"
+                    autocomplete="off"
                     prepend-inner-icon="mdi-lock-check-outline"
                     :append-inner-icon="state.showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                    placeholder="Repeat your password"
                     variant="outlined"
                     density="comfortable"
-                    class="mb-1"
+                    :readonly="state.lockAutofill"
+                    class="mb-3"
                     :error-messages="v$.password2.$errors.map((e) => e.$message)"
                     @click:append-inner="state.showPassword = !state.showPassword"
+                    @focus="unlockAutofill"
                   />
 
                   <v-btn
@@ -160,6 +195,7 @@ const state = reactive({
   password: '',
   password2: '',
   showPassword: false,
+  lockAutofill: true,
   loading: false
 })
 
@@ -173,6 +209,12 @@ const rules = {
 }
 
 const v$ = useVuelidate(rules, state)
+
+function unlockAutofill() {
+  if (state.lockAutofill) {
+    state.lockAutofill = false
+  }
+}
 
 async function registerHandler() {
   const valid = await v$.value.$validate()
@@ -209,6 +251,7 @@ async function registerHandler() {
     state.loading = false
   }
 }
+
 </script>
 
 <style lang="scss" scoped>
@@ -243,6 +286,16 @@ async function registerHandler() {
   &__card {
     border-color: #30363d !important;
     background-color: #161b22 !important;
+  }
+
+  &__autofill-trap {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
   }
 }
 </style>

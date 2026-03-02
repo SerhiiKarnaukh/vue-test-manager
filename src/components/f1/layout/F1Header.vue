@@ -66,10 +66,20 @@
           density="compact"
           variant="outlined"
           hide-details
+          clearable
           placeholder="Select session..."
           class="f1-header__session-select"
           @update:model-value="onSessionSelect"
         />
+
+        <v-btn
+          variant="text"
+          size="small"
+          prepend-icon="mdi-filter-remove-outline"
+          @click="resetFilters"
+        >
+          Reset
+        </v-btn>
 
         <v-chip
           v-if="isLiveSession"
@@ -111,8 +121,8 @@ const store = useStore()
 const router = useRouter()
 const remoteHost = import.meta.env.VITE_REMOTE_HOST
 
-const selectedYear = ref(new Date().getFullYear())
-const selectedType = ref(null)
+const selectedYear = ref(store.state.f1Data.sessions.selectedYear || new Date().getFullYear())
+const selectedType = ref(store.state.f1Data.sessions.selectedSessionType || null)
 const utcClock = ref('')
 let clockInterval = null
 
@@ -145,21 +155,39 @@ const sessionItems = computed(() =>
   }))
 )
 
-function onYearChange(year) {
+async function onYearChange(year) {
   store.commit('f1Data/sessions/SET_SELECTED_YEAR', year)
+  await store.dispatch('f1Data/sessions/selectSession', null)
   store.dispatch('f1Data/sessions/fetchSessions')
 }
 
-function onTypeChange(type) {
+async function onTypeChange(type) {
   store.commit('f1Data/sessions/SET_SELECTED_SESSION_TYPE', type)
+  await store.dispatch('f1Data/sessions/selectSession', null)
   store.dispatch('f1Data/sessions/fetchSessions')
 }
 
 function onSessionSelect(sessionKey) {
+  if (!sessionKey) {
+    store.dispatch('f1Data/sessions/selectSession', null)
+    return
+  }
+
   const session = sessions.value.find((s) => s.session_key === sessionKey)
   if (session) {
     store.dispatch('f1Data/sessions/selectSession', session)
   }
+}
+
+async function resetFilters() {
+  const currentYear = new Date().getFullYear()
+  selectedYear.value = currentYear
+  selectedType.value = null
+
+  store.commit('f1Data/sessions/SET_SELECTED_YEAR', currentYear)
+  store.commit('f1Data/sessions/SET_SELECTED_SESSION_TYPE', null)
+  await store.dispatch('f1Data/sessions/selectSession', null)
+  store.dispatch('f1Data/sessions/fetchSessions')
 }
 
 function updateClock() {

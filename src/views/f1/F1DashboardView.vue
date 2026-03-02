@@ -8,6 +8,6 @@
 </script>
 
 <style lang="scss" scoped>
-@import '@/styles/f1/variables';
-@import '@/styles/f1/pit-wall';
+@use '@/styles/f1/variables' as *;
+@use '@/styles/f1/pit-wall' as *;
 </style>

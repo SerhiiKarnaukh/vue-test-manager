@@ -311,25 +311,25 @@ function getLoginRoute(path) {
   return '/'
 }
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to) => {
   const requireAuthJWT = to.meta.authJWT
   const requireAdmin = to.meta.admin
   const isAuthenticated = store.getters['authJWT/isAuthenticated']
 
   if (requireAuthJWT && !isAuthenticated) {
-    return next(getLoginRoute(to.fullPath))
+    return getLoginRoute(to.fullPath)
   }
 
   // Redirect authenticated users away from F1 login/signup
   if (isAuthenticated && (to.name === 'F1Login' || to.name === 'F1Signup')) {
-    return next('/f1/dashboard')
+    return '/f1/dashboard'
   }
 
   if (requireAdmin && isAuthenticated && !store.getters['f1Data/sessions/isAdmin']) {
-    return next('/f1/dashboard')
+    return '/f1/dashboard'
   }
 
-  next()
+  return true
 })
 
 export default router

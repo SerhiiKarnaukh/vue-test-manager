@@ -7,8 +7,8 @@
     vertical
     :color="message.type"
   >
-    <v-card-text>
-      <ul>
+    <v-card-text class="pa-2">
+      <ul class="toast-list">
         <li v-for="(item, index) in message.value" :key="index">{{ item }}</li>
       </ul>
     </v-card-text>
@@ -39,6 +39,13 @@ export default {
   .v-snackbar__content {
     padding: 0;
     border-radius: 5px;
+  }
+  .toast-list {
+    margin: 0;
+    padding-left: 16px;
+  }
+  .toast-list li {
+    line-height: 1.3;
   }
   p {
     color: #302c2c;

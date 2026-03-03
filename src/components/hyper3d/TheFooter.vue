@@ -1,6 +1,6 @@
 <template>
   <v-footer color="white">
-    <v-row justify="center" no-gutters>
+    <v-row justify="center" density="compact">
       <v-btn
         color="#3a3a3a"
         variant="text"

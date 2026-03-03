@@ -173,9 +173,9 @@ export default {
       await store.dispatch('setPageTitle', 'Chat')
       await store.dispatch('socialChatData/getConversations')
     })
-    onBeforeRouteLeave((to, from, next) => {
+    onBeforeRouteLeave(() => {
       store.dispatch('socialChatData/disconnectWebSocket')
-      next()
+      return true
     })
 
     return {

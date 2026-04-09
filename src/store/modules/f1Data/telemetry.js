@@ -81,10 +81,11 @@ export default {
     processIncomingData({ commit }, message) {
       if (message.type === 'telemetry' && message.driver && message.data) {
         const dn = message.driver
-        commit('SET_LATEST_DATA', { driverNumber: dn, data: message.data })
+        const normalized = normalizeTelemetryData(message.data)
+        commit('SET_LATEST_DATA', { driverNumber: dn, data: normalized })
         for (const field of ['speed', 'rpm', 'throttle', 'brake']) {
-          if (message.data[field] != null) {
-            commit('PUSH_TO_BUFFER', { driverNumber: dn, field, value: message.data[field] })
+          if (normalized[field] != null) {
+            commit('PUSH_TO_BUFFER', { driverNumber: dn, field, value: normalized[field] })
           }
         }
       }
@@ -124,6 +125,23 @@ export default {
       }
     },
 
+    async fetchLatest({ commit }, sessionKey) {
+      if (!sessionKey) return
+      try {
+        const { data } = await telemetryApi.getLatest(sessionKey)
+        const results = Array.isArray(data) ? data : data.results ?? []
+        for (const row of results) {
+          const driverNumber = row.driver_number ?? row.driver
+          if (driverNumber == null) continue
+          const normalized = normalizeTelemetryData(row)
+          commit('SET_LATEST_DATA', { driverNumber, data: normalized })
+          seedBufferPoint(commit, driverNumber, normalized)
+        }
+      } catch (err) {
+        console.error('[F1] Failed to fetch latest telemetry:', err)
+      }
+    },
+
     requestReplay({ commit, dispatch }, lapNumber) {
       commit('SET_REPLAY_LAP', lapNumber)
       dispatch(
@@ -133,4 +151,32 @@ export default {
       )
     }
   }
+}
+
+function seedBufferPoint(commit, driverNumber, row) {
+  for (const field of ['speed', 'rpm', 'throttle', 'brake']) {
+    if (row[field] == null) continue
+    commit('PUSH_TO_BUFFER', { driverNumber, field, value: row[field] })
+  }
+}
+
+function normalizeTelemetryData(row) {
+  return {
+    speed: toNumberOrNull(row?.speed),
+    rpm: toNumberOrNull(row?.rpm),
+    throttle: toNumberOrNull(row?.throttle),
+    brake: toNumberOrNull(row?.brake),
+    gear: toNumberOrNull(row?.gear),
+    n_gear: toNumberOrNull(row?.n_gear),
+    drs: toNumberOrNull(row?.drs),
+    timestamp: row?.timestamp ?? null,
+    data_source: row?.data_source ?? null,
+    is_fallback: row?.is_fallback === true
+  }
+}
+
+function toNumberOrNull(value) {
+  if (value == null || value === '') return null
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : null
 }

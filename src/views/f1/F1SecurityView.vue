@@ -8,5 +8,5 @@
 </script>
 
 <style lang="scss" scoped>
-@import '@/styles/f1/variables';
+@use '@/styles/f1/variables' as *;
 </style>

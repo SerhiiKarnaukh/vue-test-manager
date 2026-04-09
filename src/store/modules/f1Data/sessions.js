@@ -1,6 +1,11 @@
 import { sessions as sessionsApi, drivers as driversApi, auth as authApi } from '@/utils/f1/api'
 
 const STORAGE_KEY = 'f1_active_session'
+const FILTERS_STORAGE_KEY = 'f1_session_filters'
+
+function resolveSessionKey(session) {
+  return session?.session_key ?? session?.sessionKey ?? session?.key ?? null
+}
 
 function loadSavedSession() {
   try {
@@ -19,6 +24,34 @@ function persistSession(session) {
   }
 }
 
+function loadSavedFilters() {
+  const fallback = { selectedYear: new Date().getFullYear(), selectedSessionType: null }
+  try {
+    const raw = localStorage.getItem(FILTERS_STORAGE_KEY)
+    if (!raw) return fallback
+    const parsed = JSON.parse(raw)
+    const selectedYear = Number(parsed?.selectedYear)
+    return {
+      selectedYear: Number.isFinite(selectedYear) ? selectedYear : fallback.selectedYear,
+      selectedSessionType: parsed?.selectedSessionType ?? null
+    }
+  } catch {
+    return fallback
+  }
+}
+
+function persistFilters(selectedYear, selectedSessionType) {
+  localStorage.setItem(
+    FILTERS_STORAGE_KEY,
+    JSON.stringify({
+      selectedYear,
+      selectedSessionType: selectedSessionType ?? null
+    })
+  )
+}
+
+const savedFilters = loadSavedFilters()
+
 export default {
   namespaced: true,
 
@@ -30,8 +63,8 @@ export default {
     activeSession: loadSavedSession(),
     liveSession: null,
     currentUser: null,
-    selectedYear: new Date().getFullYear(),
-    selectedSessionType: null,
+    selectedYear: savedFilters.selectedYear,
+    selectedSessionType: savedFilters.selectedSessionType,
     userIsAdmin: false
   }),
 
@@ -46,7 +79,7 @@ export default {
       state.activeSession?.is_live ?? false,
 
     activeSessionKey: (state) =>
-      state.activeSession?.session_key ?? null,
+      resolveSessionKey(state.activeSession),
 
     currentUserRole: (state) => state.currentUser?.role ?? 'viewer',
 
@@ -64,8 +97,14 @@ export default {
     },
     SET_LIVE_SESSION(state, session) { state.liveSession = session },
     SET_CURRENT_USER(state, user) { state.currentUser = user },
-    SET_SELECTED_YEAR(state, year) { state.selectedYear = year },
-    SET_SELECTED_SESSION_TYPE(state, type) { state.selectedSessionType = type },
+    SET_SELECTED_YEAR(state, year) {
+      state.selectedYear = year
+      persistFilters(state.selectedYear, state.selectedSessionType)
+    },
+    SET_SELECTED_SESSION_TYPE(state, type) {
+      state.selectedSessionType = type
+      persistFilters(state.selectedYear, state.selectedSessionType)
+    },
     SET_USER_IS_ADMIN(state, val) { state.userIsAdmin = val }
   },
 
@@ -126,7 +165,8 @@ export default {
       }
 
       // Cascade: load all session-dependent data in parallel
-      const sessionKey = session.session_key
+      const sessionKey = resolveSessionKey(session)
+      if (!sessionKey) return
       await Promise.allSettled([
         dispatch('fetchDrivers'),
         dispatch('f1Data/telemetry/fetchLaps', sessionKey, { root: true }),

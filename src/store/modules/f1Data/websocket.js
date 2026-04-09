@@ -7,6 +7,13 @@ let telemetryReconnectTimer = null
 let raceControlReconnectTimer = null
 let dataRateCounter = 0
 let dataRateInterval = null
+let lastTelemetryParseErrorAt = 0
+let telemetryParseErrorCount = 0
+let telemetryParseFailureStreak = 0
+let telemetryDisabledDueToParseErrors = false
+
+const MAX_TELEMETRY_MESSAGE_CHARS = 120000
+const MAX_TELEMETRY_JSON_DEPTH = 80
 
 function getWsBaseUrl() {
   const env = import.meta.env.VITE_F1_WS_BASE
@@ -17,6 +24,27 @@ function getWsBaseUrl() {
 
 function getToken(rootGetters) {
   return rootGetters['authJWT/accessToken']
+}
+
+function parseJwtExpiry(token) {
+  if (!token) return null
+  try {
+    const [, payload] = token.split('.')
+    if (!payload) return null
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/')
+    const decoded = JSON.parse(atob(base64))
+    return typeof decoded.exp === 'number' ? decoded.exp : null
+  } catch {
+    return null
+  }
+}
+
+function isTokenExpired(token) {
+  const exp = parseJwtExpiry(token)
+  if (!exp) return true
+  const now = Math.floor(Date.now() / 1000)
+  // Refresh a bit earlier to avoid reconnect loops near expiry.
+  return exp <= now + 10
 }
 
 export default {
@@ -44,10 +72,18 @@ export default {
   },
 
   actions: {
-    connectTelemetry({ commit, dispatch, rootGetters }, sessionKey) {
+    async connectTelemetry({ commit, dispatch, rootGetters }, sessionKey) {
       dispatch('disconnectTelemetry')
 
-      const token = getToken(rootGetters)
+      let token = getToken(rootGetters)
+      if (!token || isTokenExpired(token)) {
+        try {
+          await dispatch('authJWT/refreshToken', null, { root: true })
+          token = getToken(rootGetters)
+        } catch {
+          token = null
+        }
+      }
       if (!token || !sessionKey) return
 
       const url = `${getWsBaseUrl()}/ws/f1/telemetry/${sessionKey}/?token=${token}`
@@ -59,12 +95,29 @@ export default {
       ws.onopen = () => {
         commit('SET_TELEMETRY_STATUS', 'connected')
         commit('SET_RECONNECT_ATTEMPTS', 0)
+        telemetryParseFailureStreak = 0
+        telemetryDisabledDueToParseErrors = false
         startDataRateTracking(commit)
       }
 
       ws.onmessage = (event) => {
+        if (telemetryDisabledDueToParseErrors) return
+        let message
         try {
-          const message = JSON.parse(event.data)
+          message = parseTelemetryMessage(event.data)
+        } catch (err) {
+          logTelemetryParseError(err, 'parse')
+          telemetryParseFailureStreak += 1
+          if (telemetryParseFailureStreak >= 3) {
+            telemetryDisabledDueToParseErrors = true
+            dispatch('disconnectTelemetry')
+            commit('SET_TELEMETRY_STATUS', 'error')
+          }
+          return
+        }
+        if (!message) return
+        telemetryParseFailureStreak = 0
+        try {
           commit('SET_LAST_MESSAGE_TIMESTAMP', new Date().toISOString())
           dataRateCounter++
 
@@ -72,7 +125,13 @@ export default {
             dispatch('f1Data/telemetry/processIncomingData', message, { root: true })
           }
         } catch (err) {
-          console.error('[F1 WS] Failed to parse telemetry message:', err)
+          logTelemetryParseError(err, 'handle')
+          telemetryParseFailureStreak += 1
+          if (telemetryParseFailureStreak >= 3) {
+            telemetryDisabledDueToParseErrors = true
+            dispatch('disconnectTelemetry')
+            commit('SET_TELEMETRY_STATUS', 'error')
+          }
         }
       }
 
@@ -101,10 +160,18 @@ export default {
       commit('SET_TELEMETRY_STATUS', 'disconnected')
     },
 
-    connectRaceControl({ commit, dispatch, rootGetters }) {
+    async connectRaceControl({ commit, dispatch, rootGetters }) {
       dispatch('disconnectRaceControl')
 
-      const token = getToken(rootGetters)
+      let token = getToken(rootGetters)
+      if (!token || isTokenExpired(token)) {
+        try {
+          await dispatch('authJWT/refreshToken', null, { root: true })
+          token = getToken(rootGetters)
+        } catch {
+          token = null
+        }
+      }
       if (!token) return
 
       const url = `${getWsBaseUrl()}/ws/f1/race-control/?token=${token}`
@@ -157,17 +224,31 @@ export default {
       }
     },
 
-    handleReconnect({ state, commit, dispatch, rootGetters }, { channel, sessionKey }) {
+    async handleReconnect({ state, commit, dispatch, rootGetters }, { channel, sessionKey }) {
       if (state.reconnectAttempts >= WS_MAX_RETRIES) {
         console.warn(`[F1 WS] Max reconnect attempts reached for ${channel}`)
+        if (channel === 'telemetry') {
+          commit('SET_TELEMETRY_STATUS', 'error')
+        } else {
+          commit('SET_RACE_CONTROL_STATUS', 'error')
+        }
         return
       }
 
-      const token = getToken(rootGetters)
+      let token = getToken(rootGetters)
+      if (!token || isTokenExpired(token)) {
+        try {
+          await dispatch('authJWT/refreshToken', null, { root: true })
+          token = getToken(rootGetters)
+        } catch {
+          token = null
+        }
+      }
       if (!token) return
 
-      commit('SET_RECONNECT_ATTEMPTS', state.reconnectAttempts + 1)
-      const delay = WS_RECONNECT_DELAY * Math.min(state.reconnectAttempts, 5)
+      const nextAttempt = state.reconnectAttempts + 1
+      commit('SET_RECONNECT_ATTEMPTS', nextAttempt)
+      const delay = WS_RECONNECT_DELAY * Math.min(nextAttempt, 5)
 
       if (channel === 'telemetry' && sessionKey) {
         telemetryReconnectTimer = setTimeout(() => {
@@ -197,4 +278,59 @@ function stopDataRateTracking(commit) {
     dataRateInterval = null
   }
   commit('SET_DATA_RATE', 0)
+}
+
+function logTelemetryParseError(err, phase) {
+  telemetryParseErrorCount += 1
+  const now = Date.now()
+  if (now - lastTelemetryParseErrorAt < 2000) return
+  lastTelemetryParseErrorAt = now
+  const label = phase === 'parse' ? 'parse JSON' : 'handle message'
+  console.error(`[F1 WS] Failed to ${label}:`, err, `(count=${telemetryParseErrorCount})`)
+}
+
+function parseTelemetryMessage(rawData) {
+  if (typeof rawData !== 'string') return null
+  if (rawData.length > MAX_TELEMETRY_MESSAGE_CHARS) {
+    throw new RangeError('Telemetry message exceeds safe parse limit.')
+  }
+  if (exceedsSafeJsonDepth(rawData, MAX_TELEMETRY_JSON_DEPTH)) {
+    throw new RangeError('Telemetry message exceeds safe JSON depth limit.')
+  }
+  return JSON.parse(rawData)
+}
+
+function exceedsSafeJsonDepth(rawJson, maxDepth) {
+  let depth = 0
+  let inString = false
+  let escaping = false
+
+  for (let index = 0; index < rawJson.length; index += 1) {
+    const char = rawJson[index]
+
+    if (escaping) {
+      escaping = false
+      continue
+    }
+    if (char === '\\') {
+      escaping = inString
+      continue
+    }
+    if (char === '"') {
+      inString = !inString
+      continue
+    }
+    if (inString) continue
+
+    if (char === '{' || char === '[') {
+      depth += 1
+      if (depth > maxDepth) return true
+      continue
+    }
+    if ((char === '}' || char === ']') && depth > 0) {
+      depth -= 1
+    }
+  }
+
+  return false
 }

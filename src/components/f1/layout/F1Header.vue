@@ -1,14 +1,6 @@
 <template>
-  <v-app-bar
-    density="compact"
-    :height="48"
-    flat
-    class="f1-header"
-  >
-    <v-app-bar-nav-icon
-      size="small"
-      @click="$emit('toggle-sidebar')"
-    />
+  <v-app-bar app density="compact" :height="48" flat class="f1-header">
+    <v-app-bar-nav-icon size="small" @click="$emit('toggle-sidebar')" />
 
     <v-toolbar-title class="f1-header__title">
       <v-icon size="small" class="mr-1">mdi-flag-checkered</v-icon>
@@ -121,8 +113,12 @@ const store = useStore()
 const router = useRouter()
 const remoteHost = import.meta.env.VITE_REMOTE_HOST
 
-const selectedYear = ref(store.state.f1Data.sessions.selectedYear || new Date().getFullYear())
-const selectedType = ref(store.state.f1Data.sessions.selectedSessionType || null)
+const selectedYear = ref(
+  store.state.f1Data.sessions.selectedYear || new Date().getFullYear(),
+)
+const selectedType = ref(
+  store.state.f1Data.sessions.selectedSessionType || null,
+)
 const utcClock = ref('')
 let clockInterval = null
 
@@ -135,24 +131,26 @@ const sessionTypeOptions = [
   { label: 'Race', value: 'race' },
   { label: 'Qualifying', value: 'qualifying' },
   { label: 'Sprint', value: 'sprint' },
-  { label: 'Practice', value: 'practice' }
+  { label: 'Practice', value: 'practice' },
 ]
 
 const sessions = computed(() => store.state.f1Data.sessions.sessions)
 const activeSession = computed(() => store.state.f1Data.sessions.activeSession)
-const isLiveSession = computed(() => store.getters['f1Data/sessions/isLiveSession'])
+const isLiveSession = computed(
+  () => store.getters['f1Data/sessions/isLiveSession'],
+)
 const isAuthenticated = computed(() => store.getters['authJWT/isAuthenticated'])
 
 const activeSessionKey = computed({
-  get: () => activeSession.value?.session_key ?? null,
-  set: () => {}
+  get: () => getSessionKey(activeSession.value),
+  set: () => {},
 })
 
 const sessionItems = computed(() =>
   sessions.value.map((s) => ({
     session_key: s.session_key,
-    label: `${s.circuit_short_name || s.circuit_name} — ${s.session_name}`
-  }))
+    label: `${s.circuit_short_name || s.circuit_name} — ${s.session_name}`,
+  })),
 )
 
 async function onYearChange(year) {
@@ -173,7 +171,9 @@ function onSessionSelect(sessionKey) {
     return
   }
 
-  const session = sessions.value.find((s) => s.session_key === sessionKey)
+  const session = sessions.value.find(
+    (s) => String(getSessionKey(s)) === String(sessionKey),
+  )
   if (session) {
     store.dispatch('f1Data/sessions/selectSession', session)
   }
@@ -192,6 +192,10 @@ async function resetFilters() {
 
 function updateClock() {
   utcClock.value = new Date().toISOString().slice(11, 19) + ' UTC'
+}
+
+function getSessionKey(session) {
+  return session?.session_key ?? session?.sessionKey ?? session?.key ?? null
 }
 
 async function logout() {
@@ -268,12 +272,22 @@ onUnmounted(() => {
 }
 
 @keyframes f1-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 @keyframes f1-pulse-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
 }
 </style>

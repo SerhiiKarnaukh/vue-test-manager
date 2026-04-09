@@ -45,13 +45,15 @@ export function useChartTheme() {
   }
 
   function createDataset(label, data, color) {
+    const hasSinglePoint = Array.isArray(data) && data.length <= 1
     return {
       label,
       data,
       borderColor: color,
       backgroundColor: `${color}20`,
       borderWidth: 1.5,
-      pointRadius: 0,
+      pointRadius: hasSinglePoint ? 3 : 0,
+      pointHoverRadius: hasSinglePoint ? 4 : 2,
       tension: 0.2,
       fill: false
     }

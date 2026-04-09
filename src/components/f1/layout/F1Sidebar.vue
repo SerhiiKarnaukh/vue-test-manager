@@ -1,5 +1,6 @@
 <template>
   <v-navigation-drawer
+    app
     :model-value="modelValue"
     :rail="rail"
     :permanent="!mobile"

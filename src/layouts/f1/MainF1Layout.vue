@@ -1,5 +1,6 @@
 <template>
   <v-theme-provider theme="F1DarkTheme" with-background>
+    <!-- Single v-app lives in App.vue; nested v-app breaks layout updates (e.g. after logout). -->
     <v-layout class="f1-layout">
       <F1Header
         @toggle-sidebar="sidebarOpen = !sidebarOpen"
@@ -8,7 +9,10 @@
       <F1Sidebar v-model="sidebarOpen" />
 
       <v-main class="f1-layout__main">
-        <router-view />
+        <div class="f1-layout__content">
+          <!-- App.vue passes the matched view via default slot (same pattern as other apps + App.vue). -->
+          <slot />
+        </div>
       </v-main>
 
       <F1StatusBar />
@@ -17,6 +21,7 @@
 </template>
 
 <script setup>
+defineOptions({ name: 'mainF1-layout' })
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
@@ -53,6 +58,9 @@ onUnmounted(() => {
 
   &__main {
     background-color: #0d1117;
+  }
+
+  &__content {
     padding: 16px;
   }
 }

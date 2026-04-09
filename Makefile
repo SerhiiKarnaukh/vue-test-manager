@@ -20,6 +20,6 @@ node:
 update:
 	rm -rf node_modules
 	rm -f package-lock.json
-	ncu
-	ncu -u
+	ncu -u --reject eslint
+	ncu eslint -u --target semver
 	npm install

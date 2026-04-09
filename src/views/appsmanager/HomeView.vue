@@ -8,7 +8,7 @@
       </h1>
     </div>
   </v-parallax>
-  <v-container>
+  <v-container fluid class="px-sm-6 px-md-8">
     <v-main class="pt-4 pt-md-16">
       <h2 class="text-center">Last Applications</h2>
       <v-row class="py-5" justify="center">

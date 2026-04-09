@@ -85,7 +85,6 @@
     </v-main>
   </v-container>
 </template>
-
 <script>
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'

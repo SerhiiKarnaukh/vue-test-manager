@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid class="px-sm-6 px-md-8">
     <v-main class="pt-16 pt-md-14">
       <v-row class="py-5" justify="center">
         <h2>Search term: "{{ query }}"</h2>

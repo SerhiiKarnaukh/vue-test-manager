@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { error } from '@/utils/error'
+import { resolveJwtLoginUrl } from '@/utils/authJwtEndpoints'
 
 const state = {
   accessToken: localStorage.getItem('access') || null,
@@ -26,16 +27,7 @@ const mutations = {
 
 const actions = {
   login({ commit, dispatch }, credentials) {
-    let url = '/api/v1/token/'
-    const tabernaProfileUrl = '/taberna-profiles/api/v1/token/'
-
-    switch (credentials.login_source) {
-      case 'taberna':
-        url = tabernaProfileUrl
-        break
-      default:
-        break
-    }
+    const url = resolveJwtLoginUrl(credentials)
     return new Promise((resolve, reject) => {
       axios
         .post(url, { ...credentials })

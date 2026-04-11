@@ -144,7 +144,8 @@ async function loginHandler() {
     await store.dispatch('authJWT/login', {
       email: state.email,
       password: state.password,
-      activeApp: 'f1_pitwall'
+      activeApp: 'f1_pitwall',
+      login_source: 'f1_pitwall',
     })
     const me = await store.dispatch('f1Data/sessions/fetchCurrentUser')
     if (!me) {

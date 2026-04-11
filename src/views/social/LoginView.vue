@@ -84,6 +84,7 @@ export default {
           email: state.email,
           password: state.password,
           activeApp: 'social',
+          login_source: 'social',
         }
         try {
           state.loading = true

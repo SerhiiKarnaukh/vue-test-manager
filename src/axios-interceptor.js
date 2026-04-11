@@ -1,5 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
+import { isJwtObtainOrRefreshUrl } from '@/utils/authJwtEndpoints'
 
 axios.interceptors.request.use(
   (config) => {
@@ -24,8 +25,7 @@ axios.interceptors.response.use(
       error.response &&
       error.response.status === 401 &&
       !originalRequest._retry &&
-      originalRequest.url != '/api/v1/token/' &&
-      originalRequest.url != '/api/v1/token/refresh/'
+      !isJwtObtainOrRefreshUrl(originalRequest.url)
     ) {
       originalRequest._retry = true
       const newAccessToken = await store.dispatch('authJWT/refreshToken')

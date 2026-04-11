@@ -40,7 +40,7 @@
                         density="comfortable"
                         :readonly="state.lockAutofill"
                         class="mb-3"
-                        :error-messages="v$.first_name.$errors.map((e) => e.$message)"
+                        :error-messages="first_nameErrors"
                         @focus="unlockAutofill"
                       />
                     </v-col>
@@ -55,7 +55,7 @@
                         density="comfortable"
                         :readonly="state.lockAutofill"
                         class="mb-3"
-                        :error-messages="v$.last_name.$errors.map((e) => e.$message)"
+                        :error-messages="last_nameErrors"
                         @focus="unlockAutofill"
                       />
                     </v-col>
@@ -71,7 +71,7 @@
                     density="comfortable"
                     :readonly="state.lockAutofill"
                     class="mb-3"
-                    :error-messages="v$.username.$errors.map((e) => e.$message)"
+                    :error-messages="usernameErrors"
                     @focus="unlockAutofill"
                   />
 
@@ -86,7 +86,7 @@
                     density="comfortable"
                     :readonly="state.lockAutofill"
                     class="mb-3"
-                    :error-messages="v$.email.$errors.map((e) => e.$message)"
+                    :error-messages="emailErrors"
                     @focus="unlockAutofill"
                   />
 
@@ -102,7 +102,7 @@
                     density="comfortable"
                     :readonly="state.lockAutofill"
                     class="mb-3"
-                    :error-messages="v$.password.$errors.map((e) => e.$message)"
+                    :error-messages="passwordErrors"
                     @click:append-inner="state.showPassword = !state.showPassword"
                     @focus="unlockAutofill"
                   />
@@ -119,7 +119,7 @@
                     density="comfortable"
                     :readonly="state.lockAutofill"
                     class="mb-3"
-                    :error-messages="v$.password2.$errors.map((e) => e.$message)"
+                    :error-messages="password2Errors"
                     @click:append-inner="state.showPassword = !state.showPassword"
                     @focus="unlockAutofill"
                   />
@@ -162,6 +162,7 @@
 
 <script setup>
 import { reactive } from 'vue'
+import { useVuelidateErrorMessages } from '@/composables/useVuelidateErrorMessages'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useVuelidate } from '@vuelidate/core'
@@ -194,6 +195,21 @@ const rules = {
 }
 
 const v$ = useVuelidate(rules, state)
+const {
+  usernameErrors,
+  first_nameErrors,
+  last_nameErrors,
+  emailErrors,
+  passwordErrors,
+  password2Errors,
+} = useVuelidateErrorMessages(v$, [
+  'username',
+  'first_name',
+  'last_name',
+  'email',
+  'password',
+  'password2',
+])
 
 function unlockAutofill() {
   if (state.lockAutofill) {

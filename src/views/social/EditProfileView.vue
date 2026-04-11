@@ -11,28 +11,28 @@
             label="Username"
             prepend-icon="mdi-account-edit"
             placeholder="Create your Username"
-            :error-messages="v$.username.$errors.map((e) => e.$message)"
+            :error-messages="usernameErrors"
           ></v-text-field>
           <v-text-field
             v-model.trim="state.first_name"
             label="First Name"
             prepend-icon="mdi-account-edit"
             placeholder="Enter your First Name"
-            :error-messages="v$.first_name.$errors.map((e) => e.$message)"
+            :error-messages="first_nameErrors"
           ></v-text-field>
           <v-text-field
             v-model.trim="state.last_name"
             label="Last Name"
             prepend-icon="mdi-account-edit"
             placeholder="Enter your Last Name"
-            :error-messages="v$.last_name.$errors.map((e) => e.$message)"
+            :error-messages="last_nameErrors"
           ></v-text-field>
           <v-text-field
             v-model.trim="state.email"
             label="Email"
             prepend-icon="mdi-email-outline"
             placeholder="Enter your Email"
-            :error-messages="v$.email.$errors.map((e) => e.$message)"
+            :error-messages="emailErrors"
           ></v-text-field>
           <v-file-input
             label="Avatar"
@@ -57,6 +57,7 @@
 <script>
 import axios from 'axios'
 import { reactive } from 'vue'
+import { useVuelidateErrorMessages } from '@/composables/useVuelidateErrorMessages'
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, minLength } from '@vuelidate/validators'
 import { useRouter } from 'vue-router'
@@ -81,12 +82,14 @@ export default {
     }
 
     const v$ = useVuelidate(rules, state)
+    const { usernameErrors, first_nameErrors, last_nameErrors, emailErrors } =
+      useVuelidateErrorMessages(v$, ['username', 'first_name', 'last_name', 'email'])
 
     const handleFileChange = (event) => {
       state.avatar = event.target.files[0]
     }
     const submitForm = async () => {
-      const isFormCorrect = await v$._value.$validate()
+      const isFormCorrect = await v$.value.$validate()
       if (isFormCorrect) {
         const formData = new FormData()
         formData.append('username', state.username)
@@ -137,7 +140,16 @@ export default {
       }
     }
 
-    return { state, v$, submitForm, handleFileChange }
+    return {
+      state,
+      v$,
+      submitForm,
+      handleFileChange,
+      usernameErrors,
+      first_nameErrors,
+      last_nameErrors,
+      emailErrors,
+    }
   },
 }
 </script>

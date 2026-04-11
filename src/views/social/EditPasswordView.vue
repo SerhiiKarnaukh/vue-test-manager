@@ -17,7 +17,7 @@
             prepend-icon="mdi-lock"
             :append-inner-icon="state.showPassword ? 'mdi-eye' : 'mdi-eye-off'"
             @click:append-inner="state.showPassword = !state.showPassword"
-            :error-messages="v$.password.$errors.map((e) => e.$message)"
+            :error-messages="passwordErrors"
           ></v-text-field>
           <v-text-field
             v-model.trim="state.password1"
@@ -30,7 +30,7 @@
             prepend-icon="mdi-lock"
             :append-inner-icon="state.showPassword ? 'mdi-eye' : 'mdi-eye-off'"
             @click:append-inner="state.showPassword = !state.showPassword"
-            :error-messages="v$.password1.$errors.map((e) => e.$message)"
+            :error-messages="password1Errors"
           ></v-text-field>
           <v-text-field
             v-model.trim="state.password2"
@@ -43,7 +43,7 @@
             prepend-icon="mdi-lock"
             :append-inner-icon="state.showPassword ? 'mdi-eye' : 'mdi-eye-off'"
             @click:append-inner="state.showPassword = !state.showPassword"
-            :error-messages="v$.password2.$errors.map((e) => e.$message)"
+            :error-messages="password2Errors"
           ></v-text-field>
           <v-divider></v-divider>
           <v-card-actions>
@@ -59,6 +59,7 @@
 </template>
 <script>
 import { reactive } from 'vue'
+import { useVuelidateErrorMessages } from '@/composables/useVuelidateErrorMessages'
 import { useVuelidate } from '@vuelidate/core'
 import { required, minLength } from '@vuelidate/validators'
 import { useStore } from 'vuex'
@@ -77,9 +78,11 @@ export default {
       password2: { required, minLength: minLength(8) },
     }
     const v$ = useVuelidate(rules, state)
+    const { passwordErrors, password1Errors, password2Errors } =
+      useVuelidateErrorMessages(v$, ['password', 'password1', 'password2'])
 
     const editPasswordHandler = async () => {
-      const isFormCorrect = await v$._value.$validate()
+      const isFormCorrect = await v$.value.$validate()
       if (state.password1 !== state.password2) {
         store.dispatch('alert/setMessage', {
           value: ['The password does not match'],
@@ -99,6 +102,9 @@ export default {
       state,
       v$,
       editPasswordHandler,
+      passwordErrors,
+      password1Errors,
+      password2Errors,
     }
   },
 }

@@ -24,14 +24,14 @@
                   v-model.trim="state.first_name"
                   label="First name*"
                   required
-                  :error-messages="v$.first_name.$errors.map((e) => e.$message)"
+                  :error-messages="first_nameErrors"
                 ></v-text-field>
                 <br />
                 <v-text-field
                   v-model.trim="state.last_name"
                   label="Last name*"
                   required
-                  :error-messages="v$.last_name.$errors.map((e) => e.$message)"
+                  :error-messages="last_nameErrors"
                 ></v-text-field>
                 <br />
                 <v-text-field
@@ -39,48 +39,48 @@
                   type="email"
                   label="E-mail*"
                   required
-                  :error-messages="v$.email.$errors.map((e) => e.$message)"
+                  :error-messages="emailErrors"
                 ></v-text-field>
                 <br />
                 <v-text-field
                   v-model.trim="state.phone"
                   label="Phone*"
                   required
-                  :error-messages="v$.phone.$errors.map((e) => e.$message)"
+                  :error-messages="phoneErrors"
                 ></v-text-field>
                 <br />
                 <v-text-field
                   v-model.trim="state.address1"
                   label="Address Line 1*"
                   required
-                  :error-messages="v$.address1.$errors.map((e) => e.$message)"
+                  :error-messages="address1Errors"
                 ></v-text-field>
                 <br />
                 <v-text-field
                   v-model.trim="state.address2"
                   label="Address Line 2"
-                  :error-messages="v$.address2.$errors.map((e) => e.$message)"
+                  :error-messages="address2Errors"
                 ></v-text-field>
                 <br />
                 <v-text-field
                   v-model.trim="state.city"
                   label="City*"
                   required
-                  :error-messages="v$.city.$errors.map((e) => e.$message)"
+                  :error-messages="cityErrors"
                 ></v-text-field>
                 <br />
                 <v-text-field
                   v-model.trim="state.state"
                   label="State*"
                   required
-                  :error-messages="v$.state.$errors.map((e) => e.$message)"
+                  :error-messages="stateErrors"
                 ></v-text-field>
                 <br />
                 <v-text-field
                   v-model.trim="state.country"
                   label="Country*"
                   required
-                  :error-messages="v$.country.$errors.map((e) => e.$message)"
+                  :error-messages="countryErrors"
                 ></v-text-field>
                 <br />
                 <v-textarea
@@ -167,6 +167,7 @@
 <script>
 import { reactive, computed, onMounted, nextTick } from 'vue'
 import { useStore } from 'vuex'
+import { useVuelidateErrorMessages } from '@/composables/useVuelidateErrorMessages'
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, minLength, maxLength } from '@vuelidate/validators'
 
@@ -215,11 +216,32 @@ export default {
       country: { required, minLength: minLength(3), maxLength: maxLength(50) },
     }
     const v$ = useVuelidate(rules, state)
+    const {
+      first_nameErrors,
+      last_nameErrors,
+      emailErrors,
+      phoneErrors,
+      address1Errors,
+      address2Errors,
+      cityErrors,
+      stateErrors,
+      countryErrors,
+    } = useVuelidateErrorMessages(v$, [
+      'first_name',
+      'last_name',
+      'email',
+      'phone',
+      'address1',
+      'address2',
+      'city',
+      'state',
+      'country',
+    ])
 
     const cart = computed(() => store.getters['tabernaCartData/cart'])
 
     const submitForm = async () => {
-      const isFormCorrect = await v$._value.$validate()
+      const isFormCorrect = await v$.value.$validate()
 
       if (!isFormCorrect) return
 
@@ -291,6 +313,15 @@ export default {
       v$,
       cart,
       submitForm,
+      first_nameErrors,
+      last_nameErrors,
+      emailErrors,
+      phoneErrors,
+      address1Errors,
+      address2Errors,
+      cityErrors,
+      stateErrors,
+      countryErrors,
     }
   },
 }

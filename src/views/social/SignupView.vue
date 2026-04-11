@@ -22,7 +22,7 @@
             autocomplete="username"
             prepend-icon="mdi-account-edit"
             placeholder="Create your Username"
-            :error-messages="v$.username.$errors.map((e) => e.$message)"
+            :error-messages="usernameErrors"
           ></v-text-field>
           <v-text-field
             v-model.trim="state.first_name"
@@ -31,7 +31,7 @@
             autocomplete="given-name"
             prepend-icon="mdi-account-edit"
             placeholder="Enter your First Name"
-            :error-messages="v$.first_name.$errors.map((e) => e.$message)"
+            :error-messages="first_nameErrors"
           ></v-text-field>
           <v-text-field
             v-model.trim="state.last_name"
@@ -40,7 +40,7 @@
             autocomplete="family-name"
             prepend-icon="mdi-account-edit"
             placeholder="Enter your Last Name"
-            :error-messages="v$.last_name.$errors.map((e) => e.$message)"
+            :error-messages="last_nameErrors"
           ></v-text-field>
           <v-text-field
             v-model.trim="state.email"
@@ -50,7 +50,7 @@
             autocomplete="email"
             prepend-icon="mdi-email-outline"
             placeholder="Enter your Email"
-            :error-messages="v$.email.$errors.map((e) => e.$message)"
+            :error-messages="emailErrors"
           ></v-text-field>
           <v-text-field
             v-model.trim="state.password"
@@ -63,7 +63,7 @@
             prepend-icon="mdi-lock"
             :append-inner-icon="state.showPassword ? 'mdi-eye' : 'mdi-eye-off'"
             @click:append-inner="state.showPassword = !state.showPassword"
-            :error-messages="v$.password.$errors.map((e) => e.$message)"
+            :error-messages="passwordErrors"
           ></v-text-field>
           <v-text-field
             v-model.trim="state.password2"
@@ -76,7 +76,7 @@
             prepend-icon="mdi-lock"
             :append-inner-icon="state.showPassword ? 'mdi-eye' : 'mdi-eye-off'"
             @click:append-inner="state.showPassword = !state.showPassword"
-            :error-messages="v$.password2.$errors.map((e) => e.$message)"
+            :error-messages="password2Errors"
           ></v-text-field>
           <v-divider></v-divider>
           <v-card-actions>
@@ -93,6 +93,7 @@
 </template>
 <script>
 import { reactive } from 'vue'
+import { useVuelidateErrorMessages } from '@/composables/useVuelidateErrorMessages'
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, minLength, maxLength } from '@vuelidate/validators'
 import router from '@/router'
@@ -136,9 +137,24 @@ export default {
     }
 
     const v$ = useVuelidate(rules, state)
+    const {
+      usernameErrors,
+      first_nameErrors,
+      last_nameErrors,
+      emailErrors,
+      passwordErrors,
+      password2Errors,
+    } = useVuelidateErrorMessages(v$, [
+      'username',
+      'first_name',
+      'last_name',
+      'email',
+      'password',
+      'password2',
+    ])
 
     const registerHandler = async () => {
-      const isFormCorrect = await v$._value.$validate()
+      const isFormCorrect = await v$.value.$validate()
       if (isFormCorrect) {
         if (state.password !== state.password2) {
           store.dispatch('alert/setMessage', {
@@ -168,7 +184,17 @@ export default {
       }
     }
 
-    return { state, v$, registerHandler }
+    return {
+      state,
+      v$,
+      registerHandler,
+      usernameErrors,
+      first_nameErrors,
+      last_nameErrors,
+      emailErrors,
+      passwordErrors,
+      password2Errors,
+    }
   },
 }
 </script>

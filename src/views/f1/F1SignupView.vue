@@ -27,14 +27,14 @@
               </v-card-title>
 
               <v-card-text class="pt-4">
-                <v-form autocomplete="off" @submit.prevent="registerHandler">
+                <v-form @submit.prevent="registerHandler">
                   <v-row>
                     <v-col cols="12" sm="6">
                       <v-text-field
                         v-model.trim="state.first_name"
                         label="First Name"
                         name="f1_signup_first_name"
-                        autocomplete="off"
+                        autocomplete="given-name"
                         prepend-inner-icon="mdi-account-outline"
                         variant="outlined"
                         density="comfortable"
@@ -49,7 +49,7 @@
                         v-model.trim="state.last_name"
                         label="Last Name"
                         name="f1_signup_last_name"
-                        autocomplete="off"
+                        autocomplete="family-name"
                         prepend-inner-icon="mdi-account-outline"
                         variant="outlined"
                         density="comfortable"
@@ -65,7 +65,7 @@
                     v-model.trim="state.username"
                     label="Username"
                     name="f1_signup_username"
-                    autocomplete="off"
+                    autocomplete="username"
                     prepend-inner-icon="mdi-at"
                     variant="outlined"
                     density="comfortable"
@@ -80,7 +80,7 @@
                     label="Email"
                     type="email"
                     name="f1_signup_email"
-                    autocomplete="off"
+                    autocomplete="email"
                     prepend-inner-icon="mdi-email-outline"
                     variant="outlined"
                     density="comfortable"
@@ -95,7 +95,7 @@
                     :type="state.showPassword ? 'text' : 'password'"
                     label="Password"
                     name="f1_signup_password"
-                    autocomplete="off"
+                    autocomplete="new-password"
                     prepend-inner-icon="mdi-lock-outline"
                     :append-inner-icon="state.showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                     variant="outlined"
@@ -112,7 +112,7 @@
                     :type="state.showPassword ? 'text' : 'password'"
                     label="Confirm Password"
                     name="f1_signup_password2"
-                    autocomplete="off"
+                    autocomplete="new-password"
                     prepend-inner-icon="mdi-lock-check-outline"
                     :append-inner-icon="state.showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                     variant="outlined"

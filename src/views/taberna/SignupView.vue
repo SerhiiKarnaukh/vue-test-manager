@@ -17,6 +17,8 @@
           <v-text-field
             v-model.trim="state.username"
             label="Username"
+            name="taberna_signup_username"
+            autocomplete="username"
             prepend-icon="mdi-account-edit"
             placeholder="Create your Username"
             :error-messages="v$.username.$errors.map((e) => e.$message)"
@@ -24,6 +26,8 @@
           <v-text-field
             v-model.trim="state.first_name"
             label="First Name"
+            name="taberna_signup_given_name"
+            autocomplete="given-name"
             prepend-icon="mdi-account-edit"
             placeholder="Enter your First Name"
             :error-messages="v$.first_name.$errors.map((e) => e.$message)"
@@ -31,6 +35,8 @@
           <v-text-field
             v-model.trim="state.last_name"
             label="Last Name"
+            name="taberna_signup_family_name"
+            autocomplete="family-name"
             prepend-icon="mdi-account-edit"
             placeholder="Enter your Last Name"
             :error-messages="v$.last_name.$errors.map((e) => e.$message)"
@@ -38,6 +44,9 @@
           <v-text-field
             v-model.trim="state.email"
             label="Email"
+            type="email"
+            name="taberna_signup_email"
+            autocomplete="email"
             prepend-icon="mdi-email-outline"
             placeholder="Enter your Email"
             :error-messages="v$.email.$errors.map((e) => e.$message)"
@@ -45,6 +54,8 @@
           <v-text-field
             v-model.trim="state.password"
             :type="state.showPassword ? 'text' : 'password'"
+            name="taberna_signup_password"
+            autocomplete="new-password"
             clearable
             label="Password"
             placeholder="Enter your password"
@@ -56,6 +67,8 @@
           <v-text-field
             v-model.trim="state.password2"
             :type="state.showPassword ? 'text' : 'password'"
+            name="taberna_signup_password_confirm"
+            autocomplete="new-password"
             clearable
             label="Repeat password"
             placeholder="Repeat your password"

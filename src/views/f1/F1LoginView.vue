@@ -27,13 +27,13 @@
               </v-card-title>
 
               <v-card-text class="pt-4">
-                <v-form autocomplete="off" @submit.prevent="loginHandler">
+                <v-form @submit.prevent="loginHandler">
                   <v-text-field
                     v-model.trim="state.email"
                     label="Email"
                     type="email"
                     name="f1_login_email"
-                    autocomplete="off"
+                    autocomplete="username"
                     prepend-inner-icon="mdi-email-outline"
                     variant="outlined"
                     density="comfortable"
@@ -48,7 +48,7 @@
                     :type="state.showPassword ? 'text' : 'password'"
                     label="Password"
                     name="f1_login_password"
-                    autocomplete="off"
+                    autocomplete="current-password"
                     prepend-inner-icon="mdi-lock-outline"
                     :append-inner-icon="state.showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                     variant="outlined"

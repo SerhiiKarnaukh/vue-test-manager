@@ -17,6 +17,9 @@
           <v-text-field
             v-model.trim="state.email"
             label="Email"
+            type="email"
+            name="social_login_email"
+            autocomplete="username"
             prepend-icon="mdi-email-outline"
             placeholder="Enter your Email"
             :error-messages="v$.email.$errors.map((e) => e.$message)"
@@ -24,6 +27,8 @@
           <v-text-field
             v-model.trim="state.password"
             :type="state.showPassword ? 'text' : 'password'"
+            name="social_login_password"
+            autocomplete="current-password"
             clearable
             label="Password"
             placeholder="Enter your password"

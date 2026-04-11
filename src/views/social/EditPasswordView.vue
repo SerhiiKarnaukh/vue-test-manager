@@ -9,6 +9,8 @@
           <v-text-field
             v-model.trim="state.password"
             :type="state.showPassword ? 'text' : 'password'"
+            name="social_edit_password_current"
+            autocomplete="current-password"
             clearable
             label="Your old password"
             placeholder="Your old password"
@@ -20,6 +22,8 @@
           <v-text-field
             v-model.trim="state.password1"
             :type="state.showPassword ? 'text' : 'password'"
+            name="social_edit_password_new"
+            autocomplete="new-password"
             clearable
             label="Your new password"
             placeholder="Your new password"
@@ -31,6 +35,8 @@
           <v-text-field
             v-model.trim="state.password2"
             :type="state.showPassword ? 'text' : 'password'"
+            name="social_edit_password_confirm"
+            autocomplete="new-password"
             clearable
             label="Repeat password"
             placeholder="Repeat password"

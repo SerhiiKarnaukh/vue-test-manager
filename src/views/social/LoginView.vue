@@ -22,7 +22,7 @@
             autocomplete="username"
             prepend-icon="mdi-email-outline"
             placeholder="Enter your Email"
-            :error-messages="v$.email.$errors.map((e) => e.$message)"
+            :error-messages="emailErrors"
           ></v-text-field>
           <v-text-field
             v-model.trim="state.password"
@@ -35,7 +35,7 @@
             prepend-icon="mdi-lock"
             :append-inner-icon="state.showPassword ? 'mdi-eye' : 'mdi-eye-off'"
             @click:append-inner="state.showPassword = !state.showPassword"
-            :error-messages="v$.password.$errors.map((e) => e.$message)"
+            :error-messages="passwordErrors"
           ></v-text-field>
           <v-divider></v-divider>
           <v-card-actions>
@@ -51,7 +51,7 @@
   </v-main>
 </template>
 <script>
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, minLength } from '@vuelidate/validators'
 import router from '@/router'
@@ -82,8 +82,15 @@ export default {
 
     const v$ = useVuelidate(rules, state)
 
+    const emailErrors = computed(() =>
+      v$.value.email.$errors.map((e) => e.$message)
+    )
+    const passwordErrors = computed(() =>
+      v$.value.password.$errors.map((e) => e.$message)
+    )
+
     const loginHandler = async () => {
-      const isFormCorrect = await v$._value.$validate()
+      const isFormCorrect = await v$.value.$validate()
       if (isFormCorrect) {
         const formData = {
           email: state.email,
@@ -109,7 +116,7 @@ export default {
       }
     }
 
-    return { state, v$, loginHandler }
+    return { state, v$, emailErrors, passwordErrors, loginHandler }
   },
 }
 </script>

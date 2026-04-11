@@ -39,7 +39,7 @@
                     density="comfortable"
                     :readonly="state.lockAutofill"
                     class="mb-3"
-                    :error-messages="v$.email.$errors.map((e) => e.$message)"
+                    :error-messages="emailErrors"
                     @focus="unlockAutofill"
                   />
 
@@ -55,7 +55,7 @@
                     density="comfortable"
                     :readonly="state.lockAutofill"
                     class="mb-3"
-                    :error-messages="v$.password.$errors.map((e) => e.$message)"
+                    :error-messages="passwordErrors"
                     @click:append-inner="state.showPassword = !state.showPassword"
                     @focus="unlockAutofill"
                   />
@@ -97,7 +97,7 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import { useVuelidate } from '@vuelidate/core'
@@ -121,6 +121,13 @@ const rules = {
 }
 
 const v$ = useVuelidate(rules, state)
+
+const emailErrors = computed(() =>
+  v$.value.email.$errors.map((e) => e.$message)
+)
+const passwordErrors = computed(() =>
+  v$.value.password.$errors.map((e) => e.$message)
+)
 
 function unlockAutofill() {
   if (state.lockAutofill) {

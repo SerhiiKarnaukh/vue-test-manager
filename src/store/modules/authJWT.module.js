@@ -54,7 +54,7 @@ const actions = {
           )
           localStorage.removeItem('access')
           localStorage.removeItem('refresh')
-          reject(error)
+          reject(e)
         })
     })
   },

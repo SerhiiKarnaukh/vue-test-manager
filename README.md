@@ -10,6 +10,7 @@ A frontend application that displays a collection of projects built with Vue.js.
 
 - [Overview](#overview)
 - [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
 - [Sub-Applications](#sub-applications)
 - [Project Structure](#project-structure)
 - [Prerequisites](#prerequisites)
@@ -47,6 +48,86 @@ For data fetching, the application utilizes **Axios** to retrieve project detail
 | Firebase    | Hosting                          |
 | Docker      | Containerized development        |
 | GitHub Actions | CI/CD pipeline                |
+
+---
+
+## Architecture
+
+```mermaid
+flowchart TB
+  subgraph clients [Clients]
+    Browser[Browser]
+  end
+
+  subgraph delivery [Delivery]
+    Vite[Vite dev server :5173]
+    Firebase[Firebase Hosting static]
+  end
+
+  subgraph spa [Vue 3 single-page app]
+    Entry["main.js"]
+    App["App.vue + dynamic layout"]
+    Router["Vue Router"]
+    Store["Vuex + Pinia"]
+    Plugins["Vuetify + web fonts"]
+    Entry --> App
+    App --> Router
+    App --> Plugins
+    Router --> Store
+  end
+
+  subgraph features [Feature areas by route prefix]
+    AM[Apps Manager /]
+    TB[Taberna /taberna]
+    SN[Social /social]
+    AI[AI Lab /ai-lab]
+    H3[Hyper 3D /hyper3d]
+  end
+
+  subgraph transport [Data layer]
+    Axios["Axios + interceptors"]
+  end
+
+  subgraph backend [Backend and integrations]
+    API["Django REST API on AWS"]
+    WS["WebSockets social chat and notifications"]
+    Stripe["Stripe Taberna checkout"]
+    OpenAI["OpenAI Realtime AI Lab"]
+  end
+
+  Browser --> Vite
+  Browser --> Firebase
+  Vite --> Entry
+  Firebase --> Entry
+  Router --> features
+  Store --> Axios
+  Axios --> API
+  SN --> WS
+  AI --> WS
+  AI --> OpenAI
+  TB --> Stripe
+```
+
+| Layer | Role |
+| ----- | ---- |
+| **Entry** (`main.js`) | Creates the Vue app, registers Router, Vuex, Vuetify, Pinia; sets `axios.defaults.baseURL` from `VITE_REMOTE_HOST`; loads global Axios interceptors. |
+| **Shell** (`App.vue`) | Chooses the layout component from `route.meta.layout` (`mainAppsManager`, `mainTaberna`, `mainSocial`, `mainAILab`, `mainHyper3d`) so each sub-app keeps its own chrome. |
+| **Router** (`src/router/index.js`) | Declares all routes and lazy-loaded views; `beforeEach` enforces JWT where `meta.authJWT` is true (Taberna checkout/dashboard, Social protected pages). |
+| **State** (`src/store/`) | Root store for loading, alerts, and auth; namespaced modules for Taberna cart/products, Social posts/profiles/chat/notifications, and AI Lab chat. |
+| **UI** (`src/components/`, `src/plugins/vuetify.js`) | Vuetify Material components; **Vuelidate** on auth and checkout forms; shared pieces under `components/ui/`. |
+| **HTTP** (`axios`, `src/axios-interceptor.js`) | JSON and multipart requests to the Django API; Taberna and Social use path prefixes such as `/taberna-store/`, `/api/social-posts/`, etc. |
+| **Build** (`vite.config.mjs`) | Vue SFC compilation, `@` alias to `src/`, Vuetify auto-import plugin. |
+| **CI/CD** (`.github/workflows/`) | `npm ci` + `npm run build` with secrets, then deploy the `dist/` folder to Firebase Hosting. |
+
+**Routing at a glance**
+
+- `/` — Apps Manager home; `/apps_manager/search` — catalog search.
+- `/taberna`, `/taberna-store/...`, `/taberna/cart`, checkout and account routes — e-commerce.
+- `/social/...` — social feed, profiles, chat, notifications.
+- `/ai-lab/...` — AI chat, image and voice generators, realtime chat.
+- `/hyper3d/...` — Three.js demos.
+
+---
 
 ## Sub-Applications
 

@@ -1,8 +1,9 @@
 import { WS_RECONNECT_DELAY, WS_MAX_RETRIES } from '@/constants/f1'
+import { createManagedWebSocket } from '@/composables/f1/useWebSocket'
 
-// Module-level WS instances (not in reactive state to avoid proxy overhead)
-let telemetrySocket = null
-let raceControlSocket = null
+// Module-level clients (not in reactive state to avoid proxy overhead)
+let telemetryClient = null
+let raceControlClient = null
 let telemetryReconnectTimer = null
 let raceControlReconnectTimer = null
 let dataRateCounter = 0
@@ -89,62 +90,62 @@ export default {
       const url = `${getWsBaseUrl()}/ws/f1/telemetry/${sessionKey}/?token=${token}`
       commit('SET_TELEMETRY_STATUS', 'connecting')
 
-      const ws = new WebSocket(url)
-      telemetrySocket = ws
-
-      ws.onopen = () => {
-        commit('SET_TELEMETRY_STATUS', 'connected')
-        commit('SET_RECONNECT_ATTEMPTS', 0)
-        telemetryParseFailureStreak = 0
-        telemetryDisabledDueToParseErrors = false
-        startDataRateTracking(commit)
-      }
-
-      ws.onmessage = (event) => {
-        if (telemetryDisabledDueToParseErrors) return
-        let message
-        try {
-          message = parseTelemetryMessage(event.data)
-        } catch (err) {
-          logTelemetryParseError(err, 'parse')
-          telemetryParseFailureStreak += 1
-          if (telemetryParseFailureStreak >= 3) {
-            telemetryDisabledDueToParseErrors = true
-            dispatch('disconnectTelemetry')
-            commit('SET_TELEMETRY_STATUS', 'error')
+      telemetryClient = createManagedWebSocket({
+        autoReconnect: false,
+        buildUrl: () => url,
+        debugLabel: 'telemetry',
+        onOpen: () => {
+          commit('SET_TELEMETRY_STATUS', 'connected')
+          commit('SET_RECONNECT_ATTEMPTS', 0)
+          telemetryParseFailureStreak = 0
+          telemetryDisabledDueToParseErrors = false
+          startDataRateTracking(commit)
+        },
+        onMessage: (event) => {
+          if (telemetryDisabledDueToParseErrors) return
+          let message
+          try {
+            message = parseTelemetryMessage(event.data)
+          } catch (err) {
+            logTelemetryParseError(err, 'parse')
+            telemetryParseFailureStreak += 1
+            if (telemetryParseFailureStreak >= 3) {
+              telemetryDisabledDueToParseErrors = true
+              dispatch('disconnectTelemetry')
+              commit('SET_TELEMETRY_STATUS', 'error')
+            }
+            return
           }
-          return
+          if (!message) return
+          telemetryParseFailureStreak = 0
+          try {
+            commit('SET_LAST_MESSAGE_TIMESTAMP', new Date().toISOString())
+            dataRateCounter++
+
+            if (message.type === 'telemetry' || message.type === 'replay') {
+              dispatch('f1Data/telemetry/processIncomingData', message, { root: true })
+            }
+          } catch (err) {
+            logTelemetryParseError(err, 'handle')
+            telemetryParseFailureStreak += 1
+            if (telemetryParseFailureStreak >= 3) {
+              telemetryDisabledDueToParseErrors = true
+              dispatch('disconnectTelemetry')
+              commit('SET_TELEMETRY_STATUS', 'error')
+            }
+          }
+        },
+        onClose: () => {
+          commit('SET_TELEMETRY_STATUS', 'disconnected')
+          telemetryClient = null
+          stopDataRateTracking(commit)
+          dispatch('handleReconnect', { channel: 'telemetry', sessionKey })
+        },
+        onError: () => {
+          commit('SET_TELEMETRY_STATUS', 'error')
         }
-        if (!message) return
-        telemetryParseFailureStreak = 0
-        try {
-          commit('SET_LAST_MESSAGE_TIMESTAMP', new Date().toISOString())
-          dataRateCounter++
-
-          if (message.type === 'telemetry' || message.type === 'replay') {
-            dispatch('f1Data/telemetry/processIncomingData', message, { root: true })
-          }
-        } catch (err) {
-          logTelemetryParseError(err, 'handle')
-          telemetryParseFailureStreak += 1
-          if (telemetryParseFailureStreak >= 3) {
-            telemetryDisabledDueToParseErrors = true
-            dispatch('disconnectTelemetry')
-            commit('SET_TELEMETRY_STATUS', 'error')
-          }
-        }
-      }
-
-      ws.onclose = () => {
-        commit('SET_TELEMETRY_STATUS', 'disconnected')
-        telemetrySocket = null
-        stopDataRateTracking(commit)
-        dispatch('handleReconnect', { channel: 'telemetry', sessionKey })
-      }
-
-      ws.onerror = () => {
-        commit('SET_TELEMETRY_STATUS', 'error')
-      }
+      })
+      telemetryClient.connect()
     },
 
     disconnectTelemetry({ commit }) {
@@ -152,10 +153,9 @@ export default {
       telemetryReconnectTimer = null
       stopDataRateTracking(commit)
 
-      if (telemetrySocket) {
-        telemetrySocket.onclose = null
-        telemetrySocket.close()
-        telemetrySocket = null
+      if (telemetryClient) {
+        telemetryClient.disconnect()
+        telemetryClient = null
       }
       commit('SET_TELEMETRY_STATUS', 'disconnected')
     },
@@ -177,51 +177,48 @@ export default {
       const url = `${getWsBaseUrl()}/ws/f1/race-control/?token=${token}`
       commit('SET_RACE_CONTROL_STATUS', 'connecting')
 
-      const ws = new WebSocket(url)
-      raceControlSocket = ws
-
-      ws.onopen = () => {
-        commit('SET_RACE_CONTROL_STATUS', 'connected')
-        commit('f1Data/raceControl/SET_CONNECTED', true, { root: true })
-      }
-
-      ws.onmessage = (event) => {
-        try {
-          const message = JSON.parse(event.data)
-          dispatch('f1Data/raceControl/processIncomingMessage', message, { root: true })
-        } catch (err) {
-          console.error('[F1 WS] Failed to parse race control message:', err)
+      raceControlClient = createManagedWebSocket({
+        autoReconnect: false,
+        buildUrl: () => url,
+        debugLabel: 'race-control',
+        onOpen: () => {
+          commit('SET_RACE_CONTROL_STATUS', 'connected')
+          commit('f1Data/raceControl/SET_CONNECTED', true, { root: true })
+        },
+        onMessage: (event) => {
+          try {
+            const message = JSON.parse(event.data)
+            dispatch('f1Data/raceControl/processIncomingMessage', message, { root: true })
+          } catch (err) {
+            console.error('[F1 WS] Failed to parse race control message:', err)
+          }
+        },
+        onClose: () => {
+          commit('SET_RACE_CONTROL_STATUS', 'disconnected')
+          raceControlClient = null
+          commit('f1Data/raceControl/SET_CONNECTED', false, { root: true })
+          dispatch('handleReconnect', { channel: 'raceControl' })
+        },
+        onError: () => {
+          commit('SET_RACE_CONTROL_STATUS', 'error')
         }
-      }
-
-      ws.onclose = () => {
-        commit('SET_RACE_CONTROL_STATUS', 'disconnected')
-        raceControlSocket = null
-        commit('f1Data/raceControl/SET_CONNECTED', false, { root: true })
-        dispatch('handleReconnect', { channel: 'raceControl' })
-      }
-
-      ws.onerror = () => {
-        commit('SET_RACE_CONTROL_STATUS', 'error')
-      }
+      })
+      raceControlClient.connect()
     },
 
     disconnectRaceControl({ commit }) {
       clearTimeout(raceControlReconnectTimer)
       raceControlReconnectTimer = null
 
-      if (raceControlSocket) {
-        raceControlSocket.onclose = null
-        raceControlSocket.close()
-        raceControlSocket = null
+      if (raceControlClient) {
+        raceControlClient.disconnect()
+        raceControlClient = null
       }
       commit('SET_RACE_CONTROL_STATUS', 'disconnected')
     },
 
     sendTelemetryCommand(_, payload) {
-      if (telemetrySocket && telemetrySocket.readyState === WebSocket.OPEN) {
-        telemetrySocket.send(JSON.stringify(payload))
-      }
+      telemetryClient?.send(payload)
     },
 
     async handleReconnect({ state, commit, dispatch, rootGetters }, { channel, sessionKey }) {

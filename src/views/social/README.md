@@ -2,7 +2,7 @@
 
 A responsive single-page social media application that allows users to create profiles, publish posts with images, follow other users, and engage in real-time WebSocket-based chat. The user interface is modern, clean, and intuitive, with Vuetify providing a consistent look and feel across all pages. Custom CSS adds additional styling and interactivity.
 
-### Live Demo on Firebase: <https://karnaukh-vue-test.web.app/social/home>
+### Live Demo on Firebase: <https://app.karnaukh-webdev.com/social/home>
 
 ![Social Network screenshot](https://github.com/SerhiiKarnaukh/vue-test-manager/blob/main/src/views/social/social_network_main.jpg)
 

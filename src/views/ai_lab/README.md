@@ -2,7 +2,7 @@
 
 A modern single-page application built with Vue.js 3 and Vuetify 3, offering users an intuitive interface to interact with advanced AI features including text chat, image generation, voice synthesis, and multimodal input processing. Designed with responsiveness and clarity in mind, the application serves as a user-friendly control center for exploring the capabilities of GPT-4o.
 
-### Live Demo on Firebase: <https://karnaukh-vue-test.web.app/ai-lab>
+### Live Demo on Firebase: <https://app.karnaukh-webdev.com/ai-lab>
 
 ![AI Lab screenshot](https://github.com/SerhiiKarnaukh/vue-test-manager/blob/main/src/views/ai_lab/ai_lab_main.jpg)
 

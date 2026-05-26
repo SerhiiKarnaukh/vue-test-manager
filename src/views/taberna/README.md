@@ -2,7 +2,7 @@
 
 A fully functional e-Commerce application frontend built using Vue.js, Vuex, Vue Router, Axios, Vuetify, and Vuelidate. The frontend includes a navigation menu, product pages, cart, checkout with Stripe payment integration, and user account pages. The application is designed to be responsive and user-friendly, with a modern and intuitive user interface.
 
-### Live Demo on Firebase: <https://karnaukh-vue-test.web.app/taberna>
+### Live Demo on Firebase: <https://app.karnaukh-webdev.com/taberna>
 
 ![Taberna eCommerce screenshot](https://github.com/SerhiiKarnaukh/vue-test-manager/blob/main/src/views/taberna/taberna_vue.jpg)
 

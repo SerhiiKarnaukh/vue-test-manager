@@ -2,7 +2,7 @@
 
 A frontend application that displays a collection of projects built with Vue.js. The application provides an intuitive interface where users can browse through a list of projects, each represented as a card with an image, a short description, and buttons to either visit the live application or view more details about it.
 
-### Live Demo on Firebase: <https://karnaukh-vue-test.web.app>
+### Live Demo on Firebase: <https://app.karnaukh-webdev.com>
 
 ![VAM screenshot](https://github.com/SerhiiKarnaukh/vue-test-manager/blob/main/vue_manager.jpg)
 
@@ -146,7 +146,7 @@ The main landing page that displays a collection of Vue.js projects as cards wit
 A full-featured e-commerce application with product catalog, shopping cart, and Stripe checkout integration.
 
 - **Route:** `/taberna`
-- **Live Demo:** <https://karnaukh-vue-test.web.app/taberna>
+- **Live Demo:** <https://app.karnaukh-webdev.com/taberna>
 - **Layout:** `MainTabernaLayout`
 - **Features:** Product browsing, category filtering, cart, checkout, JWT authentication, user dashboard
 - **Store Modules:** `tabernaCartData`, `tabernaProductData`, `tabernaProfileData`
@@ -159,7 +159,7 @@ A full-featured e-commerce application with product catalog, shopping cart, and 
 A social networking platform with posts, profiles, real-time chat, friend management, and notifications.
 
 - **Route:** `/social/home`
-- **Live Demo:** <https://karnaukh-vue-test.web.app/social/home>
+- **Live Demo:** <https://app.karnaukh-webdev.com/social/home>
 - **Layout:** `MainSocialLayout`
 - **Features:** Posts feed, user profiles, friends, chat, notifications, trends, search, JWT authentication
 - **Store Modules:** `socialPostData`, `socialProfileData`, `socialChatData`, `socialNotificationData`
@@ -172,7 +172,7 @@ A social networking platform with posts, profiles, real-time chat, friend manage
 An AI-powered laboratory with image generation, voice generation, and real-time chat capabilities.
 
 - **Route:** `/ai-lab`
-- **Live Demo:** <https://karnaukh-vue-test.web.app/ai-lab>
+- **Live Demo:** <https://app.karnaukh-webdev.com/ai-lab>
 - **Layout:** `MainAILabLayout`
 - **Features:** Image generator, voice generator, real-time chat
 - **Store Modules:** `aiLabChatData`

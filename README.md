@@ -40,11 +40,11 @@ For data fetching, the application utilizes **Axios** to retrieve project detail
 | Vuetify 3   | Material Design UI components    |
 | Axios       | HTTP client for API requests     |
 | Vite        | Build tool and dev server        |
-| GSAP        | Animation library                |
-| Three.js    | 3D rendering                     |
 | Vuelidate   | Form validation                  |
 | CryptoJS    | Client-side encryption           |
 | Sass        | CSS preprocessor                 |
+| Vitest      | Unit tests                       |
+| @vitest/coverage-v8 | Code coverage reports    |
 | Firebase    | Hosting                          |
 | Docker      | Containerized development        |
 | GitHub Actions | CI/CD pipeline                |
@@ -81,7 +81,6 @@ flowchart TB
     TB[Taberna /taberna]
     SN[Social /social]
     AI[AI Lab /ai-lab]
-    H3[Hyper 3D /hyper3d]
   end
 
   subgraph transport [Data layer]
@@ -111,7 +110,7 @@ flowchart TB
 | Layer | Role |
 | ----- | ---- |
 | **Entry** (`main.js`) | Creates the Vue app, registers Router, Vuex, Vuetify, Pinia; sets `axios.defaults.baseURL` from `VITE_REMOTE_HOST`; loads global Axios interceptors. |
-| **Shell** (`App.vue`) | Chooses the layout component from `route.meta.layout` (`mainAppsManager`, `mainTaberna`, `mainSocial`, `mainAILab`, `mainHyper3d`) so each sub-app keeps its own chrome. |
+| **Shell** (`App.vue`) | Chooses the layout component from `route.meta.layout` (`mainAppsManager`, `mainTaberna`, `mainSocial`, `mainAILab`) so each sub-app keeps its own chrome. |
 | **Router** (`src/router/index.js`) | Declares all routes and lazy-loaded views; `beforeEach` enforces JWT where `meta.authJWT` is true (Taberna checkout/dashboard, Social protected pages). |
 | **State** (`src/store/`) | Root store for loading, alerts, and auth; namespaced modules for Taberna cart/products, Social posts/profiles/chat/notifications, and AI Lab chat. |
 | **UI** (`src/components/`, `src/plugins/vuetify.js`) | Vuetify Material components; **Vuelidate** on auth and checkout forms; shared pieces under `components/ui/`. |
@@ -125,7 +124,6 @@ flowchart TB
 - `/taberna`, `/taberna-store/...`, `/taberna/cart`, checkout and account routes — e-commerce.
 - `/social/...` — social feed, profiles, chat, notifications.
 - `/ai-lab/...` — AI chat, image and voice generators, realtime chat.
-- `/hyper3d/...` — Three.js demos.
 
 ---
 
@@ -180,14 +178,6 @@ An AI-powered laboratory with image generation, voice generation, and real-time 
 
 ![AI Lab screenshot](https://github.com/SerhiiKarnaukh/vue-test-manager/blob/main/src/views/ai_lab/ai_lab_main.jpg)
 
-### 5. Hyper 3D
-
-A 3D visualization module powered by Three.js with model loading and animation capabilities.
-
-- **Route:** `/hyper3d`
-- **Layout:** `MainHyper3dLayout`
-- **Features:** 3D model viewer, animations, local model loading
-
 ## Project Structure
 
 ```
@@ -201,14 +191,12 @@ src/
 │   ├── appsmanager/            # Apps Manager components
 │   ├── taberna/                # Taberna eCommerce components
 │   ├── social/                 # Social Network components
-│   ├── ai_lab/                 # AI Lab components
-│   └── hyper3d/                # Hyper 3D components
+│   └── ai_lab/                 # AI Lab components
 ├── layouts/                    # Layout wrappers per sub-application
 │   ├── appsmanager/
 │   ├── taberna/
 │   ├── social/
-│   ├── ai_lab/
-│   └── hyper3d/
+│   └── ai_lab/
 ├── plugins/                    # Vue plugins configuration
 │   ├── vuetify.js              # Vuetify setup
 │   └── webfontloader.js        # Web font loading
@@ -231,8 +219,7 @@ src/
     ├── appsmanager/
     ├── taberna/
     ├── social/
-    ├── ai_lab/
-    └── hyper3d/
+    └── ai_lab/
 ```
 
 ## Prerequisites
@@ -321,6 +308,9 @@ The workflow configuration is located at `.github/workflows/firebase-hosting-mer
 | `npm run build`  | Build for production                     |
 | `npm run serve`  | Preview the production build locally     |
 | `npm run lint`   | Lint and auto-fix source files           |
+| `npm run test`   | Run tests in watch mode (Vitest)         |
+| `npm run test:run` | Run tests once                         |
+| `npm run test:coverage` | Run tests with coverage report (CI) |
 
 ## Backend
 

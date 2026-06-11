@@ -4,6 +4,7 @@
 
 node_modules
 /dist
+/coverage
 /temp
 todo.txt
 

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import store from '@/store'
+import { applyLegacyGuardCompat, resolveAuthRedirect } from './guards'
 
 const routes = [
   //Vue Applications Manager
@@ -264,31 +265,6 @@ const routes = [
       layout: 'mainAILab',
     },
   },
-  //Hyper 3D
-  {
-    path: '/hyper3d',
-    name: 'homeHyper3d',
-    component: () => import('@/views/hyper3d/HomeView.vue'),
-    meta: {
-      layout: 'mainHyper3d',
-    },
-  },
-  {
-    path: '/hyper3d/animate',
-    name: 'animateHyper3d',
-    component: () => import('@/views/hyper3d/AnimateView.vue'),
-    meta: {
-      layout: 'mainHyper3d',
-    },
-  },
-  {
-    path: '/hyper3d/local-model',
-    name: 'localModelHyper3d',
-    component: () => import('@/views/hyper3d/LocalModelView.vue'),
-    meta: {
-      layout: 'mainHyper3d',
-    },
-  },
 ]
 
 const router = createRouter({
@@ -300,70 +276,8 @@ const router = createRouter({
 // Vuetify and related plugins stop registering legacy navigation guards with `next`.
 applyLegacyGuardCompat(router)
 
-function getLoginRoute(path) {
-  if (path.startsWith('/taberna'))
-    return `/taberna/login?redirect=${encodeURIComponent(path)}&message=auth`
-
-  if (path.startsWith('/social')) return '/social/login?message=auth'
-
-  return '/'
-}
-
-router.beforeEach((to) => {
-  const requireAuthJWT = to.meta.authJWT
-  const isAuthenticated = store.getters['authJWT/isAuthenticated']
-
-  if (requireAuthJWT && !isAuthenticated) {
-    return getLoginRoute(to.fullPath)
-  }
-
-  return true
-})
+router.beforeEach((to) =>
+  resolveAuthRedirect(to, store.getters['authJWT/isAuthenticated'])
+)
 
 export default router
-
-function applyLegacyGuardCompat(routerInstance) {
-  const methods = ['beforeEach', 'beforeResolve']
-
-  methods.forEach((method) => {
-    if (typeof routerInstance[method] !== 'function') return
-
-    const original = routerInstance[method].bind(routerInstance)
-    routerInstance[method] = (...args) => {
-      const maybeGuard = args[0]
-      if (typeof maybeGuard === 'function' && maybeGuard.length > 2) {
-        const adaptedGuard = adaptLegacyGuard(maybeGuard)
-        return original(adaptedGuard, ...args.slice(1))
-      }
-
-      return original(...args)
-    }
-  })
-}
-
-function adaptLegacyGuard(legacyGuard) {
-  return (to, from) =>
-    new Promise((resolve, reject) => {
-      let isResolved = false
-      const resolveOnce = (value) => {
-        if (isResolved) return
-        isResolved = true
-        resolve(value)
-      }
-
-      try {
-        const result = legacyGuard(to, from, resolveOnce)
-
-        if (result && typeof result.then === 'function') {
-          result.then(resolveOnce).catch(reject)
-          return
-        }
-
-        if (result !== undefined) {
-          resolveOnce(result)
-        }
-      } catch (error) {
-        reject(error)
-      }
-    })
-}

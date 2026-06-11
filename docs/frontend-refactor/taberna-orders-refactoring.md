@@ -1,7 +1,7 @@
 # Taberna Orders — Structure Refactoring Plan
 
 **Document:** `taberna-orders-refactoring`  
-**Status:** Planned  
+**Status:** Done  
 **Scope:** File/folder layout only. **No** Stripe session/charge flow changes.  
 **Reference:** [README.md](./README.md)  
 **Backend sibling:** [../refactor/taberna-orders-app-refactoring.md](../refactor/taberna-orders-app-refactoring.md)  
@@ -86,10 +86,10 @@ src/apps/taberna/orders/
 
 ## 5. Acceptance Criteria
 
-- [ ] Checkout still redirects to Stripe session URL when `type === 'session'`.
-- [ ] Success/failure pages still call `order_payment_success` / `order_payment_failed`.
-- [ ] Cart refreshes after order status actions.
-- [ ] `tabernaCartData` contains zero order endpoint strings.
+- [x] Checkout still redirects to Stripe session URL when `type === 'session'`.
+- [x] Success/failure pages still call `order_payment_success` / `order_payment_failed`.
+- [x] Cart refreshes after order status actions.
+- [x] `tabernaCartData` contains zero order endpoint strings.
 
 ---
 

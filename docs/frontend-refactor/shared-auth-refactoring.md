@@ -1,7 +1,7 @@
 # Shared Auth — Structure Refactoring Plan
 
 **Document:** `shared-auth-refactoring`  
-**Status:** Planned  
+**Status:** Done  
 **Scope:** File/folder layout only. **No** login/signup API contract or token storage semantics changes.  
 **Reference:** [README.md](./README.md)  
 **Sibling plans:** [taberna-profiles-refactoring.md](./taberna-profiles-refactoring.md), [social-profiles-refactoring.md](./social-profiles-refactoring.md)
@@ -103,12 +103,12 @@ src/axios-interceptor.js                 → re-export
 
 ## 5. Acceptance Criteria
 
-- [ ] JWT login still uses per-app token URL (`login_source` / `activeApp`).
-- [ ] Signup still dispatches `authToken/register` with same payloads.
-- [ ] Interceptor does not refresh on `/token/` or `/token/refresh/`.
-- [ ] `localStorage` keys (`access`, `refresh`, `active_app`) unchanged.
-- [ ] Taberna and social login pages look and behave the same.
-- [ ] Vitest covers JWT URL resolver helpers.
+- [x] JWT login still uses per-app token URL (`login_source` / `activeApp`).
+- [x] Signup still dispatches `authToken/register` with same payloads.
+- [x] Interceptor does not refresh on `/token/` or `/token/refresh/`.
+- [x] `localStorage` keys (`access`, `refresh`, `active_app`) unchanged.
+- [x] Taberna and social login pages look and behave the same.
+- [x] Vitest covers JWT URL resolver helpers and `authToken` module.
 
 ---
 

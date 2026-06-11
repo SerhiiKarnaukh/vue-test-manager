@@ -1,31 +1,33 @@
 <template>
   <v-app>
     <app-message />
-    <component :is="layout">
+    <component :is="layoutComponent">
       <router-view />
     </component>
   </v-app>
 </template>
 
 <script>
-import AppMessage from '@/components/ui/AppMessage.vue'
-import MainTabernaLayout from '@/layouts/taberna/MainTabernaLayout.vue'
-import MainAppsManagerLayout from '@/layouts/appsmanager/MainAppsManagerLayout.vue'
-import MainSocialLayout from '@/layouts/social/MainSocialLayout.vue'
-import MainAILabLayout from '@/layouts/ai_lab/MainAILabLayout.vue'
+import AppMessage from '@/shared/ui/AppMessage.vue'
+import MainAILabLayout from '@/apps/ai_lab/layouts/MainAILabLayout.vue'
+import MainAppsManagerLayout from '@/apps/apps_manager/layouts/MainAppsManagerLayout.vue'
+import MainSocialLayout from '@/apps/social/layouts/MainSocialLayout.vue'
+import MainTabernaLayout from '@/apps/taberna/layouts/MainTabernaLayout.vue'
+
+const layouts = {
+  mainAppsManager: MainAppsManagerLayout,
+  mainTaberna: MainTabernaLayout,
+  mainSocial: MainSocialLayout,
+  mainAILab: MainAILabLayout,
+}
+
 export default {
   name: 'App',
+  components: { AppMessage },
   computed: {
-    layout() {
-      return (this.$route.meta.layout || 'div') + '-layout'
+    layoutComponent() {
+      return layouts[this.$route.meta.layout] ?? 'div'
     },
-  },
-  components: {
-    AppMessage,
-    MainTabernaLayout,
-    MainAppsManagerLayout,
-    MainSocialLayout,
-    MainAILabLayout,
   },
 }
 </script>

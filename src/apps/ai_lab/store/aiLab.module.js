@@ -1,0 +1,202 @@
+import * as chatApi from '../api/chat'
+import * as imageApi from '../api/image'
+import * as realtimeApi from '../api/realtime'
+import * as voiceApi from '../api/voice'
+
+const state = () => ({
+  message: null,
+  imageURL: null,
+  voiceMessage: null,
+  errorMessage: null,
+  promptImages: [],
+  realtimeChatWebSocket: null,
+  realtimeChatMessages: [],
+})
+
+const mutations = {
+  setChatMessage(state, message) {
+    state.message = message
+  },
+  setImageURL(state, message) {
+    state.imageURL = message
+  },
+  setVoiceMessage(state, message) {
+    state.voiceMessage = message
+  },
+  setPromptImages(state, images) {
+    state.promptImages = [...state.promptImages, ...images]
+  },
+  removePromptImage(state, index) {
+    state.promptImages.splice(index, 1)
+  },
+  setErrorMessage(state, error) {
+    const errorMessage = error.response?.data?.message
+    if (errorMessage) {
+      state.errorMessage = `${errorMessage} Please contact the site administrator if the issue persists.`
+    }
+  },
+  clearErrorMessage(state) {
+    state.errorMessage = null
+  },
+  setRealtimeChatMessages(state, payload) {
+    const { sender, message } = payload
+    state.realtimeChatMessages.push({ sender, message })
+  },
+}
+
+const actions = {
+  async getChatMessage({ commit, state }, question) {
+    try {
+      const response = await chatApi.sendChatMessage(question, state.promptImages)
+      commit('setChatMessage', response.data.message)
+    } catch (error) {
+      console.log(error)
+      commit('setErrorMessage', error)
+    }
+  },
+  async connectRealtimeChatSocket({ state, commit }) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await realtimeApi.fetchRealtimeToken()
+        const ephemeralKey = response.data.client_secret.value
+        const ws = new WebSocket(realtimeApi.REALTIME_WS_URL, [
+          'realtime',
+          'openai-insecure-api-key.' + ephemeralKey,
+          'openai-beta.realtime-v1',
+        ])
+
+        ws.onopen = () => {
+          console.log('✅ WebSocket connected')
+          state.realtimeChatWebSocket = ws
+          resolve()
+        }
+
+        ws.onerror = (e) => {
+          console.error('❌ WebSocket error:', e)
+          reject(e)
+        }
+
+        ws.onmessage = (event) => {
+          const data = JSON.parse(event.data)
+
+          if (data.type === 'response.done') {
+            const transcript =
+              data.response.output?.[0]?.content?.[0]?.transcript
+            commit('setRealtimeChatMessages', {
+              sender: 'chat',
+              message: transcript,
+            })
+            commit('setIsLoading', false, { root: true })
+          }
+        }
+
+        ws.onclose = () => console.warn('⚠️ WebSocket closed')
+      } catch (error) {
+        console.error('❌ Connection failed:', error)
+        reject(error)
+      }
+    })
+  },
+  getRealtimeChatMessage({ state, commit }, question) {
+    const ws = state.realtimeChatWebSocket
+    if (!ws || ws.readyState !== 1) {
+      console.warn('WebSocket is not ready')
+      return
+    }
+
+    commit('setRealtimeChatMessages', { sender: 'me', message: question })
+    commit('setIsLoading', true, { root: true })
+
+    const event = {
+      type: 'conversation.item.create',
+      item: {
+        type: 'message',
+        role: 'user',
+        content: [{ type: 'input_text', text: question }],
+      },
+    }
+
+    ws.send(JSON.stringify(event))
+    ws.send(JSON.stringify({ type: 'response.create' }))
+  },
+
+  async getImageMessage({ commit }, question) {
+    try {
+      const response = await imageApi.generateImage(question)
+      commit('setImageURL', response.data.message)
+    } catch (error) {
+      console.log(error)
+      commit('setErrorMessage', error)
+    }
+  },
+  async downloadImage({}, imageUrl) {
+    try {
+      const encodedFilename = imageUrl.split('/').pop()
+      const filename = decodeURIComponent(encodedFilename)
+      const response = await imageApi.downloadImage(filename)
+      const url = window.URL.createObjectURL(new Blob([response.data]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', filename)
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Error while downloading the image:', error)
+    }
+  },
+  async getVoiceMessage({ commit }, question) {
+    try {
+      const response = await voiceApi.generateVoice(question)
+      commit('setVoiceMessage', response.data.message)
+    } catch (error) {
+      console.log(error)
+      commit('setErrorMessage', error)
+    }
+  },
+  async deletePromptImage({ commit, state }, index) {
+    const imageUrl = state.promptImages[index]
+    const filename = imageUrl.split('/').pop()
+
+    try {
+      await imageApi.deleteVisionImage(filename)
+      commit('removePromptImage', index)
+    } catch (error) {
+      console.error('Error while deleting image:', error)
+    }
+  },
+  async uploadPromptImages({ commit }, images) {
+    const formData = new FormData()
+    if (images.length != 0) {
+      images.forEach((object) => {
+        formData.append('images[]', object.file)
+      })
+    }
+
+    try {
+      const response = await imageApi.uploadVisionImages(formData)
+      commit('setPromptImages', response.data.uploaded_images)
+    } catch (error) {
+      console.error('Error while uploading images:', error)
+      commit('setErrorMessage', error)
+    }
+  },
+}
+
+const getters = {
+  message: (state) => state.message,
+  imageURL: (state) => state.imageURL,
+  voiceMessage: (state) => state.voiceMessage,
+  errorMessage: (state) => state.errorMessage,
+  promptImages: (state) => state.promptImages,
+  realtimeChatMessages: (state) => state.realtimeChatMessages,
+}
+
+export default {
+  namespaced: true,
+  state,
+  mutations,
+  actions,
+  getters,
+}

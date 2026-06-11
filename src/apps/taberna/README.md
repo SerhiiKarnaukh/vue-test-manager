@@ -4,7 +4,7 @@ A fully functional e-Commerce application frontend built using Vue.js, Vuex, Vue
 
 ### Live Demo on Firebase: <https://app.karnaukh-webdev.com/taberna>
 
-![Taberna eCommerce screenshot](https://github.com/SerhiiKarnaukh/vue-test-manager/blob/main/src/views/taberna/taberna_vue.jpg)
+![Taberna eCommerce screenshot](https://raw.githubusercontent.com/SerhiiKarnaukh/vue-test-manager/main/src/apps/taberna/taberna_vue.jpg)
 
 ## Table of Contents
 
@@ -63,31 +63,33 @@ All routes use the `MainTabernaLayout` layout with `TheNavbar` and `TheFooter`.
 ## Architecture
 
 ```
-src/
-├── views/taberna/
-│   ├── HomeView.vue              # Landing page with latest products
-│   ├── CategoryDetailView.vue    # Category product listing
-│   ├── ProductDetailView.vue     # Product detail with variations
-│   ├── SearchView.vue            # Product search results
-│   ├── CartView.vue              # Shopping cart summary
-│   ├── CheckoutView.vue          # Billing + Stripe payment
-│   ├── SuccessView.vue           # Order success page
-│   ├── FailedView.vue            # Payment failure page
-│   ├── DashboardView.vue         # Order history dashboard
-│   ├── LoginView.vue             # Login form
-│   └── SignupView.vue            # Registration form
-├── components/taberna/
-│   ├── TheNavbar.vue             # Navigation bar with category menu and cart badge
-│   ├── TheFooter.vue             # Footer
-│   ├── TheProductCard.vue        # Product card (image, name, price, details link)
-│   ├── TheCartItem.vue           # Cart item row (quantity controls, remove)
-│   └── TheOrderSummary.vue       # Order summary card for dashboard
-├── layouts/taberna/
-│   └── MainTabernaLayout.vue     # Layout wrapper (navbar + footer)
-└── store/modules/tabernaData/
-    ├── tabernaCartData.module.js    # Cart, checkout, Stripe order state
-    ├── tabernaProductData.module.js # Product catalog state
-    └── tabernaProfileData.module.js # Profile state (reserved)
+src/apps/taberna/
+├── README.md
+├── taberna_vue.jpg
+├── components/                   # TheNavbar, TheFooter
+├── layouts/
+│   └── MainTabernaLayout.vue
+├── product/
+│   ├── api/                      # Catalog HTTP (products, categories)
+│   ├── store/product.module.js
+│   ├── views/                    # Home, category, product detail, search
+│   └── components/TheProductCard.vue
+├── cart/
+│   ├── api/cart.js
+│   ├── store/cart.module.js
+│   ├── views/CartView.vue
+│   └── components/TheCartItem.vue
+├── orders/
+│   ├── api/orders.js             # Stripe checkout + payment status
+│   ├── store/orders.module.js
+│   └── views/                    # Checkout, success, failed
+└── profiles/
+    ├── api/orders.js             # User order history (dashboard)
+    ├── store/profiles.module.js
+    ├── views/                    # Login, signup, dashboard
+    └── components/TheOrderSummary.vue
+
+src/store/index.js                # registers taberna* modules from apps/taberna/*/store/
 ```
 
 ## Components
@@ -103,14 +105,14 @@ Responsive navigation bar featuring:
 - **Toggle Theme** -- Light/dark theme switching.
 - Mobile: Collapsible navigation drawer with all features.
 
-### TheProductCard
+### TheProductCard (`product/components/`)
 
 Reusable product card component displaying:
 - Product image with loading placeholder spinner.
 - Product name, truncated description, and price.
 - "Details" button linking to the product detail page.
 
-### TheCartItem
+### TheCartItem (`cart/components/`)
 
 Cart table row component for each item, featuring:
 - Product image and name (linked to product detail).
@@ -119,7 +121,7 @@ Cart table row component for each item, featuring:
 - Increment/decrement quantity buttons.
 - Remove item button (deletes entire line).
 
-### TheOrderSummary
+### TheOrderSummary (`profiles/components/`)
 
 Dashboard order card displaying:
 - Order number, date, payment status, and payment method.
@@ -128,11 +130,11 @@ Dashboard order card displaying:
 
 ## State Management
 
-The Taberna module uses three namespaced Vuex store modules:
+The Taberna app uses four namespaced Vuex store modules (registered in `src/store/index.js` from `src/apps/taberna/*/store/`):
 
 ### tabernaCartData
 
-Manages the shopping cart, checkout, and Stripe order flow.
+Manages the shopping cart.
 
 | State Property | Type     | Description                                         |
 | -------------- | -------- | --------------------------------------------------- |
@@ -147,6 +149,13 @@ Manages the shopping cart, checkout, and Stripe order flow.
 | `addToCart`           | Adds a product with selected color and size to the cart   |
 | `removeFromCart`      | Decrements item quantity by one                           |
 | `removeCartItemFully` | Removes an entire cart item line                          |
+
+### tabernaOrdersData
+
+Checkout and Stripe payment flow (`apps/taberna/orders/`).
+
+| Action                | Description                                               |
+| --------------------- | --------------------------------------------------------- |
 | `placeOrderStripe`    | Places an order via Stripe Session or Stripe Charge flow  |
 | `placeOrderStatus`    | Confirms or fails an order after Stripe redirect          |
 
@@ -168,7 +177,16 @@ Manages the product catalog and product detail data.
 
 ### tabernaProfileData
 
-Reserved module for future profile-related state. Currently empty.
+User dashboard and order history (`apps/taberna/profiles/`).
+
+| State Property  | Type      | Description              |
+| --------------- | --------- | ------------------------ |
+| `orders`        | `Array`   | User order history       |
+| `ordersLoading` | `Boolean` | Dashboard loading state  |
+
+| Action        | Description                    |
+| ------------- | ------------------------------ |
+| `getMyOrders` | Fetches orders for dashboard   |
 
 ## API Endpoints
 
@@ -234,8 +252,9 @@ The platform uses **JWT (JSON Web Token)** authentication via the shared `authJW
 
 ## Related Folders
 
-- [Taberna Components](https://github.com/SerhiiKarnaukh/vue-test-manager/tree/main/src/components/taberna)
-- [Taberna Vuex Store](https://github.com/SerhiiKarnaukh/vue-test-manager/tree/main/src/store/modules/tabernaData)
+- [Taberna App](https://github.com/SerhiiKarnaukh/vue-test-manager/tree/main/src/apps/taberna)
+- [Shared Taberna Shell Components](https://github.com/SerhiiKarnaukh/vue-test-manager/tree/main/src/components/taberna)
+- [Taberna Vuex modules](https://github.com/SerhiiKarnaukh/vue-test-manager/tree/main/src/apps/taberna)
 
 ## Backend
 

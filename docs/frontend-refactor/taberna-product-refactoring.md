@@ -1,7 +1,7 @@
 # Taberna Product — Structure Refactoring Plan
 
 **Document:** `taberna-product-refactoring`  
-**Status:** Planned  
+**Status:** Done  
 **Scope:** File/folder layout only. **No** catalog API changes.  
 **Reference:** [README.md](./README.md)  
 **Backend sibling:** [../refactor/taberna-product-app-refactoring.md](../refactor/taberna-product-app-refactoring.md)  
@@ -98,12 +98,12 @@ src/apps/taberna/shared/components/TheNavbar.vue
 
 ## 5. Acceptance Criteria
 
-- [ ] Home shows latest products.
-- [ ] Category and product detail pages load.
-- [ ] Search POST returns same results.
-- [ ] Navbar category menu loads.
-- [ ] `ProductDetailView` still dispatches cart actions (cross-module import unchanged).
-- [ ] No direct `axios` in taberna catalog views or navbar.
+- [x] Home shows latest products.
+- [x] Category and product detail pages load.
+- [x] Search POST returns same results.
+- [x] Navbar category menu loads.
+- [x] `ProductDetailView` still dispatches cart actions (cross-module import unchanged).
+- [x] No direct `axios` in taberna catalog views or navbar.
 
 ---
 

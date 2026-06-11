@@ -1,7 +1,7 @@
 # Social Notification — Structure Refactoring Plan
 
 **Document:** `social-notification-refactoring`  
-**Status:** Planned  
+**Status:** Done  
 **Scope:** File/folder layout only. **No** notification API changes.  
 **Reference:** [README.md](./README.md)  
 **Backend sibling:** [../refactor/social-notification-app-refactoring.md](../refactor/social-notification-app-refactoring.md)  
@@ -76,9 +76,9 @@ src/apps/social/notifications/
 
 ## 5. Acceptance Criteria
 
-- [ ] Notification list loads for authenticated user.
-- [ ] Mark-as-read updates UI state.
-- [ ] Store < ~60 lines after api extraction.
+- [x] Notification list loads for authenticated user.
+- [x] Mark-as-read updates UI state.
+- [x] Store < ~60 lines after api extraction.
 
 ---
 

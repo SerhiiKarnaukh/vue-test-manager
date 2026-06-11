@@ -1,7 +1,7 @@
 # Social Chat — Structure Refactoring Plan
 
 **Document:** `social-chat-refactoring`  
-**Status:** Planned  
+**Status:** Done  
 **Scope:** File/folder layout only. **No** WebSocket or REST chat API changes.  
 **Reference:** [README.md](./README.md)  
 **Backend sibling:** [../refactor/social-chat-app-refactoring.md](../refactor/social-chat-app-refactoring.md)  
@@ -76,10 +76,10 @@ src/store/modules/socialNetworkData/socialChatData.module.js
 
 ## 5. Acceptance Criteria
 
-- [ ] Chat list loads for authenticated user.
-- [ ] Open conversation with another user works.
-- [ ] Send message persists and displays.
-- [ ] No direct `axios` in `ChatView.vue`.
+- [x] Chat list loads for authenticated user.
+- [x] Open conversation with another user works.
+- [x] Send message persists and displays.
+- [x] No direct `axios` in `ChatView.vue`.
 
 ---
 

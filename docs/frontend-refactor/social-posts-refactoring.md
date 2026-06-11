@@ -1,7 +1,7 @@
 # Social Posts — Structure Refactoring Plan
 
 **Document:** `social-posts-refactoring`  
-**Status:** Planned  
+**Status:** Done  
 **Scope:** File/folder layout only. **No** feed, search, or trend API changes.  
 **Reference:** [README.md](./README.md)  
 **Backend sibling:** [../refactor/social-posts-app-refactoring.md](../refactor/social-posts-app-refactoring.md)  
@@ -116,13 +116,13 @@ src/apps/social/posts/
 
 ## 5. Acceptance Criteria
 
-- [ ] Home feed loads and paginates.
-- [ ] Create post with attachments works.
-- [ ] Search returns posts + profiles.
-- [ ] Trends list and trend detail feed work.
-- [ ] Like, comment, report, delete unchanged.
-- [ ] No `axios` in `TheSocialPostCard.vue` or post views.
-- [ ] `socialPostData.module.js` shim removed after migration.
+- [x] Home feed loads and paginates.
+- [x] Create post with attachments works.
+- [x] Search returns posts + profiles.
+- [x] Trends list and trend detail feed work.
+- [x] Like, comment, report, delete unchanged.
+- [x] No `axios` in `TheSocialPostCard.vue` or post views.
+- [x] `socialPostData.module.js` shim removed after migration.
 
 ---
 

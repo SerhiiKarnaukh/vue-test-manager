@@ -52,7 +52,7 @@ Coverage output:
 | Per-file thresholds | enforced for modules that already have `*.spec.js` |
 | CI gate | `npm run test:coverage` — all tests green + per-file thresholds |
 
-Raise thresholds gradually as domains gain specs (taberna → social → ai-lab).
+Raise thresholds gradually as domains gain specs (taberna → social → ai_lab).
 
 ---
 
@@ -60,11 +60,11 @@ Raise thresholds gradually as domains gain specs (taberna → social → ai-lab)
 
 | Phase | Target | Spec location |
 |-------|--------|---------------|
-| 0 ✅ | `authJwtEndpoints`, `error`, `authJWT`, `alert`, `useVuelidateErrorMessages` | done |
-| 1 ✅ | `http/axiosInterceptors.js`, `router/guards.js` | done |
-| 2 | Taberna cart/product stores + api | `src/apps/taberna/**` or current `tabernaData` |
-| 3 | Social posts/profiles stores | `socialNetworkData` |
-| 4 | Key views (login, cart checkout) | co-located `*.spec.js` |
+| 0 ✅ | `authJwtEndpoints`, `error`, `authJWT`, `authToken`, `alert`, `useVuelidateErrorMessages` | done |
+| 1 ✅ | `http/axiosInterceptors.js`, `shared/router/guards.js` | done |
+| 2 ✅ | Taberna cart + orders api/store | `src/apps/taberna/cart/**`, `src/apps/taberna/orders/**` |
+| 3 ✅ | Taberna product, social posts/profiles/chat/notifications, ai_lab | `src/apps/**` |
+| 4 ✅ | Social posts api (`posts`, `search`, `trends`, `feed`, `actions`) | co-located `*.spec.js` |
 
 Use `coverage/index.html` to find untested files before each refactor PR.
 

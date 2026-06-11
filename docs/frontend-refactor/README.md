@@ -11,10 +11,10 @@
 | Group | Frontend module | Backend app(s) | Notes |
 |-------|-----------------|----------------|-------|
 | Shared auth & shell | [shared-auth](./shared-auth-refactoring.md), [router-shell](./router-shell-refactoring.md) | `accounts` | JWT per app (`authJWT`), legacy token signup (`authToken`) |
-| Portfolio launcher | [core-appsmanager](./core-appsmanager-refactoring.md) | `core` | `/api/v1/vue-apps/` |
+| Portfolio launcher | [apps_manager](./apps_manager-refactoring.md) | `core` | `/api/v1/vue-apps/` |
 | Taberna e-commerce | [taberna-profiles](./taberna-profiles-refactoring.md), [taberna-cart](./taberna-cart-refactoring.md), [taberna-product](./taberna-product-refactoring.md), [taberna-orders](./taberna-orders-refactoring.md) | same names | Today merged in `tabernaData` store + scattered `axios` in views |
 | Social network | [social-profiles](./social-profiles-refactoring.md), [social-posts](./social-posts-refactoring.md), [social-chat](./social-chat-refactoring.md), [social-notification](./social-notification-refactoring.md) | same names | Today merged in `socialNetworkData` store |
-| Standalone | [ai-lab](./ai-lab-refactoring.md) | `ai_lab` | OpenAI tools |
+| Standalone | [ai_lab](./ai_lab-refactoring.md) | `ai_lab` | OpenAI tools |
 
 ---
 
@@ -22,22 +22,22 @@
 
 | Module | Plan | Priority | Largest file (prod) | Status |
 |--------|------|----------|---------------------|--------|
-| `router` + `App.vue` shell | [router-shell-refactoring.md](./router-shell-refactoring.md) | High | `router/index.js` ~370 | Planned |
-| `shared-auth` | [shared-auth-refactoring.md](./shared-auth-refactoring.md) | High | `authToken.module.js` ~128 | Planned |
-| `social-posts` | [social-posts-refactoring.md](./social-posts-refactoring.md) | High | `socialPostData.module.js` ~294 | Planned |
-| `taberna-cart` + orders actions | [taberna-cart-refactoring.md](./taberna-cart-refactoring.md) | High | `tabernaCartData.module.js` ~102 | Planned |
-| `social-profiles` | [social-profiles-refactoring.md](./social-profiles-refactoring.md) | Medium | `socialProfileData.module.js` ~228 | Planned |
-| `taberna-profiles` | [taberna-profiles-refactoring.md](./taberna-profiles-refactoring.md) | Medium | `LoginView.vue` ~126 | Planned |
-| `taberna-product` | [taberna-product-refactoring.md](./taberna-product-refactoring.md) | Medium | `ProductDetailView.vue` ~160 | Planned |
-| `taberna-orders` | [taberna-orders-refactoring.md](./taberna-orders-refactoring.md) | Medium | checkout flow split across views | Planned |
-| `social-chat` | [social-chat-refactoring.md](./social-chat-refactoring.md) | Medium | `socialChatData.module.js` ~119 | Planned |
-| `social-notification` | [social-notification-refactoring.md](./social-notification-refactoring.md) | Low | `socialNotificationData.module.js` ~107 | Planned |
-| `ai-lab` | [ai-lab-refactoring.md](./ai-lab-refactoring.md) | Medium | `aiLabChatData.module.js` ~230 | Planned |
-| `core-appsmanager` | [core-appsmanager-refactoring.md](./core-appsmanager-refactoring.md) | Low | `HomeView.vue` ~68 | Planned |
+| `router` + `App.vue` shell | [router-shell-refactoring.md](./router-shell-refactoring.md) | High | `shared/router/index.js` | **Done** |
+| `shared-auth` | [shared-auth-refactoring.md](./shared-auth-refactoring.md) | High | `authToken.module.js` | **Done** |
+| `social-posts` | [social-posts-refactoring.md](./social-posts-refactoring.md) | High | `posts.module.js` | **Done** |
+| `taberna-cart` + orders actions | [taberna-cart-refactoring.md](./taberna-cart-refactoring.md) | High | `cart.module.js` | **Done** |
+| `social-profiles` | [social-profiles-refactoring.md](./social-profiles-refactoring.md) | Medium | `profiles.module.js` | **Done** |
+| `taberna-profiles` | [taberna-profiles-refactoring.md](./taberna-profiles-refactoring.md) | Medium | `LoginView.vue` (thin wrapper) | **Done** |
+| `taberna-product` | [taberna-product-refactoring.md](./taberna-product-refactoring.md) | Medium | `product.module.js` | **Done** |
+| `taberna-orders` | [taberna-orders-refactoring.md](./taberna-orders-refactoring.md) | Medium | `orders.module.js` | **Done** |
+| `social-chat` | [social-chat-refactoring.md](./social-chat-refactoring.md) | Medium | `chat.module.js` | **Done** |
+| `social-notification` | [social-notification-refactoring.md](./social-notification-refactoring.md) | Low | `notifications.module.js` | **Done** |
+| `ai_lab` | [ai_lab-refactoring.md](./ai_lab-refactoring.md) | Medium | `aiLab.module.js` | **Done** |
+| `apps_manager` | [apps_manager-refactoring.md](./apps_manager-refactoring.md) | Low | `HomeView.vue` | **Done** |
 
-**Suggested order:** `router-shell` → `shared-auth` → `core-appsmanager` (pilot) → taberna cluster → social cluster → `ai-lab`.
+**Suggested order:** `router-shell` → `shared-auth` → `apps_manager` (pilot) → taberna cluster → social cluster → `ai_lab`.
 
-Start with **Taberna cart** or **core-appsmanager** as the first domain pilot after shell — smallest blast radius vs. social.
+Start with **Taberna cart** or **apps_manager** as the first domain pilot after shell — smallest blast radius vs. social.
 
 ---
 
@@ -47,6 +47,8 @@ Mirror backend domain boundaries; each product area becomes a self-contained fro
 
 ```
 src/apps/<domain>/
+├── README.md                # app overview, routes, API — lives at app root
+├── <app>_main.jpg           # screenshot(s) for docs — same folder as README
 ├── index.js                 # optional barrel: routes + store module names
 ├── api/
 │   ├── index.js             # re-exports public API functions
@@ -85,6 +87,8 @@ src/views/taberna/CartView.vue                           → thin wrapper or mov
 ```
 
 Use `@/` path aliases pointing at new locations while old import paths still work.
+
+**App documentation:** when a sub-application is migrated under `src/apps/<domain>/`, move its `README.md` and screenshot assets from `src/views/<domain>/` to the **root of that app folder** (e.g. `src/apps/taberna/README.md`, `src/apps/taberna/taberna_vue.jpg`). Update links in the root `README.md` accordingly. Apply the same rule for Social (`src/apps/social/`), AI Lab (`src/apps/ai_lab/`), etc.
 
 ---
 
@@ -142,7 +146,7 @@ Co-located `*.spec.js` next to source (same as `c-job-remark-tool-front`). Use `
 | `resolveJwtLoginUrl` (`authJwtEndpoints.js`) | `authJWT` login |
 | `store.dispatch('tabernaCartData/getCart')` | `MainTabernaLayout`, cart/checkout views |
 | `store.dispatch('socialPostData/...')` | social feed, search, trends views |
-| `@/components/ui/AppMessage.vue` | global alert via `alert` store |
+| `@/shared/ui/AppMessage.vue` | global alert via `alert` store |
 | `axios-interceptor.js` | global JWT attach + refresh |
 
 ---
@@ -154,7 +158,7 @@ Co-located `*.spec.js` next to source (same as `c-job-remark-tool-front`). Use `
 | `src/router/index.js` (all routes) | `src/shared/router/index.js` + `src/apps/*/routes.js` |
 | `src/store/modules/tabernaData/*` | `src/apps/taberna/{cart,product,profiles}/store/` |
 | `src/store/modules/socialNetworkData/*` | `src/apps/social/{posts,profiles,chat,notifications}/store/` |
-| `src/store/modules/aiLabData/*` | `src/apps/ai-lab/store/` |
+| `src/store/modules/aiLabData/*` | `src/apps/ai_lab/store/` |
 | `src/store/modules/authJWT.module.js` | `src/shared/auth/store/authJWT.module.js` |
 | `src/store/modules/authToken.module.js` | `src/shared/auth/store/authToken.module.js` |
 | `src/views/<app>/` | `src/apps/<app>/views/` (gradual move) |
@@ -175,4 +179,12 @@ Backend **structure-only** principle applies: moving files without changing what
 
 ---
 
-*Frontend refactoring index. March 2026.*
+## Completion summary (June 2026)
+
+All domain modules live under `src/apps/<domain>/` with `api/`, `store/`, `routes.js`, `views/`, `components/`, `layouts/`, per-app README, and screenshot (`*_main.jpg` / `taberna_vue.jpg`) at the app root. Router and auth are in `src/shared/router/` and `src/shared/auth/`. `src/store/index.js` imports modules from canonical paths; only `src/router/index.js` remains as a shim for `@/router`.
+
+**Verification:** `npm run test:coverage` (229 tests) and `npm run build` pass.
+
+---
+
+*Frontend refactoring index. March 2026 — completed June 2026.*

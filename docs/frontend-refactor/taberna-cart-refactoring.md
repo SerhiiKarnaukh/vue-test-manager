@@ -1,7 +1,7 @@
 # Taberna Cart — Structure Refactoring Plan
 
 **Document:** `taberna-cart-refactoring`  
-**Status:** Planned  
+**Status:** Done
 **Scope:** File/folder layout only. **No** cart session / `cart_id` semantics changes.  
 **Reference:** [README.md](./README.md)  
 **Backend sibling:** [../refactor/taberna-cart-app-refactoring.md](../refactor/taberna-cart-app-refactoring.md)  
@@ -99,11 +99,12 @@ src/store/modules/tabernaData/tabernaCartData.module.js
 
 ## 5. Acceptance Criteria
 
-- [ ] Anonymous + logged-in cart via `cart_id` unchanged.
-- [ ] Add/remove line items work from product page and cart page.
-- [ ] `getCart` on taberna layout mount unchanged.
-- [ ] Cart store module < ~80 lines after order split.
-- [ ] All cart URLs remain under `/taberna-cart/api/`.
+- [x] Anonymous + logged-in cart via `cart_id` unchanged.
+- [x] Add/remove line items work from product page and cart page.
+- [x] `getCart` on taberna layout mount unchanged.
+- [x] Cart store module < ~80 lines after order split.
+- [x] All cart URLs remain under `/taberna-cart/api/`.
+- [x] `tabernaCartData` shim preserves existing dispatch paths.
 
 ---
 

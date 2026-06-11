@@ -1,15 +1,29 @@
 import { createStore, createLogger } from 'vuex'
-import authToken from './modules/authToken.module'
-import authJWT from './modules/authJWT.module'
+
+import aiLabChatData from '@/apps/ai_lab/store/aiLab.module'
+
+import socialChatData from '@/apps/social/chat/store/chat.module'
+
+import socialNotificationData from '@/apps/social/notifications/store/notifications.module'
+
+import socialPostData from '@/apps/social/posts/store/posts.module'
+
+import socialProfileData from '@/apps/social/profiles/store/profiles.module'
+
+import tabernaCartData from '@/apps/taberna/cart/store/cart.module'
+
+import tabernaOrdersData from '@/apps/taberna/orders/store/orders.module'
+
+import tabernaProductData from '@/apps/taberna/product/store/product.module'
+
+import tabernaProfileData from '@/apps/taberna/profiles/store/profiles.module'
+
+import authJWT from '@/shared/auth/store/authJWT.module'
+
+import authToken from '@/shared/auth/store/authToken.module'
+
 import alert from './modules/alert.module'
-import socialProfileData from './modules/socialNetworkData/socialProfileData.module'
-import socialPostData from './modules/socialNetworkData/socialPostData.module'
-import socialChatData from './modules/socialNetworkData/socialChatData.module'
-import socialNotificationData from './modules/socialNetworkData/socialNotificationData.module'
-import tabernaCartData from './modules/tabernaData/tabernaCartData.module'
-import tabernaProductData from './modules/tabernaData/tabernaProductData.module'
-import tabernaProfileData from './modules/tabernaData/tabernaProfileData.module'
-import aiLabChatData from './modules/aiLabData/aiLabChatData.module'
+
 const plugins = []
 
 if (process.env.NODE_ENV === 'development') {
@@ -18,25 +32,31 @@ if (process.env.NODE_ENV === 'development') {
 
 export default createStore({
   plugins,
+
   state() {
     return {
       appName: '',
+
       isLoading: false,
     }
   },
+
   mutations: {
     setAppName(state, appName) {
       state.appName = appName
     },
+
     setIsLoading(state, value) {
       state.isLoading = value
     },
   },
+
   actions: {
     setPageTitle({ state }, pageTitle) {
       document.title = `${pageTitle} | ${state.appName}`
     },
   },
+
   modules: {
     authToken,
     authJWT,
@@ -46,10 +66,12 @@ export default createStore({
     socialChatData,
     socialNotificationData,
     tabernaCartData,
+    tabernaOrdersData,
     tabernaProductData,
     tabernaProfileData,
     aiLabChatData,
   },
+
   getters: {
     isLoading: (state) => state.isLoading,
   },

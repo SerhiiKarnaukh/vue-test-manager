@@ -1,7 +1,7 @@
 # Social Profiles — Structure Refactoring Plan
 
 **Document:** `social-profiles-refactoring`  
-**Status:** Planned  
+**Status:** Done  
 **Scope:** File/folder layout only. **No** friendship or profile API changes.  
 **Reference:** [README.md](./README.md)  
 **Backend sibling:** [../refactor/social-profiles-app-refactoring.md](../refactor/social-profiles-app-refactoring.md)  
@@ -104,11 +104,11 @@ src/store/modules/socialNetworkData/socialProfileData.module.js
 
 ## 5. Acceptance Criteria
 
-- [ ] `GET /me/` on layout/profile load; 401 still logs out + alert.
-- [ ] Friend request / accept / reject unchanged.
-- [ ] Password edit shows same success/error alerts.
-- [ ] Suggestions widget loads on search/home.
-- [ ] Store module < ~120 lines (logic in api + thin actions).
+- [x] `GET /me/` on layout/profile load; 401 still logs out + alert.
+- [x] Friend request / accept / reject unchanged.
+- [x] Password edit shows same success/error alerts.
+- [x] Suggestions widget loads on search/home.
+- [x] Store module < ~120 lines (logic in api + thin actions).
 
 ---
 

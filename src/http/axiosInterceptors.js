@@ -1,4 +1,4 @@
-import { isJwtObtainOrRefreshUrl } from '@/utils/authJwtEndpoints'
+import { isJwtObtainOrRefreshUrl } from '@/shared/auth/api/jwt'
 
 export function attachAccessTokenToRequest(config, accessToken) {
   if (accessToken) {

@@ -1,7 +1,7 @@
 # Taberna Profiles — Structure Refactoring Plan
 
 **Document:** `taberna-profiles-refactoring`  
-**Status:** Planned  
+**Status:** Done  
 **Scope:** File/folder layout only. **No** auth or profile API changes.  
 **Reference:** [README.md](./README.md)  
 **Backend sibling:** [../refactor/taberna-profiles-app-refactoring.md](../refactor/taberna-profiles-app-refactoring.md)  
@@ -93,11 +93,11 @@ src/store/modules/tabernaData/tabernaProfileData.module.js
 
 ## 5. Acceptance Criteria
 
-- [ ] Dashboard shows user orders from same API.
-- [ ] Login redirects to dashboard; logout clears session.
-- [ ] `MainTabernaLayout` still calls `checkActiveApp('taberna')`.
-- [ ] No `axios` in `DashboardView.vue`.
-- [ ] Empty `tabernaProfileData` module removed or implemented — not left as dead code.
+- [x] Dashboard shows user orders from same API.
+- [x] Login redirects to dashboard; logout clears session.
+- [x] `MainTabernaLayout` still calls `checkActiveApp('taberna')`.
+- [x] No `axios` in `DashboardView.vue`.
+- [x] Empty `tabernaProfileData` module removed or implemented — not left as dead code.
 
 ---
 

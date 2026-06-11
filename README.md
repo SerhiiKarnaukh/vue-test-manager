@@ -4,7 +4,7 @@ A frontend application that displays a collection of projects built with Vue.js.
 
 ### Live Demo on Firebase: <https://app.karnaukh-webdev.com>
 
-![VAM screenshot](https://github.com/SerhiiKarnaukh/vue-test-manager/blob/main/vue_manager.jpg)
+![VAM screenshot](https://raw.githubusercontent.com/SerhiiKarnaukh/vue-test-manager/main/src/apps/apps_manager/vue_manager.jpg)
 
 ## Table of Contents
 
@@ -111,10 +111,10 @@ flowchart TB
 | ----- | ---- |
 | **Entry** (`main.js`) | Creates the Vue app, registers Router, Vuex, Vuetify, Pinia; sets `axios.defaults.baseURL` from `VITE_REMOTE_HOST`; loads global Axios interceptors. |
 | **Shell** (`App.vue`) | Chooses the layout component from `route.meta.layout` (`mainAppsManager`, `mainTaberna`, `mainSocial`, `mainAILab`) so each sub-app keeps its own chrome. |
-| **Router** (`src/router/index.js`) | Declares all routes and lazy-loaded views; `beforeEach` enforces JWT where `meta.authJWT` is true (Taberna checkout/dashboard, Social protected pages). |
+| **Router** (`src/shared/router/`, shim `@/router`) | Per-app `routes.js` merged in `createRouter`; `beforeEach` enforces JWT where `meta.authJWT` is true. |
 | **State** (`src/store/`) | Root store for loading, alerts, and auth; namespaced modules for Taberna cart/products, Social posts/profiles/chat/notifications, and AI Lab chat. |
-| **UI** (`src/components/`, `src/plugins/vuetify.js`) | Vuetify Material components; **Vuelidate** on auth and checkout forms; shared pieces under `components/ui/`. |
-| **HTTP** (`axios`, `src/axios-interceptor.js`) | JSON and multipart requests to the Django API; Taberna and Social use path prefixes such as `/taberna-store/`, `/api/social-posts/`, etc. |
+| **UI** (`src/shared/ui/`, `src/plugins/vuetify.js`) | Vuetify Material components; **Vuelidate** on auth and checkout forms; global toast via `AppMessage`. |
+| **HTTP** (`axios`, `src/http/axiosInterceptors.js`) | JSON and multipart requests to the Django API; Taberna and Social use path prefixes such as `/taberna-store/`, `/api/social-posts/`, etc. |
 | **Build** (`vite.config.mjs`) | Vue SFC compilation, `@` alias to `src/`, Vuetify auto-import plugin. |
 | **CI/CD** (`.github/workflows/`) | `npm ci` + `npm run build` with secrets, then deploy the `dist/` folder to Firebase Hosting. |
 
@@ -138,6 +138,9 @@ The main landing page that displays a collection of Vue.js projects as cards wit
 - **Route:** `/`
 - **Layout:** `MainAppsManagerLayout`
 - **Features:** Project browsing, search
+- **Docs:** [src/apps/apps_manager/README.md](src/apps/apps_manager/README.md)
+
+![Apps Manager screenshot](https://raw.githubusercontent.com/SerhiiKarnaukh/vue-test-manager/main/src/apps/apps_manager/vue_manager.jpg)
 
 ### 2. Taberna eCommerce
 
@@ -147,10 +150,11 @@ A full-featured e-commerce application with product catalog, shopping cart, and 
 - **Live Demo:** <https://app.karnaukh-webdev.com/taberna>
 - **Layout:** `MainTabernaLayout`
 - **Features:** Product browsing, category filtering, cart, checkout, JWT authentication, user dashboard
-- **Store Modules:** `tabernaCartData`, `tabernaProductData`, `tabernaProfileData`
+- **Store Modules:** `tabernaCartData`, `tabernaOrdersData`, `tabernaProductData`, `tabernaProfileData`
+- **Docs:** [src/apps/taberna/README.md](src/apps/taberna/README.md)
 - **Backend:** [Taberna Backend](https://karnaukh-webdev.com/category/django/taberna-drf-ecommerce/)
 
-![Taberna eCommerce screenshot](https://github.com/SerhiiKarnaukh/vue-test-manager/blob/main/src/views/taberna/taberna_vue.jpg)
+![Taberna eCommerce screenshot](https://raw.githubusercontent.com/SerhiiKarnaukh/vue-test-manager/main/src/apps/taberna/taberna_vue.jpg)
 
 ### 3. Social Network DRF
 
@@ -161,9 +165,10 @@ A social networking platform with posts, profiles, real-time chat, friend manage
 - **Layout:** `MainSocialLayout`
 - **Features:** Posts feed, user profiles, friends, chat, notifications, trends, search, JWT authentication
 - **Store Modules:** `socialPostData`, `socialProfileData`, `socialChatData`, `socialNotificationData`
+- **Docs:** [src/apps/social/README.md](src/apps/social/README.md)
 - **Backend:** [Social Network Backend](https://karnaukh-webdev.com/category/django/social-network-drf/)
 
-![Social Network screenshot](https://github.com/SerhiiKarnaukh/vue-test-manager/blob/main/src/views/social/social_network_main.jpg)
+![Social Network screenshot](https://raw.githubusercontent.com/SerhiiKarnaukh/vue-test-manager/main/src/apps/social/social_network_main.jpg)
 
 ### 4. AI Lab
 
@@ -176,50 +181,39 @@ An AI-powered laboratory with image generation, voice generation, and real-time 
 - **Store Modules:** `aiLabChatData`
 - **Backend:** [AI Lab Backend](https://karnaukh-webdev.com/category/django/ai-lab-back-end/)
 
-![AI Lab screenshot](https://github.com/SerhiiKarnaukh/vue-test-manager/blob/main/src/views/ai_lab/ai_lab_main.jpg)
+![AI Lab screenshot](https://raw.githubusercontent.com/SerhiiKarnaukh/vue-test-manager/main/src/apps/ai_lab/ai_lab_main.jpg)
 
 ## Project Structure
 
 ```
 src/
+├── apps/                       # Feature modules (README + screenshots at app root)
+│   ├── apps_manager/           # Apps Manager (portfolio launcher)
+│   ├── taberna/                # Taberna eCommerce (cart, orders, product, profiles)
+│   ├── social/                 # Social network (posts, profiles, chat, notifications)
+│   └── ai_lab/                 # AI Lab (chat, image, voice, realtime)
 ├── App.vue                     # Root component with dynamic layout switching
 ├── main.js                     # Application entry point
-├── axios-interceptor.js        # Axios request/response interceptor
+├── http/axiosInterceptors.js   # Axios JWT attach + refresh on 401
 ├── assets/                     # Static assets (logos, images)
-├── components/                 # Reusable UI components
-│   ├── ui/                     # Shared UI components (AppMessage)
-│   ├── appsmanager/            # Apps Manager components
-│   ├── taberna/                # Taberna eCommerce components
-│   ├── social/                 # Social Network components
-│   └── ai_lab/                 # AI Lab components
-├── layouts/                    # Layout wrappers per sub-application
-│   ├── appsmanager/
-│   ├── taberna/
-│   ├── social/
-│   └── ai_lab/
 ├── plugins/                    # Vue plugins configuration
 │   ├── vuetify.js              # Vuetify setup
 │   └── webfontloader.js        # Web font loading
 ├── router/
-│   └── index.js                # Vue Router configuration with auth guards
+│   └── index.js                # Shim → shared/router
+├── shared/                     # Cross-cutting modules
+│   ├── auth/                   # JWT + token auth (api, store, forms)
+│   ├── router/                 # createRouter, guards, per-app route merge
+│   └── ui/                     # AppMessage and other shared UI
 ├── store/                      # Vuex store
-│   ├── index.js                # Root store with global state
-│   └── modules/                # Namespaced store modules
-│       ├── alert.module.js
-│       ├── authJWT.module.js
-│       ├── authToken.module.js
-│       ├── aiLabData/
-│       ├── socialNetworkData/
-│       └── tabernaData/
+│   ├── index.js                # Root store; modules from src/apps/* and src/shared/*
+│   └── modules/
+│       └── alert.module.js
 ├── utils/                      # Utility functions
 │   ├── cryptoUtils.js          # Encryption helpers
 │   ├── domainUtils.js          # Domain-related utilities
 │   └── error.js                # Error handling utilities
-└── views/                      # Page-level view components
-    ├── appsmanager/
-    ├── taberna/
-    ├── social/
-    └── ai_lab/
+└── views/                      # Legacy empty dirs (views live under src/apps/)
 ```
 
 ## Prerequisites

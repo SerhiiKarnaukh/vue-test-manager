@@ -4,7 +4,6 @@ const LOGIN_BY_SOURCE = {
   taberna: '/taberna-profiles/api/v1/token/',
   // Under global `/api/social-profiles/` mount, same JWT suffix as Taberna (`/api/v1/token/`).
   social: '/api/social-profiles/api/v1/token/',
-  f1_pitwall: '/f1/api/v1/token/',
 }
 
 export const DEFAULT_JWT_LOGIN_URL = '/api/v1/token/'

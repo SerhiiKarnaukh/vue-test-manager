@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import store from '@/store'
-import f1Routes from './f1Routes'
 
 const routes = [
   //Vue Applications Manager
@@ -290,8 +289,6 @@ const routes = [
       layout: 'mainHyper3d',
     },
   },
-  // F1 Pit Wall
-  ...f1Routes,
 ]
 
 const router = createRouter({
@@ -309,28 +306,15 @@ function getLoginRoute(path) {
 
   if (path.startsWith('/social')) return '/social/login?message=auth'
 
-  if (path.startsWith('/f1'))
-    return `/f1/login?redirect=${encodeURIComponent(path)}&message=auth`
-
   return '/'
 }
 
 router.beforeEach((to) => {
   const requireAuthJWT = to.meta.authJWT
-  const requireAdmin = to.meta.admin
   const isAuthenticated = store.getters['authJWT/isAuthenticated']
 
   if (requireAuthJWT && !isAuthenticated) {
     return getLoginRoute(to.fullPath)
-  }
-
-  // Redirect authenticated users away from F1 login/signup
-  if (isAuthenticated && (to.name === 'F1Login' || to.name === 'F1Signup')) {
-    return '/f1/dashboard'
-  }
-
-  if (requireAdmin && isAuthenticated && !store.getters['f1Data/sessions/isAdmin']) {
-    return '/f1/dashboard'
   }
 
   return true

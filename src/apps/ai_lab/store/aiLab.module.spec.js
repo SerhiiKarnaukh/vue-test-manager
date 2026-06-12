@@ -140,13 +140,41 @@ describe('ai-lab module', () => {
     ])
   })
 
-  it('getRealtimeChatMessage warns when socket is not ready', () => {
+  it('getRealtimeChatMessage reconnects when socket is closed', async () => {
+    const commit = vi.fn()
+    const send = vi.fn()
+    const dispatch = vi.fn().mockImplementation(async () => {
+      state.realtimeChatWebSocket = { readyState: 1, send }
+    })
+    const state = {
+      realtimeChatWebSocket: { readyState: 3, send },
+    }
+
+    await aiLabModule.actions.getRealtimeChatMessage(
+      { state, commit, dispatch },
+      'hello'
+    )
+
+    expect(dispatch).toHaveBeenCalledWith('connectRealtimeChatSocket')
+    expect(commit).toHaveBeenCalledWith('setRealtimeChatMessages', {
+      sender: 'me',
+      message: 'hello',
+    })
+    expect(send).toHaveBeenCalledTimes(2)
+  })
+
+  it('getRealtimeChatMessage warns when reconnect fails', async () => {
     const commit = vi.fn()
     const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const dispatch = vi.fn().mockResolvedValue(undefined)
     const state = { realtimeChatWebSocket: null }
 
-    aiLabModule.actions.getRealtimeChatMessage({ state, commit }, 'hello')
+    await aiLabModule.actions.getRealtimeChatMessage(
+      { state, commit, dispatch },
+      'hello'
+    )
 
+    expect(dispatch).toHaveBeenCalledWith('connectRealtimeChatSocket')
     expect(consoleSpy).toHaveBeenCalledWith('WebSocket is not ready')
     expect(commit).not.toHaveBeenCalled()
     consoleSpy.mockRestore()
@@ -170,7 +198,7 @@ describe('ai-lab module', () => {
   })
 
   it('connectRealtimeChatSocket handles assistant transcript messages', async () => {
-    const state = { realtimeChatWebSocket: null }
+    const state = { realtimeChatWebSocket: null, realtimeSessionReady: false }
     const commit = vi.fn()
     realtimeApi.fetchRealtimeToken.mockResolvedValueOnce({
       data: { client_secret: { value: 'ephemeral-key' } },
@@ -180,7 +208,12 @@ describe('ai-lab module', () => {
       constructor() {
         this.onopen = null
         this.onmessage = null
-        queueMicrotask(() => this.onopen?.())
+        queueMicrotask(() => {
+          this.onopen?.()
+          this.onmessage?.({
+            data: JSON.stringify({ type: 'session.created' }),
+          })
+        })
       }
     }
     global.WebSocket = MockWebSocket
@@ -200,8 +233,44 @@ describe('ai-lab module', () => {
     expect(commit).toHaveBeenCalledWith('setIsLoading', false, { root: true })
   })
 
-  it('connectRealtimeChatSocket resolves when websocket opens', async () => {
-    const state = { realtimeChatWebSocket: null }
+  it('connectRealtimeChatSocket handles assistant text messages', async () => {
+    const state = { realtimeChatWebSocket: null, realtimeSessionReady: false }
+    const commit = vi.fn()
+    realtimeApi.fetchRealtimeToken.mockResolvedValueOnce({
+      data: { client_secret: { value: 'ephemeral-key' } },
+    })
+
+    class MockWebSocket {
+      constructor() {
+        this.onopen = null
+        this.onmessage = null
+        queueMicrotask(() => {
+          this.onopen?.()
+          this.onmessage?.({
+            data: JSON.stringify({ type: 'session.created' }),
+          })
+        })
+      }
+    }
+    global.WebSocket = MockWebSocket
+
+    await aiLabModule.actions.connectRealtimeChatSocket({ state, commit })
+    state.realtimeChatWebSocket.onmessage({
+      data: JSON.stringify({
+        type: 'response.done',
+        response: { output: [{ content: [{ text: 'text reply' }] }] },
+      }),
+    })
+
+    expect(commit).toHaveBeenCalledWith('setRealtimeChatMessages', {
+      sender: 'chat',
+      message: 'text reply',
+    })
+    expect(commit).toHaveBeenCalledWith('setIsLoading', false, { root: true })
+  })
+
+  it('connectRealtimeChatSocket resolves when session is created', async () => {
+    const state = { realtimeChatWebSocket: null, realtimeSessionReady: false }
     const commit = vi.fn()
     realtimeApi.fetchRealtimeToken.mockResolvedValueOnce({
       data: { client_secret: { value: 'ephemeral-key' } },
@@ -215,7 +284,12 @@ describe('ai-lab module', () => {
         this.onerror = null
         this.onmessage = null
         this.onclose = null
-        queueMicrotask(() => this.onopen?.())
+        queueMicrotask(() => {
+          this.onopen?.()
+          this.onmessage?.({
+            data: JSON.stringify({ type: 'session.created' }),
+          })
+        })
       }
     }
     global.WebSocket = MockWebSocket
@@ -224,6 +298,39 @@ describe('ai-lab module', () => {
 
     expect(state.realtimeChatWebSocket).toBeTruthy()
     expect(state.realtimeChatWebSocket.url).toBe(realtimeApi.REALTIME_WS_URL)
+    expect(state.realtimeSessionReady).toBe(true)
+    expect(state.realtimeChatWebSocket.protocols).not.toContain(
+      'openai-beta.realtime-v1'
+    )
+  })
+
+  it('connectRealtimeChatSocket resets state on close', async () => {
+    const state = { realtimeChatWebSocket: null, realtimeSessionReady: false }
+    const commit = vi.fn()
+    realtimeApi.fetchRealtimeToken.mockResolvedValueOnce({
+      data: { client_secret: { value: 'ephemeral-key' } },
+    })
+
+    class MockWebSocket {
+      constructor() {
+        this.onopen = null
+        this.onmessage = null
+        this.onclose = null
+        queueMicrotask(() => {
+          this.onopen?.()
+          this.onmessage?.({
+            data: JSON.stringify({ type: 'session.created' }),
+          })
+        })
+      }
+    }
+    global.WebSocket = MockWebSocket
+
+    await aiLabModule.actions.connectRealtimeChatSocket({ state, commit })
+    state.realtimeChatWebSocket.onclose({ code: 1000, reason: 'done' })
+
+    expect(state.realtimeChatWebSocket).toBeNull()
+    expect(state.realtimeSessionReady).toBe(false)
   })
 
   it('clearErrorMessage mutation resets error state', () => {

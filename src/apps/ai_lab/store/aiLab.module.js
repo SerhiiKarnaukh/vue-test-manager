@@ -10,6 +10,7 @@ const state = () => ({
   errorMessage: null,
   promptImages: [],
   realtimeChatWebSocket: null,
+  realtimeSessionReady: false,
   realtimeChatMessages: [],
 })
 
@@ -56,48 +57,74 @@ const actions = {
   },
   async connectRealtimeChatSocket({ state, commit }) {
     return new Promise(async (resolve, reject) => {
+      let resolved = false
       try {
         const response = await realtimeApi.fetchRealtimeToken()
         const ephemeralKey = response.data.client_secret.value
         const ws = new WebSocket(realtimeApi.REALTIME_WS_URL, [
           'realtime',
           'openai-insecure-api-key.' + ephemeralKey,
-          'openai-beta.realtime-v1',
         ])
 
         ws.onopen = () => {
           console.log('✅ WebSocket connected')
           state.realtimeChatWebSocket = ws
-          resolve()
         }
 
         ws.onerror = (e) => {
           console.error('❌ WebSocket error:', e)
-          reject(e)
+          if (!resolved) {
+            resolved = true
+            reject(e)
+          }
         }
 
         ws.onmessage = (event) => {
           const data = JSON.parse(event.data)
 
+          if (data.type === 'session.created' || data.type === 'session.updated') {
+            state.realtimeSessionReady = true
+            if (!resolved) {
+              resolved = true
+              resolve()
+            }
+            return
+          }
+
+          if (data.type === 'error') {
+            console.error('Realtime error:', data)
+            return
+          }
+
           if (data.type === 'response.done') {
-            const transcript =
-              data.response.output?.[0]?.content?.[0]?.transcript
-            commit('setRealtimeChatMessages', {
-              sender: 'chat',
-              message: transcript,
-            })
-            commit('setIsLoading', false, { root: true })
+            const content = data.response?.output?.[0]?.content?.[0]
+            const message = content?.transcript || content?.text
+            if (message) {
+              commit('setRealtimeChatMessages', {
+                sender: 'chat',
+                message,
+              })
+              commit('setIsLoading', false, { root: true })
+            }
           }
         }
 
-        ws.onclose = () => console.warn('⚠️ WebSocket closed')
+        ws.onclose = (event) => {
+          console.warn('⚠️ WebSocket closed', event.code, event.reason)
+          state.realtimeChatWebSocket = null
+          state.realtimeSessionReady = false
+        }
       } catch (error) {
         console.error('❌ Connection failed:', error)
         reject(error)
       }
     })
   },
-  getRealtimeChatMessage({ state, commit }, question) {
+  async getRealtimeChatMessage({ state, dispatch, commit }, question) {
+    if (!state.realtimeChatWebSocket || state.realtimeChatWebSocket.readyState !== 1) {
+      await dispatch('connectRealtimeChatSocket')
+    }
+
     const ws = state.realtimeChatWebSocket
     if (!ws || ws.readyState !== 1) {
       console.warn('WebSocket is not ready')

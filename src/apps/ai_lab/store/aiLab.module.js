@@ -3,6 +3,19 @@ import * as imageApi from '../api/image'
 import * as realtimeApi from '../api/realtime'
 import * as voiceApi from '../api/voice'
 
+function formatApiErrorMessage(error) {
+  const data = error.response?.data
+  if (!data?.message) return null
+
+  const isQuotaExceeded =
+    error.response?.status === 402 ||
+    data.error_code === 'openai_quota_exceeded'
+
+  return isQuotaExceeded
+    ? data.message
+    : `${data.message} Please contact the site administrator if the issue persists.`
+}
+
 const state = () => ({
   message: null,
   imageURL: null,
@@ -31,9 +44,9 @@ const mutations = {
     state.promptImages.splice(index, 1)
   },
   setErrorMessage(state, error) {
-    const errorMessage = error.response?.data?.message
-    if (errorMessage) {
-      state.errorMessage = `${errorMessage} Please contact the site administrator if the issue persists.`
+    const message = formatApiErrorMessage(error)
+    if (message) {
+      state.errorMessage = message
     }
   },
   clearErrorMessage(state) {
@@ -46,16 +59,27 @@ const mutations = {
 }
 
 const actions = {
-  async getChatMessage({ commit, state }, question) {
+  reportApiError({ commit, dispatch }, error) {
+    const message = formatApiErrorMessage(error)
+    if (!message) return
+
+    commit('setErrorMessage', error)
+    dispatch(
+      'alert/setMessage',
+      { value: [message], type: 'error' },
+      { root: true }
+    )
+  },
+  async getChatMessage({ commit, dispatch, state }, question) {
     try {
       const response = await chatApi.sendChatMessage(question, state.promptImages)
       commit('setChatMessage', response.data.message)
     } catch (error) {
       console.log(error)
-      commit('setErrorMessage', error)
+      dispatch('reportApiError', error)
     }
   },
-  async connectRealtimeChatSocket({ state, commit }) {
+  async connectRealtimeChatSocket({ state, commit, dispatch }) {
     return new Promise(async (resolve, reject) => {
       let resolved = false
       try {
@@ -116,6 +140,7 @@ const actions = {
         }
       } catch (error) {
         console.error('❌ Connection failed:', error)
+        dispatch('reportApiError', error)
         reject(error)
       }
     })
@@ -147,13 +172,13 @@ const actions = {
     ws.send(JSON.stringify({ type: 'response.create' }))
   },
 
-  async getImageMessage({ commit }, question) {
+  async getImageMessage({ commit, dispatch }, question) {
     try {
       const response = await imageApi.generateImage(question)
       commit('setImageURL', response.data.message)
     } catch (error) {
       console.log(error)
-      commit('setErrorMessage', error)
+      dispatch('reportApiError', error)
     }
   },
   async downloadImage({}, imageUrl) {
@@ -173,13 +198,13 @@ const actions = {
       console.error('Error while downloading the image:', error)
     }
   },
-  async getVoiceMessage({ commit }, question) {
+  async getVoiceMessage({ commit, dispatch }, question) {
     try {
       const response = await voiceApi.generateVoice(question)
       commit('setVoiceMessage', response.data.message)
     } catch (error) {
       console.log(error)
-      commit('setErrorMessage', error)
+      dispatch('reportApiError', error)
     }
   },
   async deletePromptImage({ commit, state }, index) {
@@ -193,7 +218,7 @@ const actions = {
       console.error('Error while deleting image:', error)
     }
   },
-  async uploadPromptImages({ commit }, images) {
+  async uploadPromptImages({ commit, dispatch }, images) {
     const formData = new FormData()
     if (images.length != 0) {
       images.forEach((object) => {
@@ -206,7 +231,7 @@ const actions = {
       commit('setPromptImages', response.data.uploaded_images)
     } catch (error) {
       console.error('Error while uploading images:', error)
-      commit('setErrorMessage', error)
+      dispatch('reportApiError', error)
     }
   },
 }

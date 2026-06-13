@@ -45,25 +45,27 @@ describe('ai-lab module', () => {
 
   it('getChatMessage sets error message on failure', async () => {
     const commit = vi.fn()
+    const dispatch = vi.fn()
     const error = { response: { data: { message: 'rate limit' } } }
     chatApi.sendChatMessage.mockRejectedValueOnce(error)
 
     await aiLabModule.actions.getChatMessage(
-      { commit, state: { promptImages: [] } },
+      { commit, dispatch, state: { promptImages: [] } },
       'hello'
     )
 
-    expect(commit).toHaveBeenCalledWith('setErrorMessage', error)
+    expect(dispatch).toHaveBeenCalledWith('reportApiError', error)
   })
 
   it('getImageMessage sets error on failure', async () => {
     const commit = vi.fn()
+    const dispatch = vi.fn()
     const error = { response: { data: { message: 'bad prompt' } } }
     imageApi.generateImage.mockRejectedValueOnce(error)
 
-    await aiLabModule.actions.getImageMessage({ commit }, 'draw cat')
+    await aiLabModule.actions.getImageMessage({ commit, dispatch }, 'draw cat')
 
-    expect(commit).toHaveBeenCalledWith('setErrorMessage', error)
+    expect(dispatch).toHaveBeenCalledWith('reportApiError', error)
   })
 
   it('getImageMessage commits image url', async () => {
@@ -79,12 +81,13 @@ describe('ai-lab module', () => {
 
   it('getVoiceMessage sets error on failure', async () => {
     const commit = vi.fn()
+    const dispatch = vi.fn()
     const error = { response: { data: { message: 'voice failed' } } }
     voiceApi.generateVoice.mockRejectedValueOnce(error)
 
-    await aiLabModule.actions.getVoiceMessage({ commit }, 'say hi')
+    await aiLabModule.actions.getVoiceMessage({ commit, dispatch }, 'say hi')
 
-    expect(commit).toHaveBeenCalledWith('setErrorMessage', error)
+    expect(dispatch).toHaveBeenCalledWith('reportApiError', error)
   })
 
   it('getVoiceMessage commits audio url', async () => {
@@ -343,10 +346,74 @@ describe('ai-lab module', () => {
   it('setErrorMessage mutation formats api error', () => {
     const state = aiLabModule.state()
     aiLabModule.mutations.setErrorMessage(state, {
-      response: { data: { message: 'Quota exceeded' } },
+      response: { status: 500, data: { message: 'Server error' } },
     })
 
-    expect(state.errorMessage).toContain('Quota exceeded')
+    expect(state.errorMessage).toBe(
+      'Server error Please contact the site administrator if the issue persists.'
+    )
+  })
+
+  it('setErrorMessage mutation shows quota message without suffix', () => {
+    const state = aiLabModule.state()
+    const quotaMessage =
+      'OpenAI API credits have been exhausted. AI Lab features are temporarily unavailable. Please contact the site administrator.'
+
+    aiLabModule.mutations.setErrorMessage(state, {
+      response: {
+        status: 402,
+        data: {
+          message: quotaMessage,
+          error_code: 'openai_quota_exceeded',
+        },
+      },
+    })
+
+    expect(state.errorMessage).toBe(quotaMessage)
+  })
+
+  it('reportApiError commits message and shows error toast', () => {
+    const commit = vi.fn()
+    const dispatch = vi.fn()
+    const error = {
+      response: { status: 500, data: { message: 'Generation failed' } },
+    }
+
+    aiLabModule.actions.reportApiError({ commit, dispatch }, error)
+
+    expect(commit).toHaveBeenCalledWith('setErrorMessage', error)
+    expect(dispatch).toHaveBeenCalledWith(
+      'alert/setMessage',
+      {
+        value: [
+          'Generation failed Please contact the site administrator if the issue persists.',
+        ],
+        type: 'error',
+      },
+      { root: true }
+    )
+  })
+
+  it('connectRealtimeChatSocket reports token fetch errors', async () => {
+    const state = { realtimeChatWebSocket: null, realtimeSessionReady: false }
+    const commit = vi.fn()
+    const dispatch = vi.fn()
+    const error = {
+      response: {
+        status: 402,
+        data: {
+          message: 'OpenAI API credits have been exhausted.',
+          error_code: 'openai_quota_exceeded',
+        },
+      },
+    }
+    realtimeApi.fetchRealtimeToken.mockRejectedValueOnce(error)
+
+    await expect(
+      aiLabModule.actions.connectRealtimeChatSocket({ state, commit, dispatch })
+    ).rejects.toBe(error)
+
+    expect(dispatch).toHaveBeenCalledWith('reportApiError', error)
   })
 
   it('exposes ai-lab getters', () => {
